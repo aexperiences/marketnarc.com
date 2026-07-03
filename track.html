@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Nate's track record — MarketNarc</title>
+<meta name="description" content="Every call Nate has made, and how it turned out — wins, losses, and the times he said 'I'm not sure.' Honest by design.">
+<link rel="icon" href="/marketnarc-icon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#0B1017;--ink2:#0F1822;--card:#131E29;--card2:#16232F;--line:#243444;--off:#E9EEF4;--sea:#8FA6BB;
+ --amber:#E6A93C;--hit:#4FCB8E;--miss:#E0725A;--open:#E6A93C;--abst:#7E93A6}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(120% 60% at 50% -8%,#14212F 0%,#0B1017 55%,#080D13 100%);
+ color:var(--off);font-family:Inter,-apple-system,Segoe UI,Roboto,sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased}
+.tnum{font-variant-numeric:tabular-nums}
+.wrap{max-width:1000px;margin:0 auto;padding:0 20px}
+a{color:inherit;text-decoration:none}
+.nav{position:sticky;top:0;z-index:20;background:rgba(11,16,23,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.nav .wrap{display:flex;align-items:center;gap:11px;padding:12px 20px}
+.brand{display:flex;align-items:center;gap:10px}
+.brand svg{width:30px;height:30px;border-radius:8px}
+.brand .wm{font-family:Lato;font-weight:900;font-size:19px}.brand .wm .n{color:var(--amber)}
+.sample{margin-left:auto;font-size:11px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;color:#12202E;background:var(--amber);border-radius:999px;padding:4px 11px}
+.hero{padding:44px 0 8px}
+.kick{font-family:Lato;font-weight:900;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--sea);margin:0 0 10px}
+.kick .n{color:var(--amber)}
+h1{font-family:Lato;font-weight:900;font-size:clamp(30px,5vw,46px);letter-spacing:-.5px;margin:0 0 12px}
+.lede{font-size:17px;color:var(--sea);max-width:60ch;margin:0}
+.lede b{color:var(--off)}
+/* top stats */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:26px 0 8px}
+@media(max-width:680px){.stats{grid-template-columns:1fr 1fr}}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+.stat .n{font-family:Lato;font-weight:900;font-size:30px;line-height:1}
+.stat .l{font-size:12px;color:var(--sea);margin-top:6px;text-transform:uppercase;letter-spacing:.04em}
+.stat .n.good{color:var(--hit)}
+.sec{padding:34px 0 6px}
+.sec h2{font-family:Lato;font-weight:900;font-size:22px;margin:0 0 4px}
+.sec .sub{color:var(--sea);font-size:14.5px;margin:0 0 18px;max-width:64ch}
+/* confidence tiers */
+.tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media(max-width:760px){.tiers{grid-template-columns:1fr}}
+.tier{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 18px 16px}
+.tier .th{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:4px}
+.tier .th b{font-family:Lato;font-weight:900;font-size:15px}
+.tier .rate{font-family:Lato;font-weight:900;font-size:26px}
+.tier .bar{height:7px;border-radius:4px;background:#0C1620;overflow:hidden;margin:10px 0 10px}
+.tier .bar i{display:block;height:100%}
+.tier p{font-size:13px;color:var(--sea);margin:0}
+.tier .cnt{font-size:12px;color:var(--sea)}
+.t-hi .rate{color:var(--hit)}.t-hi .bar i{background:var(--hit)}
+.t-mid .rate{color:var(--amber)}.t-mid .bar i{background:var(--amber)}
+.t-lo .rate{color:var(--abst)}.t-lo .bar i{background:var(--abst)}
+/* nate quote */
+.nate{display:flex;gap:14px;background:linear-gradient(180deg,#16232F,#111C27);border:1px solid var(--line);border-left:3px solid var(--amber);border-radius:14px;padding:18px 20px;margin-top:16px}
+.nate .av{flex:0 0 auto;width:40px;height:40px;border-radius:11px}
+.nate .q{font-size:15px;line-height:1.6}
+.nate .q b{color:var(--amber)}
+.nate .who{font-size:12px;color:var(--sea);margin-top:6px}
+/* table */
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 14px}
+.chip{font-family:Lato;font-weight:900;font-size:13px;color:var(--sea);background:var(--card);border:1px solid var(--line);border-radius:999px;padding:8px 14px;cursor:pointer}
+.chip.on{color:#0E1620;background:var(--amber);border-color:var(--amber)}
+.tbl{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.tbl th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--sea);font-weight:700;padding:12px 14px;border-bottom:1px solid var(--line);background:var(--card2)}
+.tbl td{padding:13px 14px;border-bottom:1px solid var(--line);font-size:14px;vertical-align:middle}
+.tbl tr:last-child td{border-bottom:0}
+.tk{font-family:Lato;font-weight:900;font-size:15px}.tk small{display:block;font-family:Inter;font-weight:500;font-size:11.5px;color:var(--sea)}
+.pill{font-family:Lato;font-weight:900;font-size:12px;letter-spacing:.3px;border-radius:999px;padding:4px 11px;display:inline-block}
+.pill.BUY{background:var(--amber);color:#12202E}.pill.SELL{background:var(--miss);color:#2A0F0A}
+.pill.HOLD{background:#22303D;color:var(--off)}.pill.WATCH{background:transparent;color:var(--sea);border:1.5px solid var(--sea)}
+.conf{font-family:Lato;font-weight:900}
+.out{font-size:12px;font-weight:800;letter-spacing:.3px;text-transform:uppercase;padding:4px 10px;border-radius:999px;display:inline-block}
+.out.Hit{color:#08321F;background:var(--hit)}
+.out.Miss{color:#2A0F0A;background:var(--miss)}
+.out.Open{color:var(--amber);border:1px solid var(--amber)}
+.out.Abstained{color:var(--abst);border:1px solid var(--abst)}
+.mv{font-family:Lato;font-weight:900;font-size:13px}
+.mv.up{color:var(--hit)}.mv.dn{color:var(--miss)}.mv.fl{color:var(--sea)}
+.hide{display:none}
+/* transparency */
+.trans{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin:22px 0;font-size:13.5px;color:var(--sea);line-height:1.65}
+.trans b{color:var(--off)}
+.nfa{text-align:center;font-size:12.5px;color:var(--sea);margin:26px 0 8px}
+.foot{border-top:1px solid var(--line);margin-top:26px;padding:26px 0 60px;font-size:13px;color:var(--sea)}
+.mag{width:1024px}
+</style>
+</head>
+<body>
+<header class="nav"><div class="wrap">
+  <a class="brand" href="/marketnarc"><svg viewBox="0 0 1024 1024" aria-hidden="true"><rect width="1024" height="1024" rx="232" fill="#0E2B2A"/><circle cx="445" cy="430" r="235" fill="none" stroke="#E6A93C" stroke-width="64"/><polyline points="362,525 362,335 528,525 528,335" fill="none" stroke="#E6A93C" stroke-width="46" stroke-linecap="round" stroke-linejoin="round"/><line x1="612" y1="597" x2="775" y2="760" stroke="#E6A93C" stroke-width="82" stroke-linecap="round"/></svg><span class="wm">Market<span class="n">Narc</span></span></a>
+  <span class="sample" id="modebadge">Sample · design preview</span>
+</div></header>
+
+<section class="hero"><div class="wrap">
+  <p class="kick">Nate's <span class="n">track record</span></p>
+  <h1>Every call. Wins, losses, and the ones I sat out.</h1>
+  <p class="lede">Most apps bury their misses. I don't. Here's every call I've made, how it turned out, and — the part that matters — <b>how my hit rate holds up by how confident I was.</b> If I say I'm sure and I'm wrong, it's on this page.</p>
+
+  <div class="stats">
+    <div class="stat"><div class="n tnum" id="s-made">—</div><div class="l">Calls made</div></div>
+    <div class="stat"><div class="n tnum" id="s-res">—</div><div class="l" id="s-res-l">Resolved</div></div>
+    <div class="stat"><div class="n good tnum" id="s-rate">—</div><div class="l">Hit rate · decisive calls</div></div>
+    <div class="stat"><div class="n tnum" id="s-conf">—</div><div class="l">Avg confidence stated</div></div>
+  </div>
+</div></section>
+
+<section class="sec"><div class="wrap">
+  <h2>The part other apps hide</h2>
+  <p class="sub">A hit rate on its own is easy to fake. The honest number is whether my <b>confidence means anything</b> — do the calls I was sure about actually do better? Here's the truth.</p>
+  <div class="tiers">
+    <div class="tier t-hi">
+      <div class="th"><b>High confidence · 80%+</b><span class="rate tnum" id="hi-rate">—</span></div>
+      <div class="bar"><i id="hi-bar" style="width:0%"></i></div>
+      <p class="cnt" id="hi-cnt">—</p>
+      <p style="margin-top:8px">When I'm sure, I'm usually right. This is where I earn my keep.</p>
+    </div>
+    <div class="tier t-mid">
+      <div class="th"><b>Medium · 60–79%</b><span class="rate tnum" id="mid-rate">—</span></div>
+      <div class="bar"><i id="mid-bar" style="width:0%"></i></div>
+      <p class="cnt" id="mid-cnt">—</p>
+      <p style="margin-top:8px">A coin flip, and I'll say so. Treat these as watch-and-learn, not gospel.</p>
+    </div>
+    <div class="tier t-lo">
+      <div class="th"><b>Low · under 60%</b><span class="rate" id="lo-rate">Sat out</span></div>
+      <div class="bar"><i style="width:12%"></i></div>
+      <p class="cnt" id="lo-cnt">—</p>
+      <p style="margin-top:8px">When I'm not sure, I don't guess — I say Watch. So far, right to.</p>
+    </div>
+  </div>
+
+  <div class="nate">
+    <svg class="av" viewBox="0 0 1024 1024" aria-hidden="true"><rect width="1024" height="1024" rx="232" fill="#0E2B2A"/><circle cx="445" cy="430" r="235" fill="none" stroke="#E6A93C" stroke-width="64"/><polyline points="362,525 362,335 528,525 528,335" fill="none" stroke="#E6A93C" stroke-width="46" stroke-linecap="round" stroke-linejoin="round"/><line x1="612" y1="597" x2="775" y2="760" stroke="#E6A93C" stroke-width="82" stroke-linecap="round"/></svg>
+    <div>
+      <div class="q" id="nate-q">Read this honestly: I earn my keep when I'm sure, and I'm closer to a coin flip when I'm not. A Hold that breaks out is a miss, and I count it as one. When I say <b>Watch</b>, believe me — don't trade my medium calls like they're my high ones.</div>
+      <div class="who">— Nate, MarketNarc</div>
+    </div>
+  </div>
+</div></section>
+
+<section class="sec"><div class="wrap">
+  <h2>The calls</h2>
+  <div class="filters" id="filters">
+    <button class="chip on" data-f="all">All</button>
+    <button class="chip" data-f="Hit">Hits</button>
+    <button class="chip" data-f="Miss">Misses</button>
+    <button class="chip" data-f="Watch">Sat out</button>
+    <button class="chip" data-f="Open">Open</button>
+  </div>
+  <table class="tbl"><thead><tr>
+    <th>Stock</th><th>Date</th><th>Call</th><th>Conf.</th><th>At call</th><th>Now / resolved</th><th>Move</th><th>Outcome</th>
+  </tr></thead><tbody id="rows"></tbody></table>
+</div></section>
+
+<div class="wrap">
+  <div class="trans">
+    <b>How I score, in plain English.</b> A <b>Buy</b> is a hit if the stock is up 4%+ within 30 trading days; a <b>Sell</b> if it's down 4%+; a <b>Hold</b> if it stays within ±4% (if it breaks out, that's a miss — I don't hide from it). A <b>Watch</b> never counts as a win or a loss — it's me choosing not to call it. The rule is set before the call, not after. Prices via the live market feed; every call is timestamped and logged the moment it's made.
+  </div>
+  <p class="nfa">Educational · not financial advice · you decide. <b style="color:var(--amber)" id="nfa-note">Sample data — a design preview, not a real track record or a performance promise.</b></p>
+  <div class="foot">MarketNarc · a Narc · an Accelerated Experiences LLC line · marketnarc.com</div>
+</div>
+
+<script>
+var CALLS=[
+ {tk:"RVLN",nm:"Riverline Bank",date:"Jun 3",call:"BUY",conf:92,at:12.40,now:14.10,out:"Hit",res:1},
+ {tk:"CPRM",nm:"Copperfield Mining",date:"Jun 5",call:"BUY",conf:88,at:54.20,now:61.80,out:"Hit",res:1},
+ {tk:"VOLT",nm:"Voltaire Energy",date:"Jun 6",call:"SELL",conf:84,at:18.90,now:15.20,out:"Hit",res:1},
+ {tk:"ATLS",nm:"Atlas Freight",date:"Jun 9",call:"BUY",conf:90,at:44.30,now:49.10,out:"Hit",res:1},
+ {tk:"NHRV",nm:"Northern Harvest",date:"Jun 10",call:"BUY",conf:83,at:31.00,now:29.40,out:"Miss",res:1},
+ {tk:"SABL",nm:"SableWorks",date:"Jun 12",call:"SELL",conf:69,at:27.40,now:26.90,out:"Hit",res:1},
+ {tk:"MRDN",nm:"Meridian Pay",date:"Jun 13",call:"HOLD",conf:62,at:9.10,now:9.35,out:"Hit",res:1},
+ {tk:"CIRR",nm:"Cirrus Software",date:"Jun 16",call:"HOLD",conf:62,at:77.00,now:88.50,out:"Miss",res:1},
+ {tk:"GRND",nm:"Grandview REIT",date:"Jun 17",call:"BUY",conf:66,at:22.10,now:21.60,out:"Miss",res:1},
+ {tk:"PNNY",nm:"a penny-stock example",date:"Jun 19",call:"WATCH",conf:41,at:2.80,now:2.10,out:"Abstained",res:0},
+ {tk:"BRWM",nm:"Brightwater Marine",date:"Jun 24",call:"BUY",conf:81,at:15.75,now:null,out:"Open",res:0},
+ {tk:"KELP",nm:"Kelp Nutrition",date:"Jun 25",call:"WATCH",conf:38,at:6.20,now:null,out:"Open",res:0}
+];
+function money(x){return x==null?"—":"$"+x.toFixed(2);}
+function render(f){
+ var h="";
+ CALLS.forEach(function(c){
+  var show = f=="all" || c.out==f || (f=="Watch"&&c.call=="WATCH");
+  var mv="",cls="fl";
+  if(c.now!=null){var p=((c.now-c.at)/c.at*100);cls=p>0.6?"up":(p<-0.6?"dn":"fl");mv=(p>=0?"+":"")+p.toFixed(1)+"%";}else{mv="—";}
+  h+='<tr class="'+(show?"":"hide")+'">'+
+   '<td><span class="tk">'+c.tk+'<small>'+c.nm+'</small></span></td>'+
+   '<td class="tnum" style="color:var(--sea)">'+c.date+'</td>'+
+   '<td><span class="pill '+c.call+'">'+c.call+'</span></td>'+
+   '<td class="conf tnum">'+c.conf+'%</td>'+
+   '<td class="tnum">'+money(c.at)+'</td>'+
+   '<td class="tnum">'+(c.now==null?'<span style="color:var(--sea)">open</span>':money(c.now))+'</td>'+
+   '<td><span class="mv '+cls+'">'+mv+'</span></td>'+
+   '<td><span class="out '+c.out+'">'+c.out+'</span></td>'+
+  '</tr>';
+ });
+ document.getElementById("rows").innerHTML=h;
+}
+function setT(id,v){var e=document.getElementById(id);if(e)e.textContent=v;}
+function renderStats(s){setT('s-made',s.calls_made);setT('s-res',s.resolved);setT('s-res-l','Resolved ('+s.open+' open · '+s.sat_out+' sat out)');setT('s-rate',s.hit_rate==null?'—':s.hit_rate+'%');setT('s-conf',(s.avg_confidence||0)+'%');}
+function tierCnt(t){if(!t.n)return 'no resolved calls yet';var m=t.n-t.hits;return t.n+' resolved · '+t.hits+' hit'+(t.hits==1?'':'s')+' · '+m+' miss'+(m==1?'':'es');}
+function renderTiers(s){var hi=s.tiers.high,mid=s.tiers.mid,lo=s.tiers.low;
+ setT('hi-rate',hi.rate==null?'—':hi.rate+'%');document.getElementById('hi-bar').style.width=(hi.rate||0)+'%';setT('hi-cnt',tierCnt(hi));
+ setT('mid-rate',mid.rate==null?'—':mid.rate+'%');document.getElementById('mid-bar').style.width=(mid.rate||0)+'%';setT('mid-cnt',tierCnt(mid));
+ setT('lo-cnt',(lo.n||0)+' call'+((lo.n||0)==1?'':'s')+' · Watch');}
+function renderNate(s){var hi=s.tiers.high.rate,mid=s.tiers.mid.rate;if(hi!=null){document.getElementById('nate-q').innerHTML="Read this honestly: I'm strongest when I'm sure — <b>"+hi+"% on high-confidence calls</b> — and closer to a coin flip on medium ("+(mid==null?'—':mid+'%')+"). Don't trade my medium calls like they're my high ones. When I say <b>Watch</b>, believe me.";}}
+function applyMode(m){var b=document.getElementById('modebadge'),n=document.getElementById('nfa-note');
+ if(m==='live'){b.textContent='Live · updates daily';n.textContent='A record of illustrative educational calls — not audited returns or a performance promise.';}
+ else{b.textContent='Sample · design preview';n.textContent='Sample data — a design preview, not a real track record or a performance promise.';}}
+var FALLSUM={calls_made:12,resolved:9,open:2,sat_out:1,hit_rate:67,avg_confidence:71,tiers:{high:{rate:80,hits:4,n:5},mid:{rate:50,hits:2,n:4},low:{hits:0,n:0}}};
+function applyAll(mode,sm,calls){CALLS=calls;var on=document.querySelector('.chip.on');render(on?on.getAttribute('data-f'):'all');renderStats(sm);renderTiers(sm);renderNate(sm);applyMode(mode);}
+applyAll('sample',FALLSUM,CALLS);
+fetch('/api/track').then(function(r){return r.json();}).then(function(d){if(d&&d.calls)applyAll(d.mode,d.summary,d.calls);}).catch(function(){});
+document.getElementById("filters").addEventListener("click",function(e){
+ if(e.target.tagName!=="BUTTON")return;
+ [].forEach.call(this.children,function(b){b.classList.remove("on");});
+ e.target.classList.add("on");
+ render(e.target.getAttribute("data-f"));
+});
+</script>
+</body>
+</html>

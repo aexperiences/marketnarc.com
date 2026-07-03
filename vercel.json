@@ -1,5 +1,9 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "cleanUrls": true,
-  "trailingSlash": false
+  "trailingSlash": false,
+  "crons": [
+    { "path": "/api/publish", "schedule": "0 14 * * 1-5" },
+    { "path": "/api/resolve", "schedule": "0 22 * * 1-5" }
+  ]
 }

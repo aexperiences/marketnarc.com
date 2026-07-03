@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ask Nate — MarketNarc live read</title>
+<meta name="description" content="Type a ticker and Nate gives you the call in plain English — Buy, Sell, Hold, or an honest 'I'm not sure.'">
+<link rel="icon" href="/marketnarc-icon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#0E2B2A;--ink800:#0A2120;--ink700:#143E3C;--line:#214F4C;--amber:#E6A93C;--amber6:#D2922A;
+ --off:#EAF3F0;--sea:#8FC4BB;--clay:#D98A63;--ok:#7fd8a8;--bad:#E0725A}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:radial-gradient(120% 90% at 50% -10%,#123634 0%,#08100F 60%,#060C0B 100%);
+ font-family:Inter,-apple-system,Segoe UI,Roboto,sans-serif;color:var(--off);padding:26px 18px 70px}
+.tnum{font-variant-numeric:tabular-nums}
+.app{max-width:520px;margin:0 auto}
+.head{display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:4px}
+.head svg{width:32px;height:32px;border-radius:9px}
+.head .wm{font-family:Lato;font-weight:900;font-size:22px}.head .wm .n{color:var(--amber)}
+.sub{text-align:center;color:var(--sea);font-size:13.5px;font-style:italic;margin:0 0 20px}
+.ask{display:flex;gap:8px;margin-bottom:12px}
+.ask input{flex:1;background:var(--ink800);border:1px solid var(--line);border-radius:12px;color:var(--off);
+ font-family:Lato;font-weight:900;font-size:18px;letter-spacing:1px;text-transform:uppercase;padding:13px 16px}
+.ask input:focus{outline:none;border-color:var(--amber)}
+.ask button{background:var(--amber);color:#10202E;font-family:Lato;font-weight:900;font-size:16px;border:0;border-radius:12px;padding:0 20px;cursor:pointer}
+.chips{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin-bottom:20px}
+.chip{font-family:Lato;font-weight:900;font-size:12.5px;color:var(--sea);background:var(--ink700);border:1px solid var(--line);border-radius:999px;padding:7px 13px;cursor:pointer}
+.chip:hover{color:var(--off);border-color:var(--amber)}
+.card{background:rgba(20,62,60,.34);border:1px solid var(--line);border-radius:22px;padding:22px 22px 18px;min-height:120px}
+.samplebar{font-size:11px;font-weight:700;letter-spacing:.3px;color:var(--amber);background:rgba(230,169,60,.09);border:1px solid #5e4a2a;border-radius:8px;padding:6px 10px;margin-bottom:14px;text-align:center}
+.samplebar.live{color:var(--ok);border-color:#2f6a55;background:rgba(127,216,168,.08)}
+.ctop{display:flex;align-items:flex-start;gap:10px;margin-bottom:12px}
+.tk{font-family:Lato;font-weight:900;font-size:26px}
+.px{margin-left:auto;text-align:right}.px .p{font-family:Lato;font-weight:900;font-size:19px}
+.verdict{display:flex;align-items:center;gap:13px;margin:4px 0 10px}
+.pill{font-family:Lato;font-weight:900;font-size:16px;letter-spacing:.5px;border-radius:999px;padding:8px 20px}
+.pill.BUY{background:var(--amber);color:#10202E}.pill.SELL{background:var(--bad);color:#2A0F0A}
+.pill.HOLD{background:var(--ink700);color:var(--off);border:1px solid var(--line)}
+.pill.WATCH{background:transparent;color:var(--sea);border:1.5px solid var(--sea)}
+.cf{font-family:Lato;font-weight:900;font-size:24px}.cf small{display:block;font-family:Inter;font-weight:500;font-size:10.5px;color:var(--sea);margin-top:-3px}
+.cbar{height:6px;border-radius:3px;background:var(--ink800);overflow:hidden;margin-bottom:14px}.cbar i{display:block;height:100%;background:var(--amber)}
+.why{font-size:16px;line-height:1.5;margin:0 0 14px}.why b{color:var(--amber)}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:12px}
+.split div{background:var(--ink800);border:1px solid var(--line);border-radius:11px;padding:11px 13px}
+.split .h{font-size:10px;letter-spacing:1px;text-transform:uppercase;font-weight:700;margin-bottom:4px}
+.split .bull .h{color:var(--amber)}.split .bear .h{color:var(--sea)}
+.split p{font-size:13px;color:var(--sea);margin:0;line-height:1.45}
+.risk{font-size:12px;color:var(--clay);background:rgba(217,138,99,.09);border:1px solid #5e3f31;border-radius:9px;padding:8px 11px;margin-bottom:12px}
+.note{font-size:11.5px;color:var(--sea);text-align:center;margin:0 0 4px}
+.nfa{font-size:11.5px;color:var(--sea);text-align:center}
+.skel{color:var(--sea);text-align:center;padding:26px 0;font-style:italic}
+.foot{text-align:center;margin-top:20px}.foot a{color:var(--amber);font-weight:700;font-size:14px;text-decoration:none}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="head">
+    <svg viewBox="0 0 1024 1024" aria-hidden="true"><rect width="1024" height="1024" rx="232" fill="#0E2B2A"/><circle cx="445" cy="430" r="235" fill="none" stroke="#E6A93C" stroke-width="64"/><polyline points="362,525 362,335 528,525 528,335" fill="none" stroke="#E6A93C" stroke-width="46" stroke-linecap="round" stroke-linejoin="round"/><line x1="612" y1="597" x2="775" y2="760" stroke="#E6A93C" stroke-width="82" stroke-linecap="round"/></svg>
+    <span class="wm">Market<span class="n">Narc</span></span>
+  </div>
+  <p class="sub">type a ticker — Nate gives you the read, in plain English</p>
+
+  <form class="ask" id="ask" autocomplete="off">
+    <input id="t" placeholder="e.g. RVLN" maxlength="6" aria-label="ticker">
+    <button type="submit">Ask Nate</button>
+  </form>
+  <div class="chips" id="chips"></div>
+
+  <div class="card" id="card"><div class="skel">Ask Nate about a ticker to see the read.</div></div>
+
+  <div class="foot"><a href="/marketnarc">← MarketNarc</a> &nbsp;·&nbsp; <a href="/track">Nate's track record</a></div>
+</div>
+
+<script>
+var QUICK=["RVLN","CPRM","VOLT","ATLS","MRDN","KELP"];
+var chips=document.getElementById("chips");
+QUICK.forEach(function(t){var b=document.createElement("button");b.className="chip";b.textContent=t;b.onclick=function(){go(t);};chips.appendChild(b);});
+var card=document.getElementById("card");
+function esc(s){return (s||"").replace(/[&<>]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c];});}
+function go(t){
+  document.getElementById("t").value=t;
+  card.innerHTML='<div class="skel">Nate’s reading '+esc(t)+'…</div>';
+  fetch("/api/call?ticker="+encodeURIComponent(t)).then(function(r){return r.json();}).then(render)
+   .catch(function(){card.innerHTML='<div class="skel">Couldn’t reach the feed just now. Try again in a moment.</div>';});
+}
+function render(c){
+  if(c.error){card.innerHTML='<div class="skel">'+esc(c.error)+'</div>';return;}
+  var live=c.mode==="live";
+  var h='<div class="samplebar '+(live?'live':'')+'">'+(live?'● Live read':'▸ Sample read')+' · '+esc(c.data_note)+'</div>';
+  h+='<div class="ctop"><div><div class="tk">'+esc(c.ticker)+'</div></div><div class="px"><div class="p tnum">$'+Number(c.price).toFixed(2)+'</div></div></div>';
+  h+='<div class="verdict"><span class="pill '+c.verdict+'">'+c.verdict+'</span><span class="cf tnum">'+c.confidence+'%<small>CONFIDENCE</small></span></div>';
+  h+='<div class="cbar"><i style="width:'+c.confidence+'%"></i></div>';
+  h+='<p class="why"><b>'+(c.not_sure?'I’m not sure.':'The call:')+'</b> '+esc(c.why)+'</p>';
+  h+='<div class="split"><div class="bull"><div class="h">The case for</div><p>'+esc(c.bull)+'</p></div><div class="bear"><div class="h">The case against</div><p>'+esc(c.bear)+'</p></div></div>';
+  h+='<div class="risk">⚠ '+esc(c.risk)+'</div>';
+  h+='<p class="nfa">'+esc(c.disclaimer)+'</p>';
+  card.innerHTML=h;
+}
+document.getElementById("ask").addEventListener("submit",function(e){e.preventDefault();var t=document.getElementById("t").value.trim().toUpperCase();if(t)go(t);});
+go("RVLN");
+</script>
+</body>
+</html>
