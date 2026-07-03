@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Paper Trader — practice with fake money · MarketNarc</title>
+<meta name="description" content="Practice with fake money in a safe sandbox. Buy and sell, track your P&L, and see where Nate agreed or disagreed — before a single real dollar is involved.">
+<link rel="icon" href="/marketnarc-icon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#0E2B2A;--ink800:#0A2120;--ink700:#143E3C;--ink600:#1B4B48;--line:#214F4C;--amber:#E6A93C;--amber6:#D2922A;
+ --off:#EAF3F0;--sea:#8FC4BB;--clay:#D98A63;--up:#7fd8a8;--dn:#E0725A}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:radial-gradient(120% 90% at 50% -10%,#123634 0%,#08100F 60%,#060C0B 100%);
+ font-family:Inter,-apple-system,Segoe UI,Roboto,sans-serif;color:var(--off);padding:24px 16px 70px}
+.tnum{font-variant-numeric:tabular-nums}
+.app{max-width:760px;margin:0 auto}
+.head{display:flex;align-items:center;gap:10px;margin-bottom:4px}
+.head svg{width:32px;height:32px;border-radius:9px}
+.head .wm{font-family:Lato;font-weight:900;font-size:21px}.head .wm .n{color:var(--amber)}
+.head .pt{font-family:Lato;font-weight:900;font-size:13px;color:var(--sea);letter-spacing:.5px}
+.head .reset{margin-left:auto;background:none;border:1px solid var(--line);color:var(--sea);border-radius:999px;font-size:12px;font-weight:700;padding:7px 13px;cursor:pointer}
+.head .reset:hover{border-color:var(--dn);color:var(--dn)}
+.badge{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;color:var(--amber);background:rgba(230,169,60,.1);border:1px solid #5e4a2a;border-radius:999px;padding:4px 11px;margin:6px 0 18px}
+.acct{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px}
+@media(max-width:560px){.acct{grid-template-columns:1fr 1fr}}
+.st{background:rgba(20,62,60,.34);border:1px solid var(--line);border-radius:14px;padding:14px 15px}
+.st .n{font-family:Lato;font-weight:900;font-size:22px}
+.st .l{font-size:11px;color:var(--sea);text-transform:uppercase;letter-spacing:.05em;margin-top:5px}
+.up{color:var(--up)}.dn{color:var(--dn)}
+.card{background:rgba(20,62,60,.34);border:1px solid var(--line);border-radius:18px;padding:18px 18px;margin-bottom:16px}
+.card h2{font-family:Lato;font-weight:900;font-size:15px;margin:0 0 12px}
+.tradeform{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.tradeform input{background:var(--ink800);border:1px solid var(--line);border-radius:11px;color:var(--off);font-family:Lato;font-weight:900;font-size:16px;padding:11px 13px}
+#tk{width:120px;text-transform:uppercase;letter-spacing:1px}
+#qty{width:90px}
+.btn{font-family:Lato;font-weight:900;font-size:14px;border:0;border-radius:11px;padding:11px 16px;cursor:pointer}
+.btn.look{background:var(--ink700);color:var(--off);border:1px solid var(--line)}
+.btn.buy{background:var(--amber);color:#10202E}.btn.buy:hover{background:var(--amber6)}
+.btn.sell{background:transparent;color:var(--clay);border:1px solid #5e3f31}.btn.sell:hover{border-color:var(--clay)}
+.quote{margin-top:14px;display:none;background:var(--ink800);border:1px solid var(--line);border-radius:12px;padding:13px 15px}
+.quote .top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.quote .tkn{font-family:Lato;font-weight:900;font-size:20px}
+.quote .px{font-family:Lato;font-weight:900;font-size:18px;margin-left:auto}
+.pill{font-family:Lato;font-weight:900;font-size:12px;letter-spacing:.3px;border-radius:999px;padding:4px 11px}
+.pill.BUY{background:var(--amber);color:#10202E}.pill.SELL{background:var(--dn);color:#2A0F0A}
+.pill.HOLD{background:var(--ink600);color:var(--off)}.pill.WATCH{background:transparent;color:var(--sea);border:1.5px solid var(--sea)}
+.quote .why{font-size:13px;color:var(--sea);margin:8px 0 0}
+.coach{margin-top:12px;font-size:14px;line-height:1.5;background:linear-gradient(180deg,#16302E,#112523);border-left:3px solid var(--amber);border-radius:10px;padding:11px 14px;display:none}
+.coach b{color:var(--amber)}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--sea);font-weight:700;padding:8px 10px;border-bottom:1px solid var(--line)}
+td{padding:11px 10px;border-bottom:1px solid var(--line);font-size:14px}tr:last-child td{border-bottom:0}
+.tk2{font-family:Lato;font-weight:900}
+.empty{color:var(--sea);font-size:14px;text-align:center;padding:16px 0}
+.rowbtns{display:flex;gap:8px;margin-top:10px}
+.mini{background:var(--ink700);border:1px solid var(--line);color:var(--sea);font-weight:700;font-size:12px;border-radius:999px;padding:7px 13px;cursor:pointer}
+.mini:hover{color:var(--off);border-color:var(--amber)}
+.nfa{font-size:12px;color:var(--sea);text-align:center;margin:14px 0 0}
+.foot{text-align:center;margin-top:18px}.foot a{color:var(--amber);font-weight:700;font-size:14px;text-decoration:none}
+.trades .side{font-weight:800}.trades .BUY{color:var(--amber)}.trades .SELL{color:var(--clay)}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="head">
+    <svg viewBox="0 0 1024 1024" aria-hidden="true"><rect width="1024" height="1024" rx="232" fill="#0E2B2A"/><circle cx="445" cy="430" r="235" fill="none" stroke="#E6A93C" stroke-width="64"/><polyline points="362,525 362,335 528,525 528,335" fill="none" stroke="#E6A93C" stroke-width="46" stroke-linecap="round" stroke-linejoin="round"/><line x1="612" y1="597" x2="775" y2="760" stroke="#E6A93C" stroke-width="82" stroke-linecap="round"/></svg>
+    <span class="wm">Market<span class="n">Narc</span></span> <span class="pt">· Paper Trader</span>
+    <button class="reset" onclick="reset()">Reset account</button>
+  </div>
+  <span class="badge">🔒 Fake money · practice safely, nothing real is traded</span>
+
+  <div class="acct">
+    <div class="st"><div class="n tnum" id="a-cash">—</div><div class="l">Cash</div></div>
+    <div class="st"><div class="n tnum" id="a-hold">—</div><div class="l">Holdings</div></div>
+    <div class="st"><div class="n tnum" id="a-eq">—</div><div class="l">Equity</div></div>
+    <div class="st"><div class="n tnum" id="a-pnl">—</div><div class="l">Total P&amp;L</div></div>
+  </div>
+
+  <div class="card">
+    <h2>Make a trade</h2>
+    <div class="tradeform">
+      <input id="tk" placeholder="TICKER" maxlength="6" autocomplete="off">
+      <button class="btn look" onclick="lookup()">Look up</button>
+      <input id="qty" type="number" min="1" value="10" placeholder="Qty">
+      <button class="btn buy" onclick="trade('BUY')">Buy</button>
+      <button class="btn sell" onclick="trade('SELL')">Sell</button>
+    </div>
+    <div class="quote" id="quote"></div>
+    <div class="coach" id="coach"></div>
+  </div>
+
+  <div class="card">
+    <h2>Your positions</h2>
+    <div id="positions"></div>
+    <div class="rowbtns"><button class="mini" onclick="refresh()">↻ Refresh prices</button></div>
+  </div>
+
+  <div class="card trades">
+    <h2>Recent trades</h2>
+    <div id="trades"></div>
+  </div>
+
+  <p class="nfa">Paper money · educational · not financial advice · you decide.</p>
+  <div class="foot"><a href="/live">← Ask Nate</a> &nbsp;·&nbsp; <a href="/track">Track record</a> &nbsp;·&nbsp; <a href="/marketnarc">MarketNarc</a></div>
+</div>
+
+<script>
+var KEY='mn_paper_v1', START=10000;
+function load(){try{return JSON.parse(localStorage.getItem(KEY))}catch(e){return null}}
+var S=load()||{cash:START,start:START,positions:{},trades:[]};
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+var Q=null;
+function money(x){return (x<0?'-$':'$')+Math.abs(x).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});}
+function esc(s){return(s||'').replace(/[&<>]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;'}[c];});}
+
+function lookup(cb){
+  var t=document.getElementById('tk').value.trim().toUpperCase();if(!t)return;
+  var q=document.getElementById('quote');q.style.display='block';q.innerHTML='<span style="color:var(--sea)">Nate’s reading '+esc(t)+'…</span>';
+  fetch('/api/call?ticker='+encodeURIComponent(t)).then(function(r){return r.json();}).then(function(c){
+    if(c.error){q.innerHTML='<span style="color:var(--sea)">'+esc(c.error)+'</span>';return;}
+    Q={ticker:c.ticker,price:c.price,verdict:c.verdict,conf:c.confidence,why:c.why,mode:c.mode};
+    if(S.positions[c.ticker])S.positions[c.ticker].last=c.price;
+    q.innerHTML='<div class="top"><span class="tkn">'+esc(c.ticker)+'</span><span class="pill '+c.verdict+'">'+c.verdict+' · '+c.confidence+'%</span><span class="px tnum">$'+Number(c.price).toFixed(2)+'</span></div><p class="why">Nate: '+esc(c.why)+'</p>';
+    save();renderAll();if(cb)cb();
+  }).catch(function(){q.innerHTML='<span style="color:var(--sea)">Couldn’t reach the feed. Try again.</span>';});
+}
+function coach(msg){var c=document.getElementById('coach');c.style.display='block';c.innerHTML=msg;}
+function coachTrade(side,q){
+  var m;
+  if(side==='BUY'){
+    if(q.verdict==='BUY')m='<b>Nate’s with you.</b> He had '+q.ticker+' a BUY at '+q.conf+'%. Aligned trade.';
+    else if(q.verdict==='SELL')m='<b>Bold move.</b> Nate’s calling '+q.ticker+' a SELL — you’re trading against him. That’s allowed; just know it.';
+    else if(q.verdict==='HOLD')m='Nate’s neutral here (HOLD). No edge either way — this one’s on you.';
+    else m='<b>Nate sat this one out.</b> He wasn’t sure enough to call it (WATCH). You’re stepping in where he wouldn’t — we’ll see.';
+  } else {
+    m='Position closed. Nate had '+q.ticker+' at '+q.verdict+' ('+q.conf+'%).';
+  }
+  coach(m);
+}
+function trade(side){
+  if(!Q||Q.ticker!==document.getElementById('tk').value.trim().toUpperCase()){lookup(function(){doTrade(side);});return;}
+  doTrade(side);
+}
+function doTrade(side){
+  if(!Q)return;
+  var qty=Math.floor(+document.getElementById('qty').value);if(!(qty>0)){coach('Enter a share quantity.');return;}
+  var t=Q.ticker,px=Q.price;
+  if(side==='BUY'){
+    var cost=qty*px;
+    if(cost>S.cash){coach('Not enough paper cash — you have '+money(S.cash)+'.');return;}
+    var p=S.positions[t]||{shares:0,avg:0,last:px};
+    p.avg=(p.avg*p.shares+cost)/(p.shares+qty);p.shares+=qty;p.last=px;
+    S.positions[t]=p;S.cash-=cost;
+    S.trades.unshift({side:'BUY',t:t,qty:qty,px:px,ts:Date.now()});
+  } else {
+    var pos=S.positions[t];
+    if(!pos||pos.shares<=0){coach('You don’t own any '+t+'.');return;}
+    qty=Math.min(qty,pos.shares);
+    var proceeds=qty*px,realized=(px-pos.avg)*qty;
+    pos.shares-=qty;S.cash+=proceeds;
+    if(pos.shares<=0)delete S.positions[t];else pos.last=px;
+    S.trades.unshift({side:'SELL',t:t,qty:qty,px:px,ts:Date.now(),pnl:realized});
+  }
+  if(S.trades.length>40)S.trades.pop();
+  save();coachTrade(side,Q);renderAll();
+}
+function holdingsValue(){var v=0;for(var t in S.positions){var p=S.positions[t];v+=p.shares*(p.last||p.avg);}return v;}
+function renderAll(){
+  var hv=holdingsValue(),eq=S.cash+hv,pnl=eq-S.start,pct=S.start?pnl/S.start*100:0;
+  document.getElementById('a-cash').textContent=money(S.cash);
+  document.getElementById('a-hold').textContent=money(hv);
+  document.getElementById('a-eq').textContent=money(eq);
+  var pe=document.getElementById('a-pnl');pe.textContent=money(pnl)+' ('+(pnl>=0?'+':'')+pct.toFixed(1)+'%)';
+  pe.className='n tnum '+(pnl>0?'up':(pnl<0?'dn':''));
+  // positions
+  var keys=Object.keys(S.positions);
+  var el=document.getElementById('positions');
+  if(!keys.length){el.innerHTML='<div class="empty">No positions yet. Look up a ticker and make your first paper trade.</div>';}
+  else{
+    var h='<table><thead><tr><th>Ticker</th><th>Shares</th><th>Avg cost</th><th>Last</th><th>Value</th><th>Unreal. P&L</th></tr></thead><tbody>';
+    keys.forEach(function(t){var p=S.positions[t];var last=p.last||p.avg;var val=p.shares*last;var up=(last-p.avg)*p.shares;var cls=up>0?'up':(up<0?'dn':'');
+      h+='<tr><td class="tk2">'+t+'</td><td class="tnum">'+p.shares+'</td><td class="tnum">$'+p.avg.toFixed(2)+'</td><td class="tnum">$'+last.toFixed(2)+'</td><td class="tnum">'+money(val)+'</td><td class="tnum '+cls+'">'+(up>=0?'+':'')+money(up)+'</td></tr>';});
+    el.innerHTML=h+'</tbody></table>';
+  }
+  // trades
+  var te=document.getElementById('trades');
+  if(!S.trades.length){te.innerHTML='<div class="empty">No trades yet.</div>';}
+  else{
+    var r='<table><tbody>';
+    S.trades.slice(0,12).forEach(function(x){r+='<tr><td class="side '+x.side+'">'+x.side+'</td><td class="tk2">'+x.t+'</td><td class="tnum">'+x.qty+' @ $'+x.px.toFixed(2)+'</td><td class="tnum '+(x.pnl>0?'up':(x.pnl<0?'dn':''))+'">'+(x.pnl!=null?(x.pnl>=0?'+':'')+money(x.pnl):'')+'</td></tr>';});
+    te.innerHTML=r+'</tbody></table>';
+  }
+}
+function refresh(){
+  var keys=Object.keys(S.positions);if(!keys.length)return;var done=0;
+  keys.forEach(function(t){fetch('/api/call?ticker='+t).then(function(r){return r.json();}).then(function(c){if(c&&c.price&&S.positions[t])S.positions[t].last=c.price;}).catch(function(){}).then(function(){if(++done===keys.length){save();renderAll();}});});
+}
+function reset(){if(confirm('Reset your paper account to '+money(START)+'? This clears all positions and history.')){S={cash:START,start:START,positions:{},trades:[]};save();document.getElementById('coach').style.display='none';renderAll();}}
+document.getElementById('tk').addEventListener('keydown',function(e){if(e.key==='Enter')lookup();});
+renderAll();refresh();
+</script>
+</body>
+</html>
