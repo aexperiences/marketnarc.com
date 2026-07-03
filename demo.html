@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MarketNarc — your first call</title>
+<meta name="description" content="An interactive taste of MarketNarc — pick a stock and Nate gives you the call in plain English. Buy, sell, hold, or watch, with the why.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#0E2B2A;--ink800:#0A2120;--ink700:#143E3C;--ink600:#1B4B48;--line:#214F4C;
+  --amber:#E6A93C;--amber6:#D2922A;--off:#EAF3F0;--sea:#8FC4BB;--clay:#D98A63;--ok:#7fd8a8}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;min-height:100vh;background:
+  radial-gradient(120% 90% at 50% -10%, #123634 0%, #08100F 60%, #060C0B 100%);
+  font-family:Inter,-apple-system,Segoe UI,Roboto,sans-serif;color:var(--off);
+  display:flex;align-items:center;justify-content:center;padding:24px}
+.tnum{font-variant-numeric:tabular-nums}
+.card{width:100%;max-width:480px;background:rgba(20,62,60,.34);border:1px solid var(--line);
+  border-radius:24px;padding:26px 26px 0;backdrop-filter:blur(6px);
+  box-shadow:0 40px 90px -40px rgba(0,0,0,.8)}
+.head{text-align:center;padding-bottom:14px;border-bottom:1px solid var(--line)}
+.wm{display:inline-flex;align-items:center;gap:9px}
+.wm svg{width:30px;height:30px;border-radius:8px}
+.wm span{font-family:Lato;font-weight:900;font-size:22px;letter-spacing:-.4px}.wm .n{color:var(--amber)}
+.head .sub{font-size:13px;color:var(--sea);font-style:italic;margin:6px 0 0;letter-spacing:.3px}
+.body{padding:26px 2px 22px;min-height:332px;display:flex;flex-direction:column;justify-content:center}
+.center{text-align:center}
+.bigmark{width:88px;height:88px;margin:0 auto 16px;border-radius:22px;display:block}
+.badge{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:700;letter-spacing:.6px;
+  color:var(--amber);border:1px solid var(--amber);border-radius:999px;padding:5px 13px;margin-bottom:14px}
+.badge .dot{width:7px;height:7px;border-radius:50%;background:var(--amber);
+  box-shadow:0 0 0 0 rgba(230,169,60,.6);animation:pulse 2.6s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(230,169,60,.5)}70%{box-shadow:0 0 0 9px rgba(230,169,60,0)}100%{box-shadow:0 0 0 0 rgba(230,169,60,0)}}
+h1{font-family:Lato;font-weight:900;font-size:30px;line-height:1.08;letter-spacing:-.5px;margin:0 0 12px}
+h1 .n{color:var(--amber)}
+.lead{color:var(--sea);font-size:15px;line-height:1.55;max-width:34ch;margin:0 auto 16px}
+.tag{display:inline-block;font-size:12.5px;font-weight:600;color:var(--off);background:var(--ink700);
+  border:1px solid var(--line);border-radius:999px;padding:7px 15px;margin-bottom:20px}
+.cta{display:inline-flex;align-items:center;gap:9px;background:var(--amber);color:var(--ink);
+  font-weight:800;font-size:16px;border:0;border-radius:999px;padding:15px 30px;cursor:pointer;transition:.15s}
+.cta:hover{background:var(--amber6);transform:translateY(-1px)}
+.fine{font-size:12px;color:var(--sea);margin:14px 0 0}
+.steplabel{text-align:center;font-size:12px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:var(--amber);margin:0 0 6px}
+.stepsub{text-align:center;color:var(--sea);font-size:14px;margin:0 0 20px;line-height:1.5}
+.stepsub b{color:var(--off)}
+
+/* stock chips */
+.stocks{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.stock{text-align:left;background:var(--ink700);border:1px solid var(--line);border-radius:15px;
+  padding:14px 15px;cursor:pointer;transition:.13s;color:var(--off);font-family:Inter}
+.stock:hover{border-color:#2f6661}
+.stock.on{border-color:var(--amber);background:var(--ink600);box-shadow:0 0 0 1px var(--amber) inset}
+.stock .t{font-family:Lato;font-weight:900;font-size:18px}
+.stock .c{font-size:11.5px;color:var(--sea);margin:2px 0 8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stock .p{font-family:Lato;font-weight:900;font-size:14px}
+.stock .bd{font-size:10px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--sea);
+  border:1px solid var(--line);border-radius:999px;padding:2px 7px;margin-left:6px}
+.stock .bd.penny{color:var(--clay);border-color:#5e3f31}
+
+/* call card */
+.call .ctop{display:flex;align-items:flex-start;gap:10px;margin-bottom:12px}
+.call .tk{font-family:Lato;font-weight:900;font-size:24px}.call .tk small{display:block;font-family:Inter;font-weight:500;font-size:12px;color:var(--sea)}
+.call .px{margin-left:auto;text-align:right}.call .px .p{font-family:Lato;font-weight:900;font-size:17px}.call .px .t{font-size:11.5px;color:var(--ok)}
+.verdict{display:flex;align-items:center;gap:13px;margin:4px 0 10px}
+.pill{font-family:Lato;font-weight:900;font-size:15px;letter-spacing:.5px;border-radius:999px;padding:7px 17px}
+.pill.BUY{background:var(--amber);color:var(--ink)}.pill.WATCH{background:transparent;color:var(--sea);border:1.5px solid var(--sea)}
+.pill.HOLD{background:var(--ink600);color:var(--off)}.pill.SELL{background:var(--clay);color:var(--ink)}
+.cf{font-family:Lato;font-weight:900;font-size:23px}.cf small{display:block;font-family:Inter;font-weight:500;font-size:10.5px;color:var(--sea);margin-top:-3px}
+.cbar{height:5px;border-radius:3px;background:var(--ink);overflow:hidden;margin-bottom:13px}.cbar i{display:block;height:100%}
+.why{font-size:15px;line-height:1.5;color:var(--off);margin:0 0 13px}.why b{color:var(--amber)}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:12px}
+.split div{background:var(--ink);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.split .h{font-size:10px;letter-spacing:1px;text-transform:uppercase;font-weight:700;margin-bottom:3px}
+.split .bull .h{color:var(--amber)}.split .bear .h{color:var(--sea)}
+.split p{font-size:12.5px;color:var(--sea);margin:0;line-height:1.4}
+.risk{font-size:11.5px;color:var(--clay);background:rgba(217,138,99,.09);border:1px solid #5e3f31;border-radius:9px;padding:7px 10px;margin-bottom:12px}
+.nfa{font-size:11.5px;color:var(--sea);text-align:center}
+.samplebar{font-size:11px;font-weight:700;letter-spacing:.3px;color:var(--amber);background:rgba(230,169,60,.09);border:1px solid #5e4a2a;border-radius:8px;padding:6px 10px;margin-bottom:12px;text-align:center}
+
+/* footer */
+.foot{display:flex;align-items:center;gap:14px;border-top:1px solid var(--line);
+  margin:0 -26px;padding:15px 24px;background:rgba(10,33,32,.4);border-bottom-left-radius:24px;border-bottom-right-radius:24px}
+.prog{display:flex;gap:5px}.prog i{width:22px;height:4px;border-radius:2px;background:var(--line)}.prog i.on{background:var(--amber)}
+.foot .fl{font-size:13px}.foot .fl b{font-weight:700}.foot .fl .s{display:block;color:var(--sea);font-size:11.5px;margin-top:1px}
+.fbtn{margin-left:auto;background:var(--amber);color:var(--ink);font-weight:800;font-size:14px;border:0;border-radius:999px;padding:11px 20px;cursor:pointer;text-decoration:none;white-space:nowrap}
+.fbtn:disabled{opacity:.4;cursor:default}
+.hidden{display:none}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="head">
+    <span class="wm">
+      <svg viewBox="0 0 1024 1024" aria-hidden="true"><rect width="1024" height="1024" rx="232" fill="#0E2B2A"/><circle cx="445" cy="430" r="235" fill="none" stroke="#E6A93C" stroke-width="64"/><polyline points="362,525 362,335 528,525 528,335" fill="none" stroke="#E6A93C" stroke-width="46" stroke-linecap="round" stroke-linejoin="round"/><line x1="612" y1="597" x2="775" y2="760" stroke="#E6A93C" stroke-width="82" stroke-linecap="round"/></svg>
+      <span>Market<span class="n">Narc</span></span>
+    </span>
+    <p class="sub">market intelligence · plain English</p>
+  </div>
+
+  <div class="body" id="body">
+    <!-- STEP 0 — intro -->
+    <div class="center" id="s0">
+      <svg class="bigmark" viewBox="0 0 1024 1024" aria-hidden="true"><rect width="1024" height="1024" rx="232" fill="#0E2B2A"/><circle cx="445" cy="430" r="235" fill="none" stroke="#E6A93C" stroke-width="64"/><polyline points="362,525 362,335 528,525 528,335" fill="none" stroke="#E6A93C" stroke-width="46" stroke-linecap="round" stroke-linejoin="round"/><line x1="612" y1="597" x2="775" y2="760" stroke="#E6A93C" stroke-width="82" stroke-linecap="round"/></svg>
+      <span class="badge"><span class="dot"></span>IN PRODUCTION</span>
+      <h1>Your first stock call,<br>in <span class="n">plain English</span>.</h1>
+      <p class="lead">Pick a stock and Nate gives you the read — buy, sell, hold, or watch — with the <em>why</em>. No charts. No jargon.</p>
+      <div><span class="tag">A 30-second taste</span></div>
+      <button class="cta" onclick="go(1)">Try a call <span aria-hidden="true">▸</span></button>
+      <p class="fine">Illustrative — educational, not financial advice.</p>
+    </div>
+
+    <!-- STEP 1 — pick a stock -->
+    <div id="s1" class="hidden">
+      <p class="steplabel">Pick a stock</p>
+      <p class="stepsub">Sample stocks — this is how Nate's read works. He leads with what a beginner can actually afford, <b>not</b> the expensive names.</p>
+      <div class="stocks" id="stocks"></div>
+    </div>
+
+    <!-- STEP 2 — the call -->
+    <div id="s2" class="hidden">
+      <p class="steplabel">Nate's call</p>
+      <div class="call" id="callcard"></div>
+    </div>
+  </div>
+
+  <div class="foot hidden" id="foot">
+    <span class="prog"><i class="on" id="p1"></i><i id="p2"></i></span>
+    <span class="fl" id="footlabel"><b>Step 1 of 2 · Pick a stock</b><span class="s">Tap one to see Nate's read.</span></span>
+    <button class="fbtn" id="footbtn" disabled onclick="go(2)">Next</button>
+  </div>
+</div>
+
+<script>
+// Engine-shaped picks (Nate only — "the business" / "the chart"). Affordable-first.
+// Illustrative sample companies (fictional) — they teach Nate's four verdicts and his honesty, without posing as live calls on real tickers.
+const PICKS = [
+ {tk:"RVLN",co:"Riverline Bank",price:13.20,band:"Affordable",call:"BUY",conf:92,conv:"high",tgt:"+17%",up:1,
+  why:"Two straight earnings beats with margins widening, and it's still priced cheap — the business and the chart agree. This one earned its call.",
+  business:"Two beats running; margins expanding; still cheap.",
+  chart:"Holding above its moving averages, volume confirming, pressing its highs.",
+  bull:"Profitable growth the market is still pricing cheaply.",bear:"A rate shock could cool the story fast."},
+ {tk:"PNNY",co:"a penny-stock example",price:2.80,band:"Penny",call:"WATCH",conf:41,conv:"low",tgt:"—",up:1,
+  why:"The chart looks fine, but there's no real fundamentals to lean on. At 41% I'm under my bar — I won't hand you a low-conviction buy. Watching, not buying.",
+  business:"No solid fundamentals here — staying honest instead of guessing.",
+  chart:"Above its averages with volume confirming — for now.",
+  bull:"If real earnings show up, the cheap price has room to run.",bear:"Thin data — it can drop as fast as it pops.",
+  risk:"Higher risk · thin data · can swing hard"},
+ {tk:"CPRM",co:"Copperfield Mining",price:58.40,band:"Mid",call:"BUY",conf:90,conv:"high",tgt:"+14%",up:1,
+  why:"Margins look pressured today, but input costs are <b>easing</b> — that's a forward tailwind, not a red flag. The chart's already confirming it.",
+  business:"Three beats running; cost relief is the forward story under the margins.",
+  chart:"Above its averages, volume confirming, near the top of its range.",
+  bull:"Cost relief + steady demand = margins widen.",bear:"A demand shock would undercut it quickly."},
+ {tk:"MRDN",co:"Meridian Pay",price:9.10,band:"Affordable",call:"HOLD",conf:58,conv:"standard",tgt:"—",up:0,
+  why:"Mixed signals — a decent business on a choppy chart. Nothing forces a move, so I'm holding rather than pretending I'm sure.",
+  business:"Improving, but not yet consistently profitable.",
+  chart:"Chopping around its averages on thin volume.",
+  bull:"If profitability sticks, the re-rating is ahead of it.",bear:"Still rate-sensitive and unproven."},
+];
+const BAR={BUY:"var(--amber)",WATCH:"var(--sea)",HOLD:"var(--sea)",SELL:"var(--clay)"};
+let picked=null;
+
+function go(step){
+  document.getElementById('s0').classList.toggle('hidden',step!==0);
+  document.getElementById('s1').classList.toggle('hidden',step!==1);
+  document.getElementById('s2').classList.toggle('hidden',step!==2);
+  document.getElementById('foot').classList.toggle('hidden',step===0);
+  document.getElementById('p1').classList.toggle('on',step>=1);
+  document.getElementById('p2').classList.toggle('on',step>=2);
+  if(step===0){picked=null;document.querySelectorAll('.stock').forEach(s=>s.classList.remove('on'));}
+  if(step===1){
+    document.getElementById('footlabel').innerHTML='<b>Step 1 of 2 · Pick a stock</b><span class="s">Tap one to see Nate\'s read.</span>';
+    const fb=document.getElementById('footbtn');fb.textContent='Next';fb.disabled=!picked;fb.onclick=()=>go(2);
+  }
+  if(step===2){
+    renderCall();
+    document.getElementById('footlabel').innerHTML='<b style="color:var(--amber);cursor:pointer" onclick="go(0)">↺ Start over</b><span class="s">or open the full product →</span>';
+    const fb=document.getElementById('footbtn');fb.textContent='See MarketNarc →';fb.disabled=false;
+    fb.onclick=()=>window.open('https://marketnarc.com/marketnarc','_blank');
+  }
+}
+function renderStocks(){
+  document.getElementById('stocks').innerHTML=PICKS.map(p=>`
+    <button class="stock" data-tk="${p.tk}" onclick="pick('${p.tk}')">
+      <div class="t">${p.tk}<span class="bd ${p.band==='Penny'?'penny':''}">${p.band}</span></div>
+      <div class="c">${p.co}</div>
+      <div class="p tnum">$${p.price.toFixed(2)}</div>
+    </button>`).join('');
+}
+function pick(tk){
+  picked=tk;
+  document.querySelectorAll('.stock').forEach(s=>s.classList.toggle('on',s.dataset.tk===tk));
+  document.getElementById('footbtn').disabled=false;
+}
+function renderCall(){
+  const p=PICKS.find(x=>x.tk===picked)||PICKS[0];
+  document.getElementById('callcard').innerHTML=`
+    <div class="samplebar">▸ Sample call · illustrative — not live data or a real recommendation</div>
+    <div class="ctop"><div class="tk">${p.tk}<small>${p.co}</small></div>
+      <div class="px"><div class="p tnum">$${p.price.toFixed(2)}</div>${p.tgt!=='—'?`<div class="t tnum">${p.tgt} target</div>`:''}</div></div>
+    <div class="verdict"><span class="pill ${p.call}">${p.call}</span><span class="cf tnum">${p.conf}%<small>confidence it earned · ${p.conv}</small></span></div>
+    <div class="cbar"><i style="width:${p.conf}%;background:${BAR[p.call]}"></i></div>
+    <p class="why">${p.why}</p>
+    <div class="split"><div class="bull"><div class="h">The business</div><p>${p.business}</p></div><div class="bear"><div class="h">The chart</div><p>${p.chart}</p></div></div>
+    ${p.risk?`<div class="risk">⚠︎ ${p.risk}</div>`:''}
+    <div class="split"><div class="bull"><div class="h">Bull case</div><p>${p.bull}</p></div><div class="bear"><div class="h">Bear case</div><p>${p.bear}</p></div></div>
+    <p class="nfa">Educational · not financial advice · you decide</p>`;
+}
+renderStocks();
+// When embedded, report height to the parent so the frame can auto-size (no clipping / nested scroll on mobile).
+(function(){if(window.self===window.top)return;var b=document.body;b.style.minHeight='0';b.style.display='block';b.style.padding='16px';var c=b.querySelector('.card');if(c)c.style.margin='0 auto';var last=0;function ph(){var h=Math.ceil(b.scrollHeight);if(h&&h!==last){last=h;parent.postMessage({espoHeight:h},'*');}}window.addEventListener('load',ph);ph();setInterval(ph,350);}());
+</script>
+</body>
+</html>

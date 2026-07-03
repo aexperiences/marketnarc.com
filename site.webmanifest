@@ -1,0 +1,16 @@
+{
+  "name": "The Narcs",
+  "short_name": "The Narcs",
+  "description": "Plain-English intelligence for everyday people — what's happening and why, without the charts, jargon, or noise. Home of MarketNarc.",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#1B1148",
+  "theme_color": "#1B1148",
+  "icons": [
+    { "src": "/favicon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/favicon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

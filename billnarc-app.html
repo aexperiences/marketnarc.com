@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BillNarc — decode your own medical bill</title>
+<meta name="description" content="Enter your medical bill's line items and BillNarc reads them in plain English — flagging duplicates, likely errors, and coverage you may be owed. Runs entirely in your browser; nothing is sent anywhere.">
+<meta name="theme-color" content="#122A52">
+<link rel="icon" href="/billnarc-icon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#122A52;--ink800:#0C1D38;--ink700:#1A3A66;--ink600:#224676;--line:#294A78;
+ --accent:#4FCB8E;--accent6:#3DB87B;--off:#EAF3F0;--sea:#86B8E0;--ok:#56C98B;--warn:#E6B45C;--bad:#F0846A}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;min-height:100vh;background:radial-gradient(120% 80% at 50% -10%,#163460 0%,#0A1730 55%,#070F22 100%);
+ font-family:Inter,-apple-system,Segoe UI,Roboto,sans-serif;color:var(--off);padding:26px 18px 70px}
+.tnum{font-variant-numeric:tabular-nums}
+.app{max-width:660px;margin:0 auto}
+.head{display:flex;align-items:center;gap:11px;justify-content:center;margin-bottom:6px}
+.head svg{width:34px;height:34px;border-radius:9px}
+.head .wm{font-family:Lato;font-weight:900;font-size:24px}.head .wm .n{color:var(--accent)}
+.sub{text-align:center;color:var(--sea);font-size:13.5px;font-style:italic;margin:0 0 4px}
+.priv{text-align:center;color:var(--accent);font-size:12px;font-weight:600;margin:0 0 22px}
+.card{background:rgba(26,58,102,.34);border:1px solid var(--line);border-radius:20px;padding:22px 20px;margin-bottom:18px}
+.card h2{font-family:Lato;font-weight:900;font-size:16px;margin:0 0 4px}
+.card .h2sub{color:var(--sea);font-size:13px;margin:0 0 15px}
+.tog{display:flex;flex-direction:column;gap:10px;margin-bottom:4px}
+.tog label{display:flex;align-items:flex-start;gap:11px;font-size:14px;cursor:pointer;color:var(--off)}
+.tog input{margin-top:2px;width:18px;height:18px;accent-color:var(--accent);flex:0 0 auto}
+.rows{display:flex;flex-direction:column;gap:9px;margin-bottom:12px}
+.rw{display:grid;grid-template-columns:1fr 108px 34px;gap:8px;align-items:center}
+.rw input{background:var(--ink800);border:1px solid var(--line);border-radius:10px;color:var(--off);
+ font-family:Inter;font-size:14px;padding:11px 12px;width:100%}
+.rw input:focus{outline:none;border-color:var(--accent)}
+.rw input::placeholder{color:#5c789e}
+.rw .amtwrap{position:relative}.rw .amtwrap::before{content:"$";position:absolute;left:11px;top:11px;color:var(--sea);font-size:14px}
+.rw .amtwrap input{padding-left:22px;text-align:right}
+.rmx{background:none;border:1px solid var(--line);color:var(--sea);border-radius:9px;height:40px;cursor:pointer;font-size:16px}
+.rmx:hover{border-color:var(--bad);color:var(--bad)}
+.rowbtns{display:flex;gap:9px;flex-wrap:wrap}
+.lnk{background:var(--ink700);border:1px solid var(--line);color:var(--off);font-weight:600;font-size:13px;border-radius:999px;padding:9px 15px;cursor:pointer}
+.lnk:hover{border-color:var(--accent)}
+.go{display:block;width:100%;margin-top:16px;background:var(--accent);color:var(--ink800);font-family:Lato;font-weight:900;
+ font-size:17px;border:0;border-radius:14px;padding:16px;cursor:pointer;transition:.14s}
+.go:hover{background:var(--accent6)}
+.go:disabled{opacity:.45;cursor:default}
+/* report */
+#report{display:none}
+.dsum{font-size:14px;color:var(--off);background:var(--ink800);border:1px solid var(--line);border-radius:11px;padding:11px 14px;margin:0 0 14px}
+.dsum b{color:var(--accent)}
+.line{border-top:1px solid var(--line);padding:11px 0}.line:first-child{border-top:0}
+.lrow{display:flex;align-items:baseline;gap:8px}
+.lname{font-weight:700;font-size:14.5px;line-height:1.25}
+.lwhat{display:block;color:var(--sea);font-size:12.5px;font-weight:400;margin-top:2px}
+.lamt{margin-left:auto;font-family:Lato;font-weight:900;font-size:14px;white-space:nowrap}
+.chip{display:inline-block;margin-top:7px;font-size:9.5px;font-weight:800;letter-spacing:.3px;padding:3px 9px;border-radius:999px;text-transform:uppercase}
+.chip.ok{color:#0C2038;background:var(--ok)}.chip.warn{color:var(--warn);border:1px solid var(--warn)}.chip.bad{color:#2A0F0A;background:var(--bad)}
+.lflag{margin-top:8px;font-size:13px;line-height:1.45;border-radius:9px;padding:9px 12px}
+.lflag.warn{background:rgba(230,180,92,.10);border-left:3px solid var(--warn)}
+.lflag.bad{background:rgba(240,132,106,.11);border-left:3px solid var(--bad)}
+.lflag b{color:var(--off)}
+.bottom{background:var(--ink800);border:1px solid var(--line);border-radius:12px;padding:14px;margin:12px 0}
+.brow{display:flex;align-items:baseline;justify-content:space-between;font-size:14px;padding:4px 0}
+.brow span{color:var(--sea)}.brow b{font-family:Lato;font-weight:900}
+.brow.big{border-top:1px solid var(--line);margin-top:6px;padding-top:10px}.brow.big b{font-size:20px;color:var(--accent)}
+.todo{font-size:14px;line-height:1.55;color:var(--off);background:rgba(79,203,142,.08);border:1px solid #2f6a55;border-radius:11px;padding:12px 14px;margin-bottom:12px}
+.todo b{color:var(--accent)}.todo ul{margin:8px 0 0;padding-left:18px}.todo li{margin-bottom:5px}
+.nfa{font-size:12px;color:var(--sea);text-align:center;line-height:1.5;margin:6px 0 0}
+.foot{text-align:center;margin-top:22px}
+.foot a{color:var(--accent);font-weight:700;text-decoration:none;font-size:14px}
+.brandmark{width:42px;height:41px;margin:24px auto 8px;opacity:.78;background:url(/ae-mark.png) center/contain no-repeat}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="head">
+    <svg viewBox="0 0 1024 1024" aria-hidden="true"><rect width="1024" height="1024" rx="232" fill="#122A52"/><circle cx="445" cy="430" r="235" fill="none" stroke="#4FCB8E" stroke-width="64"/><polyline points="362,525 362,335 528,525 528,335" fill="none" stroke="#4FCB8E" stroke-width="46" stroke-linecap="round" stroke-linejoin="round"/><line x1="612" y1="597" x2="775" y2="760" stroke="#4FCB8E" stroke-width="82" stroke-linecap="round"/></svg>
+    <span class="wm">Bill<span class="n">Narc</span></span>
+  </div>
+  <p class="sub">your medical bill, decoded — in plain English</p>
+  <p class="priv">🔒 Runs entirely in your browser. Nothing you type is sent anywhere.</p>
+
+  <div class="card">
+    <h2>1 · A little context</h2>
+    <p class="h2sub">This helps BillNarc catch coverage you might be owed.</p>
+    <div class="tog">
+      <label><input type="checkbox" id="ctxPrev"> This visit was an <b>annual physical / preventive checkup</b></label>
+      <label><input type="checkbox" id="ctxNet"> The hospital / ER was <b>in-network</b> for me</label>
+      <label><input type="checkbox" id="ctxHsa"> I'm paying with an <b>HSA / FSA</b></label>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>2 · Your bill's line items</h2>
+    <p class="h2sub">Copy each charge and amount from your itemized bill. Add as many as you like.</p>
+    <div class="rows" id="rows"></div>
+    <div class="rowbtns">
+      <button class="lnk" onclick="addRow()">+ Add line</button>
+      <button class="lnk" onclick="loadSample()">Load a sample</button>
+      <button class="lnk" onclick="clearAll()">Clear</button>
+    </div>
+    <button class="go" id="go" onclick="decode()">Decode my bill →</button>
+  </div>
+
+  <div class="card" id="report">
+    <h2>BillNarc's read</h2>
+    <div id="reportbody"></div>
+  </div>
+
+  <div class="foot"><a href="/billnarc">← Back to BillNarc</a> &nbsp;·&nbsp; <a href="/">The Narcs</a></div>
+</div>
+
+<script>
+// ---- transparent rules: bill-lens vs the common rulebook ----
+function RULES(ctx){return [
+ {re:/vitamin\s*d|25[-\s]?hydroxy/i, what:"a vitamin D blood test",
+   flag:{s:"bad",why:"Frequently <b>denied as 'not medically necessary'</b> unless coded with a matching diagnosis. If it was ordered routinely, this can often be removed or appealed."}},
+ {re:/facility fee|facility charge/i, what:"the charge for using the facility itself",
+   flag:{s:"warn",why:"Legit to bill — but often <b>negotiable</b>, and usually avoidable at a standalone outpatient center."}},
+ {re:/lipid|cholesterol|metabolic panel|\bcbc\b|a1c|glucose|wellness|preventive/i, what:"a routine blood test / screening",
+   flag: ctx.prev?{s:"warn",why:"On an annual physical this is usually <b>100% covered as preventive care</b>. If you're being billed, ask them to recheck the coding — you may owe $0."}:{s:"ok",why:""}},
+ {re:/mri|ct scan|\bct\b|cat scan|imaging|x-?ray|ultrasound|mammogram|\bmri\b/i, what:"medical imaging",
+   flag:{s:"warn",why:"Hospitals often charge <b>2–3×</b> a standalone imaging center for the identical scan. For non-urgent imaging, price-shopping can cut this a lot."}},
+ {re:/physician|provider|surgeon|anesthes|radiolog|attending|consult|\bmd\b|\bdr\b|doctor/i, what:"a doctor's professional fee, billed separately from the facility",
+   flag: ctx.net?{s:"warn",why:"If this doctor was <b>out-of-network</b> while the facility was in-network, the <b>No Surprises Act</b> may cap what you owe. Don't pay a balance bill without checking."}:{s:"ok",why:"Billing the doctor apart from the facility is normal."}},
+ {re:/iv |i\.v\.|hydration|infusion|\biv\b|injection/i, what:"medication or fluids given by IV",
+   flag:{s:"warn",why:"Scan the rest of your bill — <b>IV administration is a common spot for duplicate charges</b>."}},
+ {re:/ambulance|transport/i, what:"ambulance transport",
+   flag:{s:"warn",why:"Ambulance bills are a frequent surprise-billing spot. Check whether No Surprises Act protections apply to you."}},
+ {re:/venipuncture|blood draw|phlebotomy|specimen/i, what:"the fee to draw or handle your blood", flag:{s:"ok",why:""}},
+ {re:/room|\bbed\b|board|semi-private|\bicu\b|observation/i, what:"a daily room / stay charge", flag:{s:"ok",why:""}},
+ {re:/supply|supplies|pharmacy|medication|\bdrug\b|\bdose\b|tablet/i, what:"supplies or medication", flag:{s:"ok",why:""}},
+ {re:/emergency|\ber\b|emergency room|triage/i, what:"an emergency-room charge", flag:{s:"ok",why:""}},
+ {re:/lab|test|panel|culture|biopsy|pathology/i, what:"a lab test", flag:{s:"ok",why:""}},
+];}
+function money(v){v=(''+v).replace(/[^0-9.\-]/g,'');var n=parseFloat(v);return isNaN(n)?0:n;}
+function fmt(n){return '$'+n.toLocaleString(undefined,{minimumFractionDigits:0,maximumFractionDigits:2});}
+function norm(s){return (s||'').toLowerCase().replace(/[^a-z0-9]/g,'').trim();}
+
+var rowData=[];
+function addRow(desc,amt){rowData.push({desc:desc||'',amt:amt||''});render();}
+function rmRow(i){rowData.splice(i,1);if(rowData.length===0)addRow();render();}
+function render(){
+  document.getElementById('rows').innerHTML=rowData.map(function(r,i){return (
+   '<div class="rw">'
+   +'<input placeholder="Charge description (e.g. ER facility fee)" value="'+(r.desc.replace(/"/g,'&quot;'))+'" oninput="rowData['+i+'].desc=this.value">'
+   +'<div class="amtwrap"><input inputmode="decimal" placeholder="0.00" value="'+(r.amt)+'" oninput="rowData['+i+'].amt=this.value"></div>'
+   +'<button class="rmx" onclick="rmRow('+i+')" title="Remove">×</button>'
+   +'</div>');}).join('');
+  document.getElementById('go').disabled = rowData.filter(function(r){return r.desc.trim();}).length===0;
+}
+function clearAll(){rowData=[];addRow();document.getElementById('report').style.display='none';}
+function loadSample(){
+  rowData=[{desc:"ER facility fee (Level 4)",amt:"1842"},{desc:"Emergency physician",amt:"680"},
+   {desc:"CT scan, head",amt:"1150"},{desc:"IV hydration",amt:"175"},{desc:"IV hydration",amt:"175"},
+   {desc:"Supplies & medication",amt:"175"}];
+  document.getElementById('ctxNet').checked=true;document.getElementById('ctxPrev').checked=false;
+  render();
+}
+function decode(){
+  var ctx={prev:document.getElementById('ctxPrev').checked,net:document.getElementById('ctxNet').checked,hsa:document.getElementById('ctxHsa').checked};
+  var rules=RULES(ctx);
+  var rows=rowData.filter(function(r){return r.desc.trim();}).map(function(r){return {desc:r.desc.trim(),amt:money(r.amt)};});
+  // duplicate detection (same normalized desc + same amount)
+  var counts={};rows.forEach(function(r){var k=norm(r.desc)+'|'+r.amt;counts[k]=(counts[k]||0)+1;});
+  var tags={dup:false,net:false,prev:false,img:false,notnec:false,iv:false,unmatched:false};
+  var total=0;
+  var linesHtml=rows.map(function(r,idx){
+    total+=r.amt;
+    var k=norm(r.desc)+'|'+r.amt, res=null, what="", why="", s="ok";
+    if(counts[k]>1){s="bad";what="appears more than once on your bill";
+      why="This exact charge is listed <b>more than once</b> — a likely duplicate. Ask for an itemized bill and have the extra removed.";tags.dup=true;}
+    else{
+      for(var i=0;i<rules.length;i++){if(rules[i].re.test(r.desc)){res=rules[i];break;}}
+      if(res){what=res.what;s=res.flag.s;why=res.flag.why;
+        if(s==='warn'||s==='bad'){
+          if(/no surprises/i.test(why))tags.net=true;
+          if(/preventive/i.test(why))tags.prev=true;
+          if(/imaging center/i.test(why))tags.img=true;
+          if(/not medically necessary/i.test(why))tags.notnec=true;
+          if(/duplicate charges/i.test(why))tags.iv=true;
+        }
+      } else {what="we couldn't match this line automatically";s="warn";
+        why="Ask the provider for an <b>itemized description</b> — vague or bundled line items are worth questioning.";tags.unmatched=true;}
+    }
+    var chipTxt={ok:"✓ Looks standard",warn:"⚠ Worth checking",bad:"✕ Likely error"}[s];
+    return '<div class="line"><div class="lrow"><span class="lname">'+(idx+1)+'. '+escapeHtml(r.desc)
+      +'<span class="lwhat">'+what+'</span></span><span class="lamt tnum">'+fmt(r.amt)+'</span></div>'
+      +'<div><span class="chip '+s+'">'+chipTxt+'</span></div>'
+      +(why?'<div class="lflag '+s+'">'+why+'</div>':'')+'</div>';
+  }).join('');
+  var flagged=rows.length - (linesHtml.match(/chip ok/g)||[]).length;
+  // assemble the to-do list from what we actually found
+  var todos=[];
+  if(tags.dup)todos.push("Ask for an <b>itemized bill</b> and get the duplicate charge(s) removed.");
+  if(tags.net)todos.push("Confirm every provider was <b>in-network</b> — the No Surprises Act may cap out-of-network charges.");
+  if(tags.prev)todos.push("If this was a <b>preventive</b> visit, ask them to recheck the lab coding — you may owe $0.");
+  if(tags.notnec)todos.push("Challenge the <b>'not medically necessary'</b> line with your doctor's matching diagnosis.");
+  if(tags.img)todos.push("For non-urgent <b>imaging</b>, price-shop a standalone outpatient center next time.");
+  if(tags.iv)todos.push("Double-check the <b>IV / infusion</b> lines for repeated charges.");
+  if(tags.unmatched)todos.push("Request <b>itemized descriptions</b> for the lines BillNarc couldn't match.");
+  if(ctx.hsa)todos.push("Keep this itemized bill for your <b>HSA/FSA</b> records at tax time.");
+  if(todos.length===0)todos.push("Nothing jumped out — but always request an <b>itemized bill</b> and compare it line-by-line to your insurer's EOB.");
+  var sumTxt = flagged>0
+    ? (rows.length+" charges read. <b>"+flagged+" worth a closer look.</b>")
+    : (rows.length+" charges read. <b>Nothing obvious jumped out</b> — still worth comparing to your EOB.");
+  var html='<p class="dsum">'+sumTxt+'</p>'+linesHtml
+    +'<div class="bottom"><div class="brow"><span>Total entered</span><b class="tnum">'+fmt(total)+'</b></div>'
+    +'<div class="brow big"><span>Charges flagged</span><b>'+flagged+' of '+rows.length+'</b></div></div>'
+    +'<div class="todo"><b>What I\'d do:</b><ul><li>'+todos.join('</li><li>')+'</li></ul></div>'
+    +'<p class="nfa">Educational read of the lines you entered — <b>not billing or medical advice</b>, and not a guarantee. Your insurer\'s EOB and your provider are the final word. Nothing you typed left your browser.</p>';
+  document.getElementById('reportbody').innerHTML=html;
+  var rep=document.getElementById('report');rep.style.display='block';rep.scrollIntoView({behavior:'smooth'});
+}
+function escapeHtml(s){return s.replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+addRow();addRow();addRow();
+</script>
+<div class="brandmark" aria-label="Accelerated Experiences" title="An Accelerated Experiences app"></div>
+</body>
+</html>

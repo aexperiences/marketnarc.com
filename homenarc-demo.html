@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>HomeNarc — decode home costs</title>
+<meta name="description" content="An interactive preview of HomeNarc — home costs decoded in plain English.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>:root{--ink:#26201A;--ink800:#1A1612;--ink700:#3A342F;--ink600:#49443F;--line:#453A2C;--accent:#E0A24E;--sea:#AEC9A6;--off:#EAF3F0;--ok:#56C98B;--warn:#E6B45C;--bad:#F0846A;--cardbg:#312B25E6;--todobg:#473723;--todoline:#7A5A31;--footbg:#1C1814;--glow:#966E39;--scan:#9F743C}
+body{background:radial-gradient(120% 90% at 50% -10%, #403B35 0%, #13100D 60%, #0B0907 100%)}
+
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;min-height:100vh;font-family:Inter,-apple-system,Segoe UI,Roboto,sans-serif;color:var(--off);
+  display:flex;align-items:center;justify-content:center;padding:24px}
+.tnum{font-variant-numeric:tabular-nums}
+.card{width:100%;max-width:500px;background:var(--cardbg);border:1px solid var(--line);
+  border-radius:24px;padding:26px 26px 0;backdrop-filter:blur(6px);box-shadow:0 40px 90px -40px rgba(0,0,0,.85)}
+.head{text-align:center;padding-bottom:14px;border-bottom:1px solid var(--line)}
+.wm{display:inline-flex;align-items:center;gap:9px}
+.wm svg{width:30px;height:30px;border-radius:8px}
+.wm span{font-family:Lato;font-weight:900;font-size:22px;letter-spacing:-.4px}.wm .n{color:var(--accent)}
+.head .sub{font-size:13px;color:var(--sea);font-style:italic;margin:6px 0 0;letter-spacing:.3px}
+.body{padding:26px 2px 22px;min-height:352px;display:flex;flex-direction:column;justify-content:center}
+.center{text-align:center}
+.bigmark{width:88px;height:88px;margin:0 auto 16px;border-radius:22px;display:block}
+.badge{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:700;letter-spacing:.6px;
+  color:var(--accent);border:1px solid var(--accent);border-radius:999px;padding:5px 13px;margin-bottom:14px}
+.badge .dot{width:7px;height:7px;border-radius:50%;background:var(--accent);animation:pulse 2.6s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 var(--glow)}70%{box-shadow:0 0 0 9px transparent}100%{box-shadow:0 0 0 0 transparent}}
+h1{font-family:Lato;font-weight:900;font-size:30px;line-height:1.08;letter-spacing:-.5px;margin:0 0 12px}
+h1 .n{color:var(--accent)}
+.lead{color:var(--sea);font-size:15px;line-height:1.55;max-width:36ch;margin:0 auto 16px}
+.tag{display:inline-block;font-size:12.5px;font-weight:600;color:var(--off);background:var(--ink700);
+  border:1px solid var(--line);border-radius:999px;padding:7px 15px;margin-bottom:20px}
+.cta{display:inline-flex;align-items:center;gap:9px;background:var(--accent);color:var(--ink800);
+  font-weight:800;font-size:16px;border:0;border-radius:999px;padding:15px 30px;cursor:pointer;transition:.15s}
+.cta:hover{filter:brightness(.94);transform:translateY(-1px)}
+.fine{font-size:12px;color:var(--sea);margin:14px 0 0}
+.steplabel{text-align:center;font-size:12px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:var(--accent);margin:0 0 6px}
+.stepsub{text-align:center;color:var(--sea);font-size:14px;margin:0 0 20px;line-height:1.5}.stepsub b{color:var(--off)}
+.bills{display:flex;flex-direction:column;gap:11px}
+.bill{display:flex;align-items:center;gap:14px;text-align:left;background:var(--ink700);border:1px solid var(--line);
+  border-radius:15px;padding:15px 16px;cursor:pointer;transition:.13s;color:var(--off);font-family:Inter}
+.bill:hover{border-color:var(--accent)}
+.bill.on{border-color:var(--accent);background:var(--ink600);box-shadow:0 0 0 1px var(--accent) inset}
+.bill .ico{font-size:22px;flex:0 0 auto}
+.bill .t{font-family:Lato;font-weight:900;font-size:16px}.bill .c{font-size:12px;color:var(--sea);margin-top:1px}
+.bill .amt{margin-left:auto;text-align:right}
+.bill .amt .p{font-family:Lato;font-weight:900;font-size:16px}
+.bill .amt .l{font-size:10px;color:var(--sea);text-transform:uppercase;letter-spacing:.4px}
+.reading{text-align:center}
+.scanmark{position:relative;width:96px;height:96px;margin:6px auto 18px;border-radius:22px;overflow:hidden}
+.scanmark svg{width:100%;height:100%;display:block}
+.scanline{position:absolute;left:0;right:0;height:26px;top:-26px;
+  background:linear-gradient(180deg,transparent,var(--scan),transparent);animation:scan 1.15s linear infinite}
+@keyframes scan{0%{top:-26px}100%{top:96px}}
+.reading .rl{font-family:Lato;font-weight:900;font-size:19px;margin:0 0 6px}
+.reading .rs{color:var(--sea);font-size:13.5px;margin:0}
+.dhead{display:flex;align-items:flex-start;gap:10px;margin-bottom:6px}
+.dhead .dt{font-family:Lato;font-weight:900;font-size:18px;line-height:1.1}
+.dhead .dt small{display:block;font-family:Inter;font-weight:500;font-size:11.5px;color:var(--sea);margin-top:2px}
+.dhead .dconf{margin-left:auto;text-align:right;font-size:10.5px;color:var(--sea);text-transform:uppercase;letter-spacing:.4px}
+.dhead .dconf b{display:block;font-family:Lato;font-size:13px;color:var(--accent);letter-spacing:0}
+.dsum{font-size:13px;color:var(--off);background:var(--ink800);border:1px solid var(--line);border-radius:10px;padding:9px 12px;margin:0 0 12px}
+.dsum b{color:var(--accent)}
+.lines{margin:0 -4px 4px;padding:0 4px}
+.line{border-top:1px solid var(--line);padding:10px 0}.line:first-child{border-top:0}
+.lrow{display:flex;align-items:baseline;gap:8px}
+.lname{font-weight:700;font-size:14px;line-height:1.25}
+.lwhat{display:block;color:var(--sea);font-size:12px;font-weight:400;margin-top:2px}
+.lamt{margin-left:auto;font-family:Lato;font-weight:900;font-size:14px;white-space:nowrap}
+.chip{font-size:9.5px;font-weight:800;letter-spacing:.3px;padding:3px 8px;border-radius:999px;text-transform:uppercase;white-space:nowrap}
+.chip.ok{color:#0C2038;background:var(--ok)}.chip.warn{color:var(--warn);border:1px solid var(--warn)}.chip.bad{color:#2A0F0A;background:var(--bad)}
+.lflag{margin-top:8px;font-size:12.5px;line-height:1.45;border-radius:8px;padding:8px 11px}
+.lflag.warn{background:rgba(230,180,92,.10);border-left:3px solid var(--warn)}
+.lflag.bad{background:rgba(240,132,106,.11);border-left:3px solid var(--bad)}
+.lflag b{color:var(--off)}
+.bottom{background:var(--ink800);border:1px solid var(--line);border-radius:12px;padding:13px 14px;margin:10px 0 12px}
+.brow{display:flex;align-items:baseline;justify-content:space-between;font-size:13px;padding:3px 0}
+.brow span{color:var(--sea)}.brow b{font-family:Lato;font-weight:900;font-size:14px}
+.brow.big{border-top:1px solid var(--line);margin-top:5px;padding-top:9px}
+.brow.big span{color:var(--off);font-weight:600}.brow.big b{font-size:22px;color:var(--accent)}
+.strike{color:var(--sea);text-decoration:line-through;font-weight:700}
+.bnote{font-size:11px;color:var(--sea);margin:8px 0 0;line-height:1.4}
+.todo{font-size:13px;line-height:1.5;color:var(--off);background:var(--todobg);border:1px solid var(--todoline);border-radius:10px;padding:10px 12px;margin-bottom:12px}
+.todo b{color:var(--accent)}
+.nfa{font-size:11.5px;color:var(--sea);text-align:center;margin:0}
+.foot{display:flex;align-items:center;gap:14px;border-top:1px solid var(--line);
+  margin:0 -26px;padding:15px 24px;background:var(--footbg);border-bottom-left-radius:24px;border-bottom-right-radius:24px}
+.prog{display:flex;gap:5px}.prog i{width:22px;height:4px;border-radius:2px;background:var(--line)}.prog i.on{background:var(--accent)}
+.foot .fl{font-size:13px}.foot .fl b{font-weight:700}.foot .fl .s{display:block;color:var(--sea);font-size:11.5px;margin-top:1px}
+.fbtn{margin-left:auto;background:var(--accent);color:var(--ink800);font-weight:800;font-size:14px;border:0;border-radius:999px;padding:11px 20px;cursor:pointer;text-decoration:none;white-space:nowrap}
+.fbtn:disabled{opacity:.4;cursor:default}
+.hidden{display:none}
+</style></head>
+<body>
+<div class="card">
+  <div class="head"><span class="wm"><svg viewBox="0 0 1024 1024" aria-hidden="true"><rect width="1024" height="1024" rx="232" fill="#26201A"/><circle cx="445" cy="430" r="235" fill="none" stroke="#E0A24E" stroke-width="64"/><polyline points="362,525 362,335 528,525 528,335" fill="none" stroke="#E0A24E" stroke-width="46" stroke-linecap="round" stroke-linejoin="round"/><line x1="612" y1="597" x2="775" y2="760" stroke="#E0A24E" stroke-width="82" stroke-linecap="round"/></svg>
+    <span>Home<span class="n">Narc</span></span></span>
+    <p class="sub">home costs · plain English</p></div>
+  <div class="body" id="body">
+    <div class="center" id="s0">
+      <svg class="bigmark" viewBox="0 0 1024 1024" aria-hidden="true"><rect width="1024" height="1024" rx="232" fill="#26201A"/><circle cx="445" cy="430" r="235" fill="none" stroke="#E0A24E" stroke-width="64"/><polyline points="362,525 362,335 528,525 528,335" fill="none" stroke="#E0A24E" stroke-width="46" stroke-linecap="round" stroke-linejoin="round"/><line x1="612" y1="597" x2="775" y2="760" stroke="#E0A24E" stroke-width="82" stroke-linecap="round"/></svg>
+      <span class="badge"><span class="dot"></span>PREVIEW</span>
+      <h1>Decode your home costs,<br>in <span class="n">plain English</span>.</h1>
+      <p class="lead">Pick a home cost and HomeNarc reads it — what's <em>fair</em>, what's not, and exactly how to fix it.</p>
+      <div><span class="tag">A 30-second taste</span></div>
+      <button class="cta" onclick="go(1)">Decode a cost <span aria-hidden="true">▸</span></button>
+      <p class="fine">Illustrative preview — educational, not legal, tax, or insurance advice.</p>
+    </div>
+    <div id="s1" class="hidden">
+      <p class="steplabel">Pick a cost</p>
+      <p class="stepsub">Sample home costs, so you can try it now. <b>Yours decodes the same way.</b></p>
+      <div class="bills" id="bills"></div>
+    </div>
+    <div id="sr" class="reading hidden">
+      <div class="scanmark"><svg viewBox="0 0 1024 1024" aria-hidden="true"><rect width="1024" height="1024" rx="232" fill="#26201A"/><circle cx="445" cy="430" r="235" fill="none" stroke="#E0A24E" stroke-width="64"/><polyline points="362,525 362,335 528,525 528,335" fill="none" stroke="#E0A24E" stroke-width="46" stroke-linecap="round" stroke-linejoin="round"/><line x1="612" y1="597" x2="775" y2="760" stroke="#E0A24E" stroke-width="82" stroke-linecap="round"/></svg><div class="scanline"></div></div>
+      <p class="rl">Reading…</p><p class="rs" id="rsub">Matching to plain English</p>
+    </div>
+    <div id="s2" class="hidden"><div id="decode"></div></div>
+  </div>
+  <div class="foot hidden" id="foot">
+    <span class="prog"><i class="on" id="p1"></i><i id="p2"></i></span>
+    <span class="fl" id="footlabel"></span>
+    <button class="fbtn" id="footbtn" disabled onclick="decode()">Decode a cost</button>
+  </div>
+</div>
+<script>const ITEMS=[{"id": "tax", "ico": "\ud83c\udfdb\ufe0f", "t": "Property tax assessment", "c": "Annual notice", "rt": "$420k", "rtl": "assessed", "conf": "Medium", "sum": "3 lines read. <b>You may be over-assessed \u2014 and missing an exemption.</b>", "todo": "File a <b>homestead exemption</b> and an <b>assessment appeal</b> with 3 comps. The deadline is usually 30\u201345 days after the notice \u2014 don't miss it.", "lines": [{"n": "Assessed value", "w": "what the county says your home is worth", "a": "$420,000", "s": "warn", "why": "Comparable homes nearby assessed near <b>$360k</b>. If you're over by ~$60k, that's roughly <b>$900/yr</b> in extra tax. You can appeal with comps."}, {"n": "Homestead exemption", "w": "a discount for your primary home", "a": "not applied", "s": "bad", "why": "If you live here, you likely qualify (often $25k\u201350k off the taxable value). It's <b>missing</b> \u2014 applying lowers the bill going forward."}, {"n": "Tax rate (millage)", "w": "the percentage applied", "a": "1.5%", "s": "ok", "why": ""}], "bottom": {"rows": [["Assessed", "$420,000", true], ["Fair value (comps)", "~$360,000", false]], "big": ["Est. overpayment", "~$900/yr"], "note": "Plus a missing homestead exemption. Estimate \u2014 check your county's rules and appeal deadline."}}, {"id": "ins", "ico": "\ud83d\udee1\ufe0f", "t": "Homeowners insurance", "c": "Annual policy", "rt": "$2,400", "rtl": "premium", "conf": "Medium", "sum": "4 lines read. <b>2 ways you're likely overpaying</b> \u2014 for less coverage.", "todo": "Re-shop this year and ask specifically about <b>replacement cost</b> coverage and a <b>multi-policy discount</b> \u2014 an easy 10\u201320% off is common.", "lines": [{"n": "Dwelling coverage", "w": "what it costs to rebuild", "a": "$310k", "s": "ok", "why": ""}, {"n": "Claim payout basis", "w": "how much you get at claim time", "a": "actual cash value", "s": "warn", "why": "ACV pays <b>depreciated</b> value \u2014 you get less. For a small premium bump, <b>replacement cost</b> pays to actually rebuild. Ask to switch."}, {"n": "Wind/hail deductible", "w": "what you pay before coverage kicks in", "a": "2% ($6,200)", "s": "warn", "why": "A <b>percentage</b> deductible is a nasty surprise \u2014 2% of dwelling, not a flat $1,000. Know it before a storm."}, {"n": "Multi-policy discount", "w": "a break for bundling", "a": "not applied", "s": "bad", "why": "You're not getting the bundling discount. Bundling or re-shopping often cuts <b>10\u201320%</b>."}], "bottom": {"rows": [["Premium", "$2,400/yr", false], ["Overpaying flags", "2", false]], "big": ["Likely savings", "10\u201320%"], "note": "Re-shop and ask about replacement cost + bundling. Estimate only."}}, {"id": "close", "ico": "\ud83d\udcc4", "t": "Mortgage closing costs", "c": "Loan Estimate", "rt": "$9,800", "rtl": "total", "conf": "Medium", "sum": "5 lines read. <b>~$1,500\u20132,500 is negotiable or shoppable.</b>", "todo": "Ask for a revised <b>Loan Estimate</b> with the junk fees cut, and <b>shop title insurance</b> separately \u2014 lenders expect you to push back.", "lines": [{"n": "Origination fee", "w": "the lender's charge to make the loan", "a": "$2,100", "s": "ok", "why": ""}, {"n": "Processing + underwriting + app fees", "w": "the lender's internal 'junk' fees", "a": "$1,450", "s": "warn", "why": "These are often <b>negotiable or duplicative</b>. Ask the lender to reduce or waive them."}, {"n": "Title insurance", "w": "protects against title problems", "a": "$1,600", "s": "warn", "why": "You can <b>shop this separately</b> \u2014 it's frequently cheaper than the lender's pick."}, {"n": "Owner's + lender's title", "w": "two title policies", "a": "both charged", "s": "ok", "why": ""}, {"n": "Discount points", "w": "paying up front to lower the rate", "a": "$1,900 (1 pt)", "s": "warn", "why": "Only worth it if you'll keep the loan long enough to break even. Ask for the <b>break-even math</b> before you pay it."}], "bottom": {"rows": [["Closing costs", "$9,800", false], ["Negotiable / shoppable", "~$1,500\u20132,500", false]], "big": ["Ask to cut", "junk fees + title"], "note": "Lenders expect you to negotiate the Loan Estimate. Estimate only."}}];const CHIP={"ok": "\u2713 Fair", "warn": "\u26a0 Overpaying", "bad": "\u2715 Likely error"};const RSTEPS=["Reading the line items", "Comparing to fair local rates", "Flagging overcharges & missed breaks", "Estimating what you could save"];const CTA="Decode a cost";const PICKLABEL="Pick a cost";const NFA="Educational \u00b7 not legal, tax, or insurance advice \u00b7 you decide";const CTAURL="/homenarc";const CTALABEL="See HomeNarc \u2192";
+let picked=null;
+function go(step){
+  for(const [id,st] of [["s0",0],["s1",1],["sr","r"],["s2",2]])
+    document.getElementById(id).classList.toggle('hidden',step!==st);
+  document.getElementById('foot').classList.toggle('hidden',step===0||step==='r');
+  document.getElementById('p1').classList.toggle('on',step===1||step==='r'||step===2);
+  document.getElementById('p2').classList.toggle('on',step===2);
+  if(step===0){picked=null;document.querySelectorAll('.bill').forEach(s=>s.classList.remove('on'));}
+  if(step===1){
+    document.getElementById('footlabel').innerHTML='<b>Step 1 of 2 · '+PICKLABEL+'</b><span class="s">Tap one to see the decode.</span>';
+    const fb=document.getElementById('footbtn');fb.textContent=CTA;fb.disabled=!picked;fb.onclick=decode;
+  }
+  if(step===2){
+    document.getElementById('footlabel').innerHTML='<b style="color:var(--accent);cursor:pointer" onclick="go(0)">↺ Start over</b><span class="s">or open the full product →</span>';
+    const fb=document.getElementById('footbtn');fb.textContent=CTALABEL;fb.disabled=false;
+    fb.onclick=()=>window.open(CTAURL,'_blank');
+  }
+}
+function renderBills(){
+  document.getElementById('bills').innerHTML=ITEMS.map(b=>`
+    <button class="bill" data-id="${b.id}" onclick="pick('${b.id}')">
+      <span class="ico">${b.ico}</span>
+      <span><span class="t">${b.t}</span><span class="c">${b.c}</span></span>
+      ${b.rt?`<span class="amt"><span class="p tnum">${b.rt}</span><span class="l">${b.rtl}</span></span>`:''}
+    </button>`).join('');
+}
+function pick(id){picked=id;document.querySelectorAll('.bill').forEach(s=>s.classList.toggle('on',s.dataset.id===id));document.getElementById('footbtn').disabled=false;}
+function decode(){
+  go('r');let i=0;const rs=document.getElementById('rsub');
+  const iv=setInterval(()=>{i=(i+1)%RSTEPS.length;rs.textContent=RSTEPS[i];},330);
+  setTimeout(()=>{clearInterval(iv);renderDecode();go(2);},1350);
+}
+function renderDecode(){
+  const b=ITEMS.find(x=>x.id===picked)||ITEMS[0];
+  const lines=b.lines.map((l,idx)=>`
+    <div class="line"><div class="lrow"><span class="lname">${idx+1}. ${l.n}<span class="lwhat">${l.w}</span></span>
+      ${l.a?`<span class="lamt tnum">${l.a}</span>`:''}</div>
+      <div style="margin-top:6px"><span class="chip ${l.s}">${CHIP[l.s]}</span></div>
+      ${l.why?`<div class="lflag ${l.s}">${l.why}</div>`:''}</div>`).join('');
+  const rows=b.bottom.rows.map(r=>`<div class="brow"><span>${r[0]}</span><b class="${r[2]?'strike ':''}tnum">${r[1]}</b></div>`).join('');
+  document.getElementById('decode').innerHTML=`
+    <div class="dhead"><div class="dt">${b.ico} ${b.t}<small>${b.c}</small></div>
+      <div class="dconf">read confidence<b>${b.conf}</b></div></div>
+    <p class="dsum">${b.sum}</p>
+    <div class="lines">${lines}</div>
+    <div class="bottom">${rows}
+      <div class="brow big"><span>${b.bottom.big[0]}</span><b class="tnum">${b.bottom.big[1]}</b></div>
+      <p class="bnote">${b.bottom.note}</p></div>
+    <div class="todo"><b>What I'd do:</b> ${b.todo}</div>
+    <p class="nfa">${NFA}</p>`;
+}
+renderBills();
+(function(){if(window.self===window.top)return;var b=document.body;b.style.minHeight='0';b.style.display='block';b.style.padding='16px';var c=b.querySelector('.card');if(c)c.style.margin='0 auto';var last=0;function ph(){var h=Math.ceil(b.scrollHeight);if(h&&h!==last){last=h;parent.postMessage({espoHeight:h},'*');}}window.addEventListener('load',ph);ph();setInterval(ph,350);}());
+</script>
+</body></html>

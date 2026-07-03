@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PawNarc — read your pet policy</title>
+<meta name="description" content="Enter your pet insurance policy details and PawNarc reads them in plain English — flagging gaps, exclusions, and what you're really covered for. Runs entirely in your browser; nothing is sent anywhere.">
+<meta name="theme-color" content="#34163A">
+<link rel="icon" href="/pawnarc-icon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#34163A;--ink800:#230F28;--ink700:#472653;--ink600:#553363;--line:#55305A;--accent:#52C6B9;--accent6:#3FA99D;--off:#EAF3F0;--sea:#F2B79C;--ok:#56C98B;--warn:#E6B45C;--bad:#F0846A}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;min-height:100vh;background:radial-gradient(120% 80% at 50% -10%,#4A2452 0%,#1E0F23 55%,#120A15 100%);
+ font-family:Inter,-apple-system,Segoe UI,Roboto,sans-serif;color:var(--off);padding:26px 18px 70px}
+.tnum{font-variant-numeric:tabular-nums}
+.app{max-width:660px;margin:0 auto}
+.head{display:flex;align-items:center;gap:11px;justify-content:center;margin-bottom:6px}
+.head svg{width:34px;height:34px;border-radius:9px}
+.head .wm{font-family:Lato;font-weight:900;font-size:24px}.head .wm .n{color:var(--accent)}
+.sub{text-align:center;color:var(--sea);font-size:13.5px;font-style:italic;margin:0 0 4px}
+.priv{text-align:center;color:var(--accent);font-size:12px;font-weight:600;margin:0 0 22px}
+.card{background:rgba(26,58,102,.34);border:1px solid var(--line);border-radius:20px;padding:22px 20px;margin-bottom:18px}
+.card h2{font-family:Lato;font-weight:900;font-size:16px;margin:0 0 4px}
+.card .h2sub{color:var(--sea);font-size:13px;margin:0 0 15px}
+.tog{display:flex;flex-direction:column;gap:10px;margin-bottom:4px}
+.tog label{display:flex;align-items:flex-start;gap:11px;font-size:14px;cursor:pointer;color:var(--off)}
+.tog input{margin-top:2px;width:18px;height:18px;accent-color:var(--accent);flex:0 0 auto}
+.rows{display:flex;flex-direction:column;gap:9px;margin-bottom:12px}
+.rw{display:grid;grid-template-columns:1fr 108px 34px;gap:8px;align-items:center}
+.rw input{background:var(--ink800);border:1px solid var(--line);border-radius:10px;color:var(--off);
+ font-family:Inter;font-size:14px;padding:11px 12px;width:100%}
+.rw input:focus{outline:none;border-color:var(--accent)}
+.rw input::placeholder{color:#5c789e}
+.rw .amtwrap{position:relative}.rw .amtwrap::before{content:"$";position:absolute;left:11px;top:11px;color:var(--sea);font-size:14px}
+.rw .amtwrap input{padding-left:22px;text-align:right}
+.rmx{background:none;border:1px solid var(--line);color:var(--sea);border-radius:9px;height:40px;cursor:pointer;font-size:16px}
+.rmx:hover{border-color:var(--bad);color:var(--bad)}
+.fld{display:flex;flex-direction:column;gap:9px;margin-bottom:4px}
+.fld .amtwrap{position:relative}
+.fld .amtwrap::before{content:"$";position:absolute;left:13px;top:12px;color:var(--sea);font-size:14px}
+.fld input{background:var(--ink800);border:1px solid var(--line);border-radius:10px;color:var(--off);
+ font-family:Inter;font-size:14px;padding:12px 13px;width:100%}
+.fld .amtwrap input{padding-left:24px}
+.fld input:focus{outline:none;border-color:var(--accent)}
+.fld input::placeholder{color:#5c789e}
+.rowbtns{display:flex;gap:9px;flex-wrap:wrap}
+.lnk{background:var(--ink700);border:1px solid var(--line);color:var(--off);font-weight:600;font-size:13px;border-radius:999px;padding:9px 15px;cursor:pointer}
+.lnk:hover{border-color:var(--accent)}
+.go{display:block;width:100%;margin-top:16px;background:var(--accent);color:var(--ink800);font-family:Lato;font-weight:900;
+ font-size:17px;border:0;border-radius:14px;padding:16px;cursor:pointer;transition:.14s}
+.go:hover{background:var(--accent6)}
+.go:disabled{opacity:.45;cursor:default}
+/* report */
+#report{display:none}
+.dsum{font-size:14px;color:var(--off);background:var(--ink800);border:1px solid var(--line);border-radius:11px;padding:11px 14px;margin:0 0 14px}
+.dsum b{color:var(--accent)}
+.line{border-top:1px solid var(--line);padding:11px 0}.line:first-child{border-top:0}
+.lrow{display:flex;align-items:baseline;gap:8px}
+.lname{font-weight:700;font-size:14.5px;line-height:1.25}
+.lwhat{display:block;color:var(--sea);font-size:12.5px;font-weight:400;margin-top:2px}
+.lamt{margin-left:auto;font-family:Lato;font-weight:900;font-size:14px;white-space:nowrap}
+.chip{display:inline-block;margin-top:7px;font-size:9.5px;font-weight:800;letter-spacing:.3px;padding:3px 9px;border-radius:999px;text-transform:uppercase}
+.chip.ok{color:#0C2038;background:var(--ok)}.chip.warn{color:var(--warn);border:1px solid var(--warn)}.chip.bad{color:#2A0F0A;background:var(--bad)}
+.lflag{margin-top:8px;font-size:13px;line-height:1.45;border-radius:9px;padding:9px 12px}
+.lflag.warn{background:rgba(230,180,92,.10);border-left:3px solid var(--warn)}
+.lflag.bad{background:rgba(240,132,106,.11);border-left:3px solid var(--bad)}
+.lflag b{color:var(--off)}
+.bottom{background:var(--ink800);border:1px solid var(--line);border-radius:12px;padding:14px;margin:12px 0}
+.brow{display:flex;align-items:baseline;justify-content:space-between;font-size:14px;padding:4px 0}
+.brow span{color:var(--sea)}.brow b{font-family:Lato;font-weight:900}
+.brow.big{border-top:1px solid var(--line);margin-top:6px;padding-top:10px}.brow.big b{font-size:20px;color:var(--accent)}
+.todo{font-size:14px;line-height:1.55;color:var(--off);background:rgba(79,203,142,.08);border:1px solid #2f6a55;border-radius:11px;padding:12px 14px;margin-bottom:12px}
+.todo b{color:var(--accent)}.todo ul{margin:8px 0 0;padding-left:18px}.todo li{margin-bottom:5px}
+.nfa{font-size:12px;color:var(--sea);text-align:center;line-height:1.5;margin:6px 0 0}
+.foot{text-align:center;margin-top:22px}
+.foot a{color:var(--accent);font-weight:700;text-decoration:none;font-size:14px}
+.brandmark{width:42px;height:41px;margin:24px auto 8px;opacity:.78;background:url(/ae-mark.png) center/contain no-repeat}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="head">
+    <svg viewBox="0 0 1024 1024" aria-hidden="true"><rect width="1024" height="1024" rx="232" fill="#34163A"/><circle cx="445" cy="430" r="235" fill="none" stroke="#52C6B9" stroke-width="64"/><polyline points="362,525 362,335 528,525 528,335" fill="none" stroke="#52C6B9" stroke-width="46" stroke-linecap="round" stroke-linejoin="round"/><line x1="612" y1="597" x2="775" y2="760" stroke="#52C6B9" stroke-width="82" stroke-linecap="round"/></svg>
+    <span class="wm">Paw<span class="n">Narc</span></span>
+  </div>
+  <p class="sub">what you're really covered for.</p>
+  <p class="priv">🔒 Runs entirely in your browser. Nothing you type is sent anywhere.</p>
+
+  <div class="card">
+    <h2>1 · Your policy</h2>
+    <p class="h2sub">The core numbers from your pet insurance plan.</p>
+    <div class="fld">
+      <input id="reimb" inputmode="decimal" placeholder="Reimbursement % (e.g. 80)">
+      <div class="amtwrap"><input id="ded" inputmode="decimal" placeholder="Annual deductible ($)"></div>
+      <div class="amtwrap"><input id="limit" inputmode="decimal" placeholder="Annual limit ($)"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>2 · The fine print</h2>
+    <p class="h2sub">The exclusions that quietly decide what you'll actually pay.</p>
+    <div class="tog">
+      <label><input type="checkbox" id="exam"> Exam fees are covered</label>
+      <label><input type="checkbox" id="hered"> Hereditary / breed conditions are covered</label>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>3 · A claim (optional)</h2>
+    <p class="h2sub">Add a vet bill to estimate what comes back.</p>
+    <div class="fld">
+      <div class="amtwrap"><input id="claim" inputmode="decimal" placeholder="A vet bill amount to estimate ($)"></div>
+    </div>
+    <div class="tog" style="margin-top:12px">
+      <label><input type="checkbox" id="denied"> This claim was denied as 'pre-existing'</label>
+    </div>
+    <div class="rowbtns" style="margin-top:16px">
+      <button class="lnk" onclick="loadSample()">Load a sample</button>
+      <button class="lnk" onclick="clearAll()">Clear</button>
+    </div>
+    <button class="go" id="go" onclick="decode()">Read my policy →</button>
+  </div>
+
+  <div class="card" id="report">
+    <h2>PawNarc's read</h2>
+    <div id="reportbody"></div>
+  </div>
+
+  <div class="foot"><a href="/pawnarc">← Back to PawNarc</a> &nbsp;·&nbsp; <a href="/">The Narcs</a></div>
+</div>
+
+<script>
+function money(v){v=(''+v).replace(/[^0-9.\-]/g,'');var n=parseFloat(v);return isNaN(n)?0:n;}
+function fmt(n){return '$'+Math.round(n).toLocaleString();}
+function escapeHtml(s){return s.replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+
+function clearAll(){
+  document.getElementById('reimb').value='';
+  document.getElementById('ded').value='';
+  document.getElementById('limit').value='';
+  document.getElementById('exam').checked=false;
+  document.getElementById('hered').checked=false;
+  document.getElementById('claim').value='';
+  document.getElementById('denied').checked=false;
+  document.getElementById('report').style.display='none';
+}
+function loadSample(){
+  document.getElementById('reimb').value='80';
+  document.getElementById('ded').value='250';
+  document.getElementById('limit').value='5000';
+  document.getElementById('exam').checked=false;
+  document.getElementById('hered').checked=false;
+  document.getElementById('claim').value='1240';
+  document.getElementById('denied').checked=false;
+}
+function decode(){
+  var reimb=money(document.getElementById('reimb').value);
+  var ded=money(document.getElementById('ded').value);
+  var limit=money(document.getElementById('limit').value);
+  var claim=money(document.getElementById('claim').value);
+  var exam=document.getElementById('exam').checked;
+  var hered=document.getElementById('hered').checked;
+  var denied=document.getElementById('denied').checked;
+
+  var lines=[];
+  // Reimbursement
+  lines.push({
+    name:"Reimbursement",
+    what:"how much comes back after your deductible",
+    right:reimb+"% after "+fmt(ded),
+    chip:(reimb>0&&reimb<70)?"warn":"ok",
+    flag:(reimb<70)?{s:"warn",why:"Lower than typical (70–90%) — you'll shoulder more of each bill."}:null
+  });
+  // Annual limit
+  lines.push({
+    name:"Annual limit",
+    what:"the yearly ceiling on payouts",
+    right:(limit>0?fmt(limit):"—"),
+    chip:(limit>0&&limit<5000)?"warn":"ok",
+    flag:(limit>0&&limit<5000)?{s:"warn",why:"One big surgery with complications can hit this fast. Know your ceiling before you rely on it."}:null
+  });
+  // Exam fees
+  lines.push({
+    name:"Exam fees",
+    what:"the visit charge itself",
+    right:(exam?"covered":"not covered"),
+    chip:(exam?"ok":"warn"),
+    flag:(!exam)?{s:"warn",why:"Many plans exclude the exam fee — <b>you'll pay that part every visit</b>, even on covered claims."}:null
+  });
+  // Hereditary conditions
+  lines.push({
+    name:"Hereditary conditions",
+    what:"breed-linked issues (hips, knees)",
+    right:(hered?"covered":"excluded"),
+    chip:(hered?"ok":"bad"),
+    flag:(!hered)?{s:"bad",why:"Your breed's <b>most likely</b> problems may be excluded. Read this closely before you count on the policy."}:null
+  });
+  // Claim status (only if denied)
+  if(denied){
+    lines.push({
+      name:"Claim status",
+      what:"flagged pre-existing",
+      right:"denied",
+      chip:"bad",
+      flag:{s:"bad",why:"Denied as pre-existing? If the first symptom was <b>after</b> your coverage/waiting period, that's often wrong. Get the vet to document the first-symptom date and appeal."}
+    });
+  }
+
+  var chipTxt={ok:"✓ Covered",warn:"⚠ Watch this",bad:"✕ Gap / fight it"};
+  var linesHtml=lines.map(function(l){
+    return '<div class="line"><div class="lrow"><span class="lname">'+escapeHtml(l.name)
+      +'<span class="lwhat">'+l.what+'</span></span><span class="lamt tnum">'+l.right+'</span></div>'
+      +'<div><span class="chip '+l.chip+'">'+chipTxt[l.chip]+'</span></div>'
+      +(l.flag?'<div class="lflag '+l.flag.s+'">'+l.flag.why+'</div>':'')+'</div>';
+  }).join('');
+
+  // gaps = count of warn/bad coverage lines
+  var gaps=lines.filter(function(l){return l.chip==='warn'||l.chip==='bad';}).length;
+
+  // claim math
+  var estReimb=0, net=0;
+  if(claim>0){
+    estReimb=Math.min(limit>0?limit:Infinity, Math.max(0, claim - ded) * reimb/100);
+    net=claim - estReimb;
+  }
+
+  var sumTxt = claim>0
+    ? ("On a "+fmt(claim)+" bill, you'd get about <b>"+fmt(estReimb)+" back</b> — your net ~"+fmt(net)+".")
+    : ("Policy read — <b>"+gaps+" gaps worth knowing</b> before you need them.");
+
+  // bottom rows
+  var bottomRows, bottomBig;
+  if(claim>0){
+    bottomRows=[["Vet bill",fmt(claim),false],["Est. reimbursement","~"+fmt(estReimb),false]];
+    bottomBig=["Your net","~"+fmt(net)];
+  } else {
+    bottomRows=[["Reimbursement",reimb+"%",false],["Gaps to know",String(gaps),false]];
+    bottomBig=["Before you rely on it","ask 2 things"];
+  }
+  var bottomHtml='<div class="bottom">'
+    +bottomRows.map(function(r){return '<div class="brow"><span>'+r[0]+'</span><b class="tnum">'+r[1]+'</b></div>';}).join('')
+    +'<div class="brow big"><span>'+bottomBig[0]+'</span><b>'+bottomBig[1]+'</b></div></div>';
+
+  // to-do list
+  var todos=[];
+  if(!exam)todos.push("Ask whether exam fees can be added to the plan.");
+  if(!hered)todos.push("Confirm whether your breed's common conditions are covered.");
+  if(limit>0&&limit<5000)todos.push("Consider a higher annual limit.");
+  if(denied)todos.push("Appeal the pre-existing denial with a dated medical record.");
+  if(reimb>0&&reimb<70)todos.push("Compare a higher reimbursement tier.");
+  if(todos.length===0)todos.push("Solid basics — just confirm exclusions before a big claim.");
+
+  var html='<p class="dsum">'+sumTxt+'</p>'+linesHtml
+    +bottomHtml
+    +'<div class="todo"><b>What I\'d do:</b><ul><li>'+todos.join('</li><li>')+'</li></ul></div>'
+    +'<p class="nfa">Educational read of the details you entered — <b>not insurance or veterinary advice</b>, and not a coverage decision. Your policy documents and insurer are the final word. Nothing you typed left your browser.</p>';
+  document.getElementById('reportbody').innerHTML=html;
+  var rep=document.getElementById('report');rep.style.display='block';rep.scrollIntoView({behavior:'smooth'});
+}
+</script>
+<div class="brandmark" aria-label="Accelerated Experiences" title="An Accelerated Experiences app"></div>
+</body>
+</html>
