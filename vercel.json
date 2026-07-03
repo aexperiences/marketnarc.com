@@ -2,6 +2,9 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "cleanUrls": true,
   "trailingSlash": false,
+  "functions": {
+    "api/*.py": { "includeFiles": "api/_*.py" }
+  },
   "crons": [
     { "path": "/api/publish", "schedule": "0 14 * * 1-5" },
     { "path": "/api/resolve", "schedule": "0 22 * * 1-5" }
