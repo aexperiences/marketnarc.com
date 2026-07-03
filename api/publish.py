@@ -3,9 +3,10 @@
 Appends a new call when a ticker has no open call, or when Nate's verdict changed. Guarded by CRON_SECRET.
 Only logs the curated watchlist — NOT every ad-hoc lookup — so the record stays Nate's real calls.
 """
-import json, os, datetime
+import json, os, sys, datetime
 from http.server import BaseHTTPRequestHandler
 from urllib.parse import urlparse, parse_qs
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from _engine import make_call
 from _store import get_calls, set_calls, has_store, WATCHLIST, HORIZON_DAYS
 

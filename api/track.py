@@ -1,6 +1,7 @@
 """/api/track — the record: {mode, summary, calls}. Sample data until a store is configured + calls logged."""
-import json
+import json, os, sys
 from http.server import BaseHTTPRequestHandler
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from _store import get_calls, summarize, SAMPLE_CALLS
 
 class handler(BaseHTTPRequestHandler):

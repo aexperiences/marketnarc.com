@@ -1,7 +1,8 @@
 """/api/call?ticker=SYM — Nate's live read for one ticker. See _engine.py."""
-import json
+import json, os, sys
 from http.server import BaseHTTPRequestHandler
 from urllib.parse import urlparse, parse_qs
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from _engine import make_call
 
 class handler(BaseHTTPRequestHandler):

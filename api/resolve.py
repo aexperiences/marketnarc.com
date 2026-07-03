@@ -2,9 +2,10 @@
 /api/resolve — scores matured calls. Runs on a schedule (Vercel cron). For each Open call past its
 horizon, fetches the current price and marks Hit / Miss / Abstained by the pre-stated rule. Guarded.
 """
-import json, os, datetime
+import json, os, sys, datetime
 from http.server import BaseHTTPRequestHandler
 from urllib.parse import urlparse, parse_qs
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from _engine import live_price, has_alpaca, sample_snapshot
 from _store import get_calls, set_calls, has_store, score
 
