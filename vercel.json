@@ -7,6 +7,7 @@
   },
   "crons": [
     { "path": "/api/publish", "schedule": "0 14 * * 1-5" },
-    { "path": "/api/resolve", "schedule": "0 22 * * 1-5" }
+    { "path": "/api/publish", "schedule": "0 19 * * 1-5" },
+    { "path": "/api/resolve", "schedule": "30 20 * * 1-5" }
   ]
 }
