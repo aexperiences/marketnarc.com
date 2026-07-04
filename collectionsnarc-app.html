@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CollectionsNarc — know your rights, in plain English</title>
+<meta name="description" content="A debt collector contacted you? CollectionsNarc lays out your rights under the FDCPA, whether the debt looks valid, and your next move — plus a ready debt-validation letter. Runs in your browser; nothing you enter is sent anywhere. Educational, not legal advice.">
+<meta name="theme-color" content="#2A1414">
+<link rel="icon" href="/collectionsnarc-icon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#2A1414;--ink800:#1E0E0E;--ink700:#3C1E1C;--ink600:#4A2624;--line:#512C2A;
+ --accent:#E0725A;--accent6:#C85E48;--off:#F3EAE8;--sea:#C79E96;--ok:#7FD8A8;--warn:#E6B45C;--bad:#F0846A}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;min-height:100vh;background:radial-gradient(120% 80% at 50% -10%,#3A1C1A 0%,#200F0F 55%,#150909 100%);
+ font-family:Inter,-apple-system,Segoe UI,Roboto,sans-serif;color:var(--off);padding:26px 18px 70px}
+.app{max-width:660px;margin:0 auto}
+.head{display:flex;align-items:center;gap:11px;justify-content:center;margin-bottom:6px}
+.head svg{width:34px;height:34px;border-radius:9px}
+.head .wm{font-family:Lato;font-weight:900;font-size:24px}.head .wm .n{color:var(--accent)}
+.sub{text-align:center;color:var(--sea);font-size:13.5px;font-style:italic;margin:0 0 4px}
+.priv{text-align:center;color:var(--accent);font-size:12px;font-weight:600;margin:0 0 22px}
+.card{background:rgba(60,30,28,.34);border:1px solid var(--line);border-radius:20px;padding:22px 20px;margin-bottom:18px}
+.card h2{font-family:Lato;font-weight:900;font-size:16px;margin:0 0 4px}
+.card .h2sub{color:var(--sea);font-size:13px;margin:0 0 15px}
+.seg{display:flex;gap:9px;margin-bottom:16px;flex-wrap:wrap}
+.seg label{flex:1;min-width:180px;display:flex;gap:9px;align-items:flex-start;background:var(--ink800);border:1px solid var(--line);border-radius:12px;padding:12px 13px;cursor:pointer;font-size:14px}
+.seg input{margin-top:2px;accent-color:var(--accent)}
+.seg label:has(input:checked){border-color:var(--accent)}
+.f label{display:block;font-size:12.5px;color:var(--sea);margin-bottom:5px;font-weight:600}
+.f input{width:120px;background:var(--ink800);border:1px solid var(--line);border-radius:10px;color:var(--off);font-family:Inter;font-size:15px;padding:11px 12px}
+.f input:focus{outline:none;border-color:var(--accent)}
+.tog{display:flex;flex-direction:column;gap:10px;margin-top:14px}
+.tog label{display:flex;align-items:flex-start;gap:11px;font-size:14px;cursor:pointer;color:var(--off)}
+.tog input{margin-top:2px;width:18px;height:18px;accent-color:var(--accent);flex:0 0 auto}
+.rowbtns{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}
+.lnk{background:var(--ink700);border:1px solid var(--line);color:var(--off);font-weight:600;font-size:13px;border-radius:999px;padding:9px 15px;cursor:pointer}
+.lnk:hover{border-color:var(--accent)}
+.go{display:block;width:100%;margin-top:16px;background:var(--accent);color:#20100E;font-family:Lato;font-weight:900;
+ font-size:17px;border:0;border-radius:14px;padding:16px;cursor:pointer;transition:.14s}
+.go:hover{background:var(--accent6)}
+#report{display:none}
+.dsum{font-size:14px;color:var(--off);background:var(--ink800);border:1px solid var(--line);border-radius:11px;padding:11px 14px;margin:0 0 14px}
+.dsum b{color:var(--accent)}
+.line{border-top:1px solid var(--line);padding:12px 0}.line:first-child{border-top:0}
+.lname{font-weight:700;font-size:14.5px}
+.chip{display:inline-block;margin-top:7px;font-size:9.5px;font-weight:800;letter-spacing:.3px;padding:3px 9px;border-radius:999px;text-transform:uppercase}
+.chip.right{color:#08210F;background:var(--ok)}.chip.watch{color:var(--warn);border:1px solid var(--warn)}.chip.act{color:#2A0F0A;background:var(--bad)}
+.lflag{margin-top:8px;font-size:13px;line-height:1.5;border-radius:9px;padding:9px 12px;background:rgba(224,114,90,.09);border-left:3px solid var(--accent)}
+.lflag b{color:var(--off)}
+.todo{font-size:14px;line-height:1.55;color:var(--off);background:rgba(224,114,90,.08);border:1px solid #6a3f39;border-radius:11px;padding:12px 14px;margin:14px 0 12px}
+.todo b{color:var(--accent)}.todo ul{margin:8px 0 0;padding-left:18px}.todo li{margin-bottom:5px}
+.letter{background:var(--ink800);border:1px dashed var(--line);border-radius:12px;padding:16px;margin:12px 0;font-family:ui-monospace,Menlo,monospace;font-size:12.5px;line-height:1.6;white-space:pre-wrap;color:var(--off)}
+.lettl{font-family:Lato;font-weight:900;font-size:14px;color:var(--accent);margin:14px 0 6px}
+.nfa{font-size:12px;color:var(--sea);text-align:center;line-height:1.5;margin:6px 0 0}
+.foot{text-align:center;margin-top:22px}.foot a{color:var(--accent);font-weight:700;text-decoration:none;font-size:14px}
+.brandmark{width:42px;height:41px;margin:24px auto 8px;opacity:.78;background:url(/ae-mark.png) center/contain no-repeat}
+@media print{body{background:#fff;color:#111}.card,.go,.foot,.priv,.rowbtns{display:none!important}#report{display:block!important;border:0}.letter{color:#111;border-color:#999}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="head">
+    <svg viewBox="0 0 1024 1024" aria-hidden="true"><rect width="1024" height="1024" rx="232" fill="#2A1414"/><circle cx="445" cy="430" r="235" fill="none" stroke="#E0725A" stroke-width="64"/><polyline points="362,525 362,335 528,525 528,335" fill="none" stroke="#E0725A" stroke-width="46" stroke-linecap="round" stroke-linejoin="round"/><line x1="612" y1="597" x2="775" y2="760" stroke="#E0725A" stroke-width="82" stroke-linecap="round"/></svg>
+    <span class="wm">Collections<span class="n">Narc</span></span>
+  </div>
+  <p class="sub">a collector came at you? here are your rights &mdash; in plain English</p>
+  <p class="priv">&#128274; Runs entirely in your browser. Nothing you enter is sent anywhere.</p>
+
+  <div class="card">
+    <h2>1 &middot; What are you dealing with?</h2>
+    <div class="seg">
+      <label><input type="radio" name="sit" value="letter" checked> A <b>collection letter or phone call</b></label>
+      <label><input type="radio" name="sit" value="sued"> I&rsquo;ve been <b>sued</b> (court papers)</label>
+    </div>
+    <div class="f"><label>Roughly how old is this debt? (years)</label><input id="age" type="number" min="0" value="0"></div>
+  </div>
+
+  <div class="card">
+    <h2>2 &middot; Anything that&rsquo;s true?</h2>
+    <p class="h2sub">Check what applies &mdash; some of these are the collector breaking the law.</p>
+    <div class="tog">
+      <label><input type="checkbox" id="cDont"> I <b>don&rsquo;t recognize this debt</b>, or I&rsquo;m not sure it&rsquo;s mine / the amount is right</label>
+      <label><input type="checkbox" id="cTime"> They call <b>before 8am or after 9pm</b></label>
+      <label><input type="checkbox" id="cWork"> They call me <b>at work</b> after I asked them to stop</label>
+      <label><input type="checkbox" id="cThreat"> They <b>threatened me, lied, or claimed to be law enforcement</b></label>
+      <label><input type="checkbox" id="cRepeat"> They <b>call over and over</b> to annoy or harass</label>
+    </div>
+    <button class="go" onclick="decode()">Show me my rights &rarr;</button>
+  </div>
+
+  <div class="card" id="report">
+    <h2>CollectionsNarc&rsquo;s read</h2>
+    <div id="reportbody"></div>
+  </div>
+
+  <div class="foot"><a href="/collectionsnarc">&larr; Back to CollectionsNarc</a> &nbsp;&middot;&nbsp; <a href="/">The Narcs</a></div>
+  <div class="brandmark" aria-label="Accelerated Experiences" title="An Accelerated Experiences app"></div>
+</div>
+
+<script>
+function decode(){
+  var sit=document.querySelector('input[name="sit"]:checked').value;
+  var age=Math.max(0,parseFloat(document.getElementById('age').value)||0);
+  var dont=document.getElementById('cDont').checked,time=document.getElementById('cTime').checked,
+      work=document.getElementById('cWork').checked,threat=document.getElementById('cThreat').checked,
+      repeat=document.getElementById('cRepeat').checked;
+  var F=[];
+  if(sit==='sued'){
+    F.push({name:'You&rsquo;ve been sued &mdash; do NOT ignore this',chip:'act',clabel:'Act now',
+      why:'This is the big one. <b>Over 70% of people lose debt-collection lawsuits simply by not showing up.</b> You usually have about <b>20&ndash;30 days</b> to file a written &ldquo;Answer&rdquo; with the court &mdash; the exact deadline is on the papers. Show up and many collectors <b>can&rsquo;t actually prove they own the debt</b>. Ignoring it hands them an automatic win (a &ldquo;default judgment&rdquo;) and they can garnish your wages.'});
+  }
+  // validation right (always)
+  F.push({name:'You can make them prove it &mdash; in writing',chip:'right',clabel:'Your right',
+    why:'Under the <b>Fair Debt Collection Practices Act</b>, you can send a <b>debt-validation letter</b> within 30 days of their first contact. Until they prove the debt is yours and the amount is right, they&rsquo;re supposed to <b>stop collecting</b>. There&rsquo;s a ready letter below.'});
+  if(dont){F.push({name:'You don&rsquo;t recognize it &mdash; that matters',chip:'watch',clabel:'Check this',
+    why:'<b>44% of credit reports carry an error</b>, and collectors buy old debts for pennies with sloppy records. Don&rsquo;t pay a debt you&rsquo;re unsure of &mdash; send the validation letter first, and dispute it on your credit report at <b>annualcreditreport.com</b> (free).'});}
+  if(age>=3){F.push({name:'This debt may be too old to sue over',chip:'watch',clabel:'Check your state',
+    why:'Most states have a <b>statute of limitations of about 3&ndash;6 years</b> on debt. If it&rsquo;s past that, a collector <b>can&rsquo;t win a lawsuit</b> over it. But be careful: <b>making a payment or even promising to pay can restart the clock</b>. Confirm your state&rsquo;s limit before you say a word about paying.'});}
+  var violations=[];
+  if(time)violations.push('calling before 8am or after 9pm');
+  if(work)violations.push('calling you at work after you told them to stop');
+  if(threat)violations.push('threats, lies, or pretending to be law enforcement');
+  if(repeat)violations.push('repeated calls meant to harass');
+  if(violations.length){F.push({name:'They may be breaking the law',chip:'right',clabel:'Leverage',
+    why:'What you described &mdash; '+violations.join('; ')+' &mdash; can <b>violate the FDCPA</b>. You can report them to the <b>CFPB</b> (consumerfinance.gov/complaint) and your state AG. Violations can be worth up to <b>$1,000</b> to you, and the threat of a complaint is real leverage.'});}
+
+  var letter='[Your name]\n[Your address]\n[Date]\n\n[Collector’s name]\n[Collector’s address]\n\nRe: Account # [account number, if any]\n\nTo whom it may concern:\n\nI am responding to your contact about a debt you say I owe. I am requesting validation under the Fair Debt Collection Practices Act, 15 U.S.C. § 1692g.\n\nPlease provide: (1) proof that I owe this debt and the exact amount; (2) the name of the original creditor; and (3) proof that you are licensed to collect it in my state.\n\nUntil you provide this validation, please cease collection activity as required by law. Please also communicate with me only in writing from this point forward.\n\nSincerely,\n[Your name]';
+
+  var h='<div class="dsum">Here&rsquo;s where you stand &mdash; <b>'+F.length+' thing'+(F.length>1?'s':'')+'</b> to know. Collectors count on you not knowing any of this.</div>';
+  F.forEach(function(f){
+    h+='<div class="line"><span class="lname">'+f.name+'</span><br><span class="chip '+f.chip+'">'+f.clabel+'</span><div class="lflag">'+f.why+'</div></div>';
+  });
+  h+='<div class="todo"><b>What I&rsquo;d do, in order:</b><ul>'+
+     (sit==='sued'?'<li><b>Respond to the lawsuit by the deadline on the papers</b> &mdash; even a simple Answer stops an automatic loss. This is the one thing you can&rsquo;t skip.</li>':'')+
+     '<li><b>Send the validation letter below</b> (certified mail, keep a copy) before you pay anything.</li>'+
+     (age>=3?'<li><b>Don&rsquo;t pay or promise to pay</b> until you&rsquo;ve checked your state&rsquo;s statute of limitations.</li>':'')+
+     '<li><b>Dispute any error</b> on your credit report at annualcreditreport.com (free).</li>'+
+     '<li>Get <b>free legal help</b> &mdash; if you qualify, legal aid is no cost: <b>lawhelp.org</b>. For a lawsuit, this is worth it.</li></ul></div>';
+  h+='<div class="lettl">&#9993; Your debt-validation letter (fill in the [brackets])</div><div class="letter">'+letter+'</div>';
+  h+='<div class="rowbtns" style="justify-content:center"><button class="lnk" onclick="window.print()">&#128424; Print / share this</button></div>';
+  h+='<p class="nfa"><b>Educational &middot; not legal advice.</b> Debt and lawsuits are high-stakes and the rules vary by state. CollectionsNarc points you to your rights &mdash; it can&rsquo;t represent you. <b>If you&rsquo;ve been sued or anything feels serious, talk to a lawyer</b> (free legal aid at lawhelp.org).</p>';
+  document.getElementById('reportbody').innerHTML=h;
+  var r=document.getElementById('report');r.style.display='block';r.scrollIntoView({behavior:'smooth'});
+}
+</script>
+</body>
+</html>

@@ -88,6 +88,7 @@ body{margin:0;min-height:100vh;background:radial-gradient(120% 80% at 50% -10%,#
       <label><input type="checkbox" id="ctxPrev"> This visit was an <b>annual physical / preventive checkup</b></label>
       <label><input type="checkbox" id="ctxNet"> The hospital / ER was <b>in-network</b> for me</label>
       <label><input type="checkbox" id="ctxHsa"> I'm paying with an <b>HSA / FSA</b></label>
+      <label><input type="checkbox" id="ctxDenied"> My insurance <b>denied this claim</b> or says I owe the whole thing</label>
     </div>
   </div>
 
@@ -159,7 +160,7 @@ function loadSample(){
   render();
 }
 function decode(){
-  var ctx={prev:document.getElementById('ctxPrev').checked,net:document.getElementById('ctxNet').checked,hsa:document.getElementById('ctxHsa').checked};
+  var ctx={prev:document.getElementById('ctxPrev').checked,net:document.getElementById('ctxNet').checked,hsa:document.getElementById('ctxHsa').checked,denied:(document.getElementById('ctxDenied')||{}).checked};
   var rules=RULES(ctx);
   var rows=rowData.filter(function(r){return r.desc.trim();}).map(function(r){return {desc:r.desc.trim(),amt:money(r.amt)};});
   // duplicate detection (same normalized desc + same amount)
@@ -210,6 +211,13 @@ function decode(){
     +'<div class="brow big"><span>Charges flagged</span><b>'+flagged+' of '+rows.length+'</b></div></div>'
     +'<div class="todo"><b>What I\'d do:</b><ul><li>'+todos.join('</li><li>')+'</li></ul></div>'
     +'<p class="nfa">Educational read of the lines you entered — <b>not billing or medical advice</b>, and not a guarantee. Your insurer\'s EOB and your provider are the final word. Nothing you typed left your browser.</p>';
+  if(ctx.denied){
+    var appeal="[Your name]\n[Your address]\n[Date]\n\n[Insurer name] — Appeals Department\n[Insurer address]\n\nRe: Appeal of denied claim · Member ID [ ___ ] · Claim # [ ___ ] · Date of service [ ___ ]\n\nTo whom it may concern:\n\nI am formally appealing your denial of the claim above and requesting an internal review.\n\nUnder my plan, this service should be covered because [reason — e.g., it was medically necessary / preventive / from an in-network provider]. Please reprocess and pay the claim.\n\nPlease also send me (1) the exact plan provision you used to deny it, and (2) any medical-necessity criteria applied.\n\nIf you uphold the denial, treat this as my request for the plan’s external review.\n\nSincerely,\n[Your name]";
+    html+='<div style="font-family:Lato;font-weight:900;font-size:14px;color:var(--accent);margin:16px 0 6px">✉ Here’s your appeal</div>'
+      +'<div class="todo"><b>Almost nobody does this.</b> Only about <b>0.1% of denied claims are ever appealed</b> — and roughly <b>half of appeals win</b>. They’re betting you won’t. Don’t just pay a denial — appeal it. Fill in the [brackets], send it certified, keep a copy.</div>'
+      +'<div style="background:var(--ink800);border:1px dashed var(--line);border-radius:12px;padding:16px;margin:12px 0;font-family:ui-monospace,Menlo,monospace;font-size:12.5px;line-height:1.6;white-space:pre-wrap">'+appeal.replace(/</g,"&lt;")+'</div>'
+      +'<div style="text-align:center;margin-top:10px"><button class="lnk" onclick="window.print()">🖨 Print / share this appeal</button></div>';
+  }
   document.getElementById('reportbody').innerHTML=html;
   var rep=document.getElementById('report');rep.style.display='block';rep.scrollIntoView({behavior:'smooth'});
 }
