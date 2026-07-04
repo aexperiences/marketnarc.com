@@ -155,9 +155,11 @@ body{margin:0;min-height:100vh;background:radial-gradient(120% 80% at 50% -10%,#
     <h2>HomeNarc's read</h2>
     <div id="reportbody"></div>
     <div class="readbar" style="margin-top:14px;display:flex;gap:9px;justify-content:center;flex-wrap:wrap">
+      <button class="lnk" type="button" onclick="showLetter()">&#9993; Get your letter</button>
       <button class="lnk" type="button" onclick="speakRead()">&#128266; Read it to me</button>
       <button class="lnk" id="stopread" type="button" style="display:none" onclick="stopRead()">&#9209; Stop</button>
     </div>
+    <div id="letterwrap" style="display:none;margin-top:14px"><div style="font-family:Lato;font-weight:900;font-size:14px;color:var(--accent);margin:0 0 6px">&#9993; Here&rsquo;s your letter &mdash; fill in the [brackets], send it certified, keep a copy</div><div id="lettertext" style="background:var(--ink800);border:1px dashed var(--line);border-radius:12px;padding:16px;font-family:ui-monospace,Menlo,monospace;font-size:12.5px;line-height:1.6;white-space:pre-wrap"></div><div style="text-align:center;margin-top:10px"><button class="lnk" type="button" onclick="window.print()">&#128424; Print / share</button></div></div>
   </div>
 
   <div class="foot"><a href="/homenarc">← Back to HomeNarc</a> &nbsp;·&nbsp; <a href="/">The Narcs</a></div>
@@ -287,6 +289,8 @@ function narcText(){var el=document.getElementById('reportbody');if(!el)return '
 function toggleStop(on){var s=document.getElementById('stopread');if(s)s.style.display=on?'inline-block':'none';}
 function speakRead(){if(!('speechSynthesis' in window)){return;}var t=narcText();if(!t)return;try{window.speechSynthesis.cancel();}catch(e){}var u=new SpeechSynthesisUtterance(t);u.rate=0.98;u.onend=function(){toggleStop(false);};u.onerror=function(){toggleStop(false);};window.speechSynthesis.speak(u);toggleStop(true);}
 function stopRead(){try{window.speechSynthesis.cancel();}catch(e){}toggleStop(false);}
+var LETTER="[Your name]\n[Your address]\n[Date]\n\n[County] Assessor / Board of Review\n[Address]\n\nRe: Appeal of assessed value — [property address], Parcel # [ ___ ], Tax year [ ___ ]\n\nTo whom it may concern:\n\nI am formally appealing the assessed value of my property. Based on the recent sale prices and assessments of comparable homes in my area, my assessment appears too high.\n\nI request a review and a reduction of the assessed value to reflect fair market value. I can provide comparable sales, photos, and any errors I found in the property record.\n\nPlease send me the appeal deadline and any hearing date, and confirm what documentation you need.\n\nSincerely,\n[Your name]";
+function showLetter(){document.getElementById("lettertext").textContent=LETTER;var w=document.getElementById("letterwrap");w.style.display="block";w.scrollIntoView({behavior:"smooth"});}
 </script>
 <div class="brandmark" aria-label="Accelerated Experiences" title="An Accelerated Experiences app"></div>
 </body>
