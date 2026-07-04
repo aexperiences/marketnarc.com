@@ -71,6 +71,16 @@ body{margin:0;min-height:100vh;background:radial-gradient(120% 80% at 50% -10%,#
 .foot{text-align:center;margin-top:22px}
 .foot a{color:var(--accent);font-weight:700;text-decoration:none;font-size:14px}
 .brandmark{width:42px;height:41px;margin:24px auto 8px;opacity:.78;background:url(/ae-mark.png) center/contain no-repeat}
+.inbar{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin:0 0 6px}
+.inbtn{background:var(--ink700);border:1px solid var(--accent);color:var(--accent);font-family:Lato;font-weight:900;font-size:13px;border-radius:999px;padding:9px 14px;cursor:pointer}
+.inbtn:hover{background:var(--accent);color:#10202E}
+.inbtn.rec{background:#E0725A;border-color:#E0725A;color:#2A0F0A}
+.inhint{color:var(--sea);font-size:12px}
+.innote{color:var(--sea);font-size:11px;margin:0 0 16px;line-height:1.5}
+.scanpanel{background:var(--ink800);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:0 0 16px}
+.sp-t{font-size:12.5px;color:var(--off);margin-bottom:8px}
+.numchip{background:var(--ink700);border:1px solid var(--accent);color:var(--accent);font-weight:800;border-radius:999px;padding:6px 11px;margin:3px;cursor:pointer;font-size:13px}
+.sp-d{margin-top:8px;font-size:12px;color:var(--sea)}.sp-raw{margin-top:6px;font-family:ui-monospace,Menlo,monospace;font-size:11px;color:var(--sea);white-space:pre-wrap;max-height:120px;overflow:auto}
 </style>
 </head>
 <body>
@@ -81,6 +91,14 @@ body{margin:0;min-height:100vh;background:radial-gradient(120% 80% at 50% -10%,#
   </div>
   <p class="sub">are you overpaying? let's check.</p>
   <p class="priv">🔒 Runs entirely in your browser. Nothing you type is sent anywhere.</p>
+  <div class="inbar">
+    <button class="inbtn" type="button" onclick="nScan()">&#128247; Scan a photo</button>
+    <button class="inbtn" id="ntalk" type="button" onclick="nTalk()">&#127908; Talk</button>
+    <span class="inhint">&mdash; or just type</span>
+  </div>
+  <p class="innote" id="nstatus">Scan &amp; voice run <b>on your device</b> with your browser&rsquo;s own tools &mdash; nothing you enter leaves your phone. Tip: tap the box you want, then Scan or Talk.</p>
+  <div class="scanpanel" id="scanpanel" style="display:none"></div>
+
 
   <div class="card">
     <h2>1 · Your assessment</h2>
@@ -233,6 +251,34 @@ function decode(){
   rep.style.display='block';rep.scrollIntoView({behavior:'smooth'});
 }
 function escapeHtml(s){return (''+s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+var _lastIn=null;
+document.addEventListener('focusin',function(e){var t=e.target;if(t&&(t.tagName==='INPUT'||t.tagName==='TEXTAREA')&&t.type!=='checkbox'&&t.type!=='radio')_lastIn=t;});
+function nStatus(m){var e=document.getElementById('nstatus');if(e)e.innerHTML=m;}
+function fillLast(v){if(!_lastIn){nStatus('First <b>tap the box</b> you want to fill, then use Scan or Talk.');return false;}_lastIn.value=v;_lastIn.dispatchEvent(new Event('input',{bubbles:true}));_lastIn.dispatchEvent(new Event('change',{bubbles:true}));return true;}
+function nScan(){var inp=document.createElement('input');inp.type='file';inp.accept='image/*';inp.setAttribute('capture','environment');
+ inp.onchange=function(){var f=inp.files&&inp.files[0];if(!f)return;
+  if(!('TextDetector' in window)){nStatus('This browser has no built-in text reader (iPhone Safari doesn&rsquo;t). Use <b>&#127908; Talk</b>, or type it in.');return;}
+  nStatus('Reading your photo <b>on your device</b>&hellip;');var img=new Image();
+  img.onload=function(){try{new TextDetector().detect(img).then(function(r){
+    var text=(r||[]).map(function(b){return b.rawValue;}).join(' ');
+    var m=text.match(/\$?\s?[0-9][0-9,]*(?:\.[0-9]{1,2})?/g)||[];var uniq=[];
+    m.forEach(function(x){var n=x.replace(/[^0-9.]/g,'');if(n&&uniq.indexOf(n)<0)uniq.push(n);});
+    var chips=uniq.slice(0,14).map(function(n){return '<button type="button" class="numchip" onclick="pickNum(\''+n+'\')">$'+n+'</button>';}).join('');
+    document.getElementById('scanpanel').innerHTML='<div class="sp-t">&#128196; What I read &mdash; tap a number to drop it in the box you last tapped:</div><div>'+(chips||'<span style="color:var(--sea)">no numbers found</span>')+'</div><details class="sp-d"><summary>see all text</summary><div class="sp-raw">'+text.replace(/</g,'&lt;')+'</div></details>';
+    document.getElementById('scanpanel').style.display='block';nStatus('Read on your device &mdash; nothing was sent anywhere.');
+  }).catch(function(){nStatus('Couldn&rsquo;t read that image &mdash; try a clearer, straight-on photo in good light.');});}catch(e){nStatus('Text reading failed on this device.');}};
+  img.onerror=function(){nStatus('Couldn&rsquo;t open that image.');};img.src=URL.createObjectURL(f);};
+ inp.click();}
+function pickNum(n){if(fillLast(n))nStatus('Dropped $'+n+' in. Tap another box + number to keep going.');}
+function nTalk(){var SR=window.SpeechRecognition||window.webkitSpeechRecognition;var btn=document.getElementById('ntalk');
+ if(!SR){nStatus('Voice isn&rsquo;t supported in this browser &mdash; type it in, or try Chrome or Safari.');return;}
+ if(window._nrec){try{window._nrec.stop();}catch(e){}window._nrec=null;return;}
+ var rec=new SR();window._nrec=rec;rec.lang='en-US';rec.interimResults=false;rec.maxAlternatives=1;if(btn)btn.classList.add('rec');
+ nStatus('Listening&hellip; tap a box first, then say the answer (e.g. tap income, say &ldquo;38000&rdquo;).');
+ rec.onresult=function(e){var t=e.results[0][0].transcript.trim();var num=t.replace(/[^0-9.]/g,'');fillLast((/\d/.test(num))?num:t);nStatus('Filled it &mdash; check it and fix anything.');};
+ rec.onerror=function(){nStatus('Didn&rsquo;t catch that &mdash; try again, or type it in.');};
+ rec.onend=function(){window._nrec=null;if(btn)btn.classList.remove('rec');};rec.start();}
+
 </script>
 <div class="brandmark" aria-label="Accelerated Experiences" title="An Accelerated Experiences app"></div>
 </body>
