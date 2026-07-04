@@ -111,6 +111,10 @@ body{margin:0;min-height:100vh;background:radial-gradient(120% 80% at 50% -10%,#
   <div class="card" id="report">
     <h2>CollectionsNarc&rsquo;s read</h2>
     <div id="reportbody"></div>
+    <div class="readbar" style="margin-top:14px;display:flex;gap:9px;justify-content:center;flex-wrap:wrap">
+      <button class="lnk" type="button" onclick="speakRead()">&#128266; Read it to me</button>
+      <button class="lnk" id="stopread" type="button" style="display:none" onclick="stopRead()">&#9209; Stop</button>
+    </div>
   </div>
 
   <div class="foot"><a href="/collectionsnarc">&larr; Back to CollectionsNarc</a> &nbsp;&middot;&nbsp; <a href="/">The Narcs</a></div>
@@ -190,6 +194,10 @@ function nTalk(){var SR=window.SpeechRecognition||window.webkitSpeechRecognition
  rec.onerror=function(){nStatus('Didn&rsquo;t catch that &mdash; try again, or type it in.');};
  rec.onend=function(){window._nrec=null;if(btn)btn.classList.remove('rec');};rec.start();}
 
+function narcText(){var el=document.getElementById('reportbody');if(!el)return '';var t=el.innerText||el.textContent||'';return t.replace(/\u00a0/g,' ').replace(/\s+/g,' ').trim();}
+function toggleStop(on){var s=document.getElementById('stopread');if(s)s.style.display=on?'inline-block':'none';}
+function speakRead(){if(!('speechSynthesis' in window)){return;}var t=narcText();if(!t)return;try{window.speechSynthesis.cancel();}catch(e){}var u=new SpeechSynthesisUtterance(t);u.rate=0.98;u.onend=function(){toggleStop(false);};u.onerror=function(){toggleStop(false);};window.speechSynthesis.speak(u);toggleStop(true);}
+function stopRead(){try{window.speechSynthesis.cancel();}catch(e){}toggleStop(false);}
 </script>
 </body>
 </html>
