@@ -70,6 +70,12 @@ body{margin:0;min-height:100vh;background:radial-gradient(120% 80% at 50% -10%,#
 .foot{text-align:center;margin-top:22px}
 .foot a{color:var(--accent);font-weight:700;text-decoration:none;font-size:14px}
 .brandmark{width:42px;height:41px;margin:24px auto 8px;opacity:.78;background:url(/ae-mark.png) center/contain no-repeat}
+.inbar{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin-bottom:8px}
+.inbtn{background:var(--ink700);border:1px solid var(--accent);color:var(--accent);font-family:Lato;font-weight:900;font-size:13.5px;border-radius:999px;padding:10px 15px;cursor:pointer}
+.inbtn:hover{background:var(--accent);color:var(--ink800)}
+.inbtn.rec{background:var(--bad);border-color:var(--bad);color:#2A0F0A}
+.inhint{color:var(--sea);font-size:12.5px}
+.innote{color:var(--sea);font-size:11.5px;margin:2px 0 14px;line-height:1.5}
 </style>
 </head>
 <body>
@@ -95,6 +101,12 @@ body{margin:0;min-height:100vh;background:radial-gradient(120% 80% at 50% -10%,#
   <div class="card">
     <h2>2 · Your bill's line items</h2>
     <p class="h2sub">Copy each charge and amount from your itemized bill. Add as many as you like.</p>
+    <div class="inbar">
+      <button class="inbtn" type="button" onclick="scanBill()">&#128247; Scan a photo</button>
+      <button class="inbtn" id="micbtn" type="button" onclick="talkCharges()">&#127908; Speak the charges</button>
+      <span class="inhint">&mdash; or type them below</span>
+    </div>
+    <p class="innote" id="instatus">Scanning &amp; voice run <b>on your device</b> using your browser&rsquo;s own tools &mdash; the photo and audio never leave your phone.</p>
     <div class="rows" id="rows"></div>
     <div class="rowbtns">
       <button class="lnk" onclick="addRow()">+ Add line</button>
@@ -140,6 +152,62 @@ function fmt(n){return '$'+n.toLocaleString(undefined,{minimumFractionDigits:0,m
 function norm(s){return (s||'').toLowerCase().replace(/[^a-z0-9]/g,'').trim();}
 
 var rowData=[];
+function setStatus(m){var e=document.getElementById('instatus');if(e)e.innerHTML=m;}
+function parseLines(text){
+  var out=[];
+  (text||'').split(/\n|;|,(?=\s*[A-Za-z])/).forEach(function(ln){
+    ln=ln.replace(/\s+/g,' ').trim(); if(!ln) return;
+    var m=ln.match(/^(.*?)[\s\.\:\-]*\$?\s*([0-9][0-9,]*(?:\.[0-9]{1,2})?)\s*(?:dollars?)?\s*$/i);
+    if(m && m[1].replace(/[^a-z]/gi,'').length>=2){
+      out.push({desc:m[1].replace(/[\.\-\:\s]+$/,'').trim(), amt:m[2].replace(/,/g,'')});
+    }
+  });
+  return out;
+}
+function applyParsed(rows){
+  if(!rows||!rows.length){setStatus('Couldn&rsquo;t pick out charges from that &mdash; you can still <b>type them in</b> below.');return;}
+  var keep=rowData.filter(function(r){return (r.desc||'').trim();});
+  rowData=keep.concat(rows); render();
+  setStatus('Added <b>'+rows.length+'</b> line'+(rows.length>1?'s':'')+' &mdash; check them and fix anything that came out wrong.');
+}
+function scanBill(){
+  var inp=document.createElement('input'); inp.type='file'; inp.accept='image/*'; inp.setAttribute('capture','environment');
+  inp.onchange=function(){
+    var f=inp.files&&inp.files[0]; if(!f)return;
+    if(!('TextDetector' in window)){
+      setStatus('Your browser doesn&rsquo;t have built-in text detection yet (iPhone Safari doesn&rsquo;t). Use the <b>&#127908; voice</b> button, or type it in. Chrome on Android reads photos best.');
+      return;
+    }
+    setStatus('Reading your photo <b>on your device</b>&hellip;');
+    var img=new Image();
+    img.onload=function(){
+      try{
+        new TextDetector().detect(img).then(function(res){
+          var text=(res||[]).map(function(b){return b.rawValue;}).join('\n');
+          applyParsed(parseLines(text));
+        }).catch(function(){setStatus('Couldn&rsquo;t read that image &mdash; try a clearer, straight-on photo in good light, or type it in.');});
+      }catch(e){setStatus('Text detection failed on this device &mdash; type it in or use voice.');}
+    };
+    img.onerror=function(){setStatus('Couldn&rsquo;t open that image.');};
+    img.src=URL.createObjectURL(f);
+  };
+  inp.click();
+}
+var _rec=null;
+function talkCharges(){
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  var btn=document.getElementById('micbtn');
+  if(!SR){setStatus('Voice input isn&rsquo;t supported in this browser &mdash; type it in, or try Chrome or Safari.');return;}
+  if(_rec){try{_rec.stop();}catch(e){} _rec=null; if(btn)btn.classList.remove('rec'); return;}
+  _rec=new SR(); _rec.lang='en-US'; _rec.interimResults=false; _rec.continuous=true; _rec.maxAlternatives=1;
+  if(btn){btn.classList.add('rec'); btn.innerHTML='&#9209; Stop';}
+  setStatus('Listening&hellip; say each charge and its amount, e.g. &ldquo;<b>ER facility fee 1842</b>&rdquo;. Tap Stop when done.');
+  var buf='';
+  _rec.onresult=function(e){for(var i=e.resultIndex;i<e.results.length;i++){if(e.results[i].isFinal)buf+=e.results[i][0].transcript+'\n';}};
+  _rec.onerror=function(){setStatus('Didn&rsquo;t catch that &mdash; try again, or type it in.');};
+  _rec.onend=function(){_rec=null; if(btn){btn.classList.remove('rec'); btn.innerHTML='&#127908; Speak the charges';} applyParsed(parseLines(buf));};
+  _rec.start();
+}
 function addRow(desc,amt){rowData.push({desc:desc||'',amt:amt||''});render();}
 function rmRow(i){rowData.splice(i,1);if(rowData.length===0)addRow();render();}
 function render(){
