@@ -200,5 +200,17 @@ function speakRead(){if(!('speechSynthesis' in window)){return;}var t=narcText()
 function stopRead(){try{window.speechSynthesis.cancel();}catch(e){}toggleStop(false);}
 </script>
   <script src="/family-nav.js" defer></script>
+  <script>
+window.NARC_APP='collections';
+window.NARC_WALK=[
+ {id:'age',ask:"Let's look at this debt. Roughly how old is it, in years?"},
+ {id:'cDont',ask:"Do you not recognize this debt, or are you unsure the amount is right?"},
+ {id:'cTime',ask:"Do they call before eight a m, or after nine p m?"},
+ {id:'cWork',ask:"Do they call you at work after you asked them to stop?"},
+ {id:'cThreat',ask:"Have they threatened you, lied, or claimed to be law enforcement?"},
+ {id:'cRepeat',ask:"Last one. Do they call over and over to harass you?"}
+];
+  </script>
+  <script src="/narc-walk.js" defer></script>
 </body>
 </html>

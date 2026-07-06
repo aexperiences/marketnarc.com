@@ -294,5 +294,18 @@ function showLetter(){document.getElementById("lettertext").textContent=LETTER;v
 </script>
 <div class="brandmark" aria-label="Accelerated Experiences" title="An Accelerated Experiences app"></div>
   <script src="/family-nav.js" defer></script>
+  <script>
+window.NARC_APP='home';
+window.NARC_WALK=[
+ {id:'assessed',ask:"Let's check your property taxes. What is your home's assessed value?"},
+ {id:'tax',ask:"What's your annual property tax? If you're not sure, say zero."},
+ {id:'c1',ask:"Now a few similar homes nearby. What is one comparable home's value?"},
+ {id:'c2',ask:"Another comparable home's value?"},
+ {id:'c3',ask:"One more comparable, or say zero to skip."},
+ {id:'primary',ask:"Is this your primary residence?"},
+ {id:'homestead',ask:"Last one. Is a homestead exemption already applied to your tax bill?"}
+];
+  </script>
+  <script src="/narc-walk.js" defer></script>
 </body>
 </html>

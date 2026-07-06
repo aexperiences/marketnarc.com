@@ -221,5 +221,19 @@ function speakRead(){if(!('speechSynthesis' in window)){return;}var t=narcText()
 function stopRead(){try{window.speechSynthesis.cancel();}catch(e){}toggleStop(false);}
 </script>
   <script src="/family-nav.js" defer></script>
+  <script>
+window.NARC_APP='tax';
+window.NARC_WALK=[
+ {id:'fstatus',ask:"Let's check your taxes. Is your filing status single, head of household, or married filing jointly?"},
+ {id:'kids',ask:"How many kids under seventeen do you support?"},
+ {id:'agi',ask:"Roughly what was your income last year, your adjusted gross income?"},
+ {id:'refund',ask:"What refund did you get? If you owed money, just say zero."},
+ {id:'cCare',ask:"Did you pay for childcare or daycare so you could work?"},
+ {id:'cEdu',ask:"Did you or a dependent pay college tuition?"},
+ {id:'cRet',ask:"Did you put money into an I R A or a four oh one k on a modest income?"},
+ {id:'cLoan',ask:"Last question. Did you pay student loan interest?"}
+];
+  </script>
+  <script src="/narc-walk.js" defer></script>
 </body>
 </html>

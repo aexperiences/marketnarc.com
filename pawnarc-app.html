@@ -320,5 +320,18 @@ function showLetter(){document.getElementById("lettertext").textContent=LETTER;v
 </script>
 <div class="brandmark" aria-label="Accelerated Experiences" title="An Accelerated Experiences app"></div>
   <script src="/family-nav.js" defer></script>
+  <script>
+window.NARC_APP='paw';
+window.NARC_WALK=[
+ {id:'reimb',ask:"Let's read your pet policy. What is the reimbursement percent? For example, eighty."},
+ {id:'ded',ask:"What is the annual deductible, in dollars?"},
+ {id:'limit',ask:"What is the annual payout limit, in dollars?"},
+ {id:'exam',ask:"Are exam fees covered?"},
+ {id:'hered',ask:"Are hereditary or breed conditions covered?"},
+ {id:'claim',ask:"A vet bill amount you would like to estimate, in dollars?"},
+ {id:'denied',ask:"Last one. Was a claim denied as pre-existing?"}
+];
+  </script>
+  <script src="/narc-walk.js" defer></script>
 </body>
 </html>

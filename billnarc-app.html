@@ -302,5 +302,17 @@ function stopRead(){try{window.speechSynthesis.cancel();}catch(e){}toggleStop(fa
 </script>
 <div class="brandmark" aria-label="Accelerated Experiences" title="An Accelerated Experiences app"></div>
   <script src="/family-nav.js" defer></script>
+  <script>
+window.NARC_APP='bill';
+window.NARC_NODECODE=true;
+window.NARC_WALK=[
+ {id:'ctxPrev',ask:"Let's decode your bill. Was this visit an annual physical or preventive checkup?"},
+ {id:'ctxNet',ask:"Was the hospital or E R in network for you?"},
+ {id:'ctxHsa',ask:"Are you paying with an H S A or F S A?"},
+ {id:'ctxDenied',ask:"Did your insurance deny the claim, or say you owe the whole thing?"},
+ {ask:"Great. Now add the charges from your bill using Scan a photo or Speak the charges, then tap Decode my bill.",end:true}
+];
+  </script>
+  <script src="/narc-walk.js" defer></script>
 </body>
 </html>
