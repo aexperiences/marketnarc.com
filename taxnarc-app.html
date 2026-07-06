@@ -220,5 +220,6 @@ function toggleStop(on){var s=document.getElementById('stopread');if(s)s.style.d
 function speakRead(){if(!('speechSynthesis' in window)){return;}var t=narcText();if(!t)return;try{window.speechSynthesis.cancel();}catch(e){}var u=new SpeechSynthesisUtterance(t);u.rate=0.98;u.onend=function(){toggleStop(false);};u.onerror=function(){toggleStop(false);};window.speechSynthesis.speak(u);toggleStop(true);}
 function stopRead(){try{window.speechSynthesis.cancel();}catch(e){}toggleStop(false);}
 </script>
+  <script src="/family-nav.js" defer></script>
 </body>
 </html>
