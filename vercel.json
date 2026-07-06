@@ -3,11 +3,49 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "functions": {
-    "api/*.py": { "includeFiles": "api/_*.py" }
+    "api/*.py": {
+      "includeFiles": "api/_*.py"
+    }
   },
   "crons": [
-    { "path": "/api/publish", "schedule": "0 14 * * 1-5" },
-    { "path": "/api/publish", "schedule": "0 19 * * 1-5" },
-    { "path": "/api/resolve", "schedule": "30 20 * * 1-5" }
+    {
+      "path": "/api/publish",
+      "schedule": "0 14 * * 1-5"
+    },
+    {
+      "path": "/api/publish",
+      "schedule": "0 19 * * 1-5"
+    },
+    {
+      "path": "/api/resolve",
+      "schedule": "30 20 * * 1-5"
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/billnarc",
+      "destination": "/billnarc-app",
+      "permanent": false
+    },
+    {
+      "source": "/homenarc",
+      "destination": "/homenarc-app",
+      "permanent": false
+    },
+    {
+      "source": "/pawnarc",
+      "destination": "/pawnarc-app",
+      "permanent": false
+    },
+    {
+      "source": "/taxnarc",
+      "destination": "/taxnarc-app",
+      "permanent": false
+    },
+    {
+      "source": "/collectionsnarc",
+      "destination": "/collectionsnarc-app",
+      "permanent": false
+    }
   ]
 }
