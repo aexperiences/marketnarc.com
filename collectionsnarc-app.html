@@ -210,6 +210,10 @@ window.NARC_WALK=[
  {id:'cThreat',ask:"Have they threatened you, lied, or claimed to be law enforcement?"},
  {id:'cRepeat',ask:"Last one. Do they call over and over to harass you?"}
 ];
+window.NARC_FIRST=function(){
+ var dont=(document.getElementById('cDont')||{}).checked;
+ return "<b>Send a written debt-validation letter within 30 days"+(dont?" — you said you're not sure this debt is even yours, which makes this critical":"")+".</b> It's free, it's your right under the FDCPA, and it pauses collection until they prove the debt. Don't pay or admit anything until they do.";
+};
   </script>
   <script src="/narc-walk.js" defer></script>
 </body>

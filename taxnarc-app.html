@@ -233,6 +233,13 @@ window.NARC_WALK=[
  {id:'cRet',ask:"Did you put money into an I R A or a four oh one k on a modest income?"},
  {id:'cLoan',ask:"Last question. Did you pay student loan interest?"}
 ];
+window.NARC_FIRST=function(){
+ var g=function(id){return document.getElementById(id)||{};};
+ var agi=parseFloat(g('agi').value)||0, kids=parseInt(g('kids').value)||0;
+ if(agi>0 && agi<60000 && kids>0) return "<b>Check the EITC and Child Tax Credit first.</b> At your income with kids, these are refundable — real money the IRS won't chase you to claim. See the breakdown below.";
+ if(g('cRet').checked) return "<b>Look at the Saver's Credit first.</b> Retirement contributions on a modest income can hand you a credit most people never claim.";
+ return "<b>Start with the biggest credit flagged below</b> — then confirm it against last year's return before you file or amend.";
+};
   </script>
   <script src="/narc-walk.js" defer></script>
 </body>

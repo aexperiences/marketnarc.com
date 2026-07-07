@@ -331,6 +331,11 @@ window.NARC_WALK=[
  {id:'claim',ask:"A vet bill amount you would like to estimate, in dollars?"},
  {id:'denied',ask:"Last one. Was a claim denied as pre-existing?"}
 ];
+window.NARC_FIRST=function(){
+ var denied=(document.getElementById('denied')||{}).checked;
+ if(denied) return "<b>Appeal the denial in writing.</b> 'Pre-existing' denials are often wrong or reversible — ask for the specific policy language and your vet's records. Many get overturned.";
+ return "<b>Check the reimbursement math below before you file.</b> Insurers apply the deductible and percentage in a specific order — knowing it stops you from under-claiming.";
+};
   </script>
   <script src="/narc-walk.js" defer></script>
 </body>

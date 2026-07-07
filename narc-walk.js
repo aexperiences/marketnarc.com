@@ -1,23 +1,23 @@
-/* narc-walk — shared spoken walkthrough for the Narc document apps.
-   Each app sets window.NARC_WALK (ordered steps) + optional window.NARC_APP (storage key)
-   before loading this file. The module injects a "Walk me through it" button into the
-   app's .inbar, speaks each question, listens, fills the field, then runs the app's decode().
-   Also adds Add-to-home-screen + save/resume. On-device only; nothing is sent anywhere. */
+/* narc-walk — shared spoken walkthrough + confidence/do-first polish for the Narc apps.
+   Per app (set before this file loads):
+     window.NARC_WALK  = [ {id, ask, kind?}, ... ]  ordered spoken steps
+     window.NARC_APP   = 'bill'   storage key (optional)
+     window.NARC_FIRST = function(){ return '<b>...</b> ...'; }  tailored "do this first"
+     window.NARC_NODECODE = true   (bill: don't auto-run decode at end of walk)
+   Injects a "Walk me through it" button, runs the walk, and wraps decode() to prepend a
+   confidence meter + do-first callout. On-device only; nothing is sent anywhere. */
 (function(){
   "use strict";
   if (window.__narcWalkLoaded) return; window.__narcWalkLoaded = true;
 
   /* ---------- spoken number parsing ---------- */
   var SMALL={zero:0,oh:0,one:1,two:2,three:3,four:4,five:5,six:6,seven:7,eight:8,nine:9,ten:10,eleven:11,twelve:12,thirteen:13,fourteen:14,fifteen:15,sixteen:16,seventeen:17,eighteen:18,nineteen:19,twenty:20,thirty:30,forty:40,fourty:40,fifty:50,sixty:60,seventy:70,eighty:80,ninety:90};
-  var MAG={hundred:100,thousand:1000,million:1000000,k:1000,grand:1000};
   function words2num(text){
     if(!text) return null;
     var t=(' '+text.toLowerCase()+' ').replace(/[,$]/g,' ').replace(/\band\b/g,' ').replace(/-/g,' ');
-    // if it already has digits, prefer them (handle "38,000" / "38000" / "80")
     var digitMatch=t.match(/\d[\d.]*/g);
     var hasWords=/\b(one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thir|four|fif|six|seven|eigh|nine|twenty|thirty|forty|fourty|fifty|sixty|seventy|eighty|ninety|hundred|thousand|million|grand|zero)\b/.test(t);
     if(digitMatch && !hasWords){ return parseFloat(digitMatch.join('')); }
-    // word parse
     var toks=t.trim().split(/\s+/); var cur=0,total=0,used=false;
     for(var i=0;i<toks.length;i++){ var w=toks[i];
       if(w in SMALL){ cur+=SMALL[w]; used=true; }
@@ -30,22 +30,46 @@
     return total+cur;
   }
 
-  /* ---------- helpers ---------- */
   function $(id){return document.getElementById(id);}
   var STEPS = window.NARC_WALK || [];
   var LSK = 'narc_' + (window.NARC_APP || location.pathname.replace(/\W+/g,'_'));
   var DECODE = window.NARC_DECODE || 'decode';
   var noAutoDecode = !!window.NARC_NODECODE;
 
-  /* ---------- save / resume (generic) ---------- */
+  /* ---------- save / resume ---------- */
   function fields(){ return Array.prototype.slice.call(document.querySelectorAll('input[id],select[id],textarea[id]')).filter(function(e){return e.type!=='button';}); }
   function saveState(){ try{ var d={}; fields().forEach(function(e){ d[e.id]=(e.type==='checkbox')?e.checked:e.value; }); localStorage.setItem(LSK,JSON.stringify(d)); }catch(e){} }
-  function loadState(){ try{ var d=JSON.parse(localStorage.getItem(LSK)||'null'); if(!d)return false; var any=false; fields().forEach(function(e){ if(e.id in d){ if(e.type==='checkbox'){ if(d[e.id]){e.checked=true;any=true;} } else if(d[e.id]!==''&&d[e.id]!=null){ e.value=d[e.id]; any=true; } } }); return any; }catch(e){ return false; } }
+  function loadState(){ try{ var d=JSON.parse(localStorage.getItem(LSK)||'null'); if(!d)return false; fields().forEach(function(e){ if(e.id in d){ if(e.type==='checkbox'){ if(d[e.id])e.checked=true; } else if(d[e.id]!==''&&d[e.id]!=null){ e.value=d[e.id]; } } }); return true; }catch(e){ return false; } }
 
   /* ---------- install ---------- */
   var _dfd=null;
   window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();_dfd=e;var b=$('nwinstall');if(b)b.style.display='inline-block';});
   function doInstall(){ if(_dfd){_dfd.prompt();_dfd.userChoice.then(function(){_dfd=null;var b=$('nwinstall');if(b)b.style.display='none';});} else { setLbl('Use your browser menu → Add to Home Screen'); } }
+
+  /* ---------- confidence + do-first polish ---------- */
+  function computeConf(){
+    var vf=Array.prototype.slice.call(document.querySelectorAll('input[type=number][id],input[type=text][id],select[id]'));
+    var total=vf.length||1;
+    var filled=vf.filter(function(e){return (''+e.value).trim()!=='';}).length;
+    var checked=document.querySelectorAll('input[type=checkbox]:checked').length;
+    var conf=40+Math.round(filled/total*35)+Math.min(15,checked*4);
+    return Math.max(40,Math.min(85,conf));
+  }
+  function polishReport(){
+    var rb=$('reportbody'); if(!rb||!rb.innerHTML.trim()) return;
+    var conf=computeConf();
+    var first=(typeof window.NARC_FIRST==='function')?(function(){try{return window.NARC_FIRST()||'';}catch(e){return '';}})():'';
+    var top='<div class="conf"><div><span class="confnum">'+conf+'%<small>READ COMPLETENESS</small></span></div><div class="confmeter"><i style="width:0"></i></div></div>';
+    if(first) top+='<div class="dofirst"><div class="k">▶ Do this first</div><div class="t">'+first+'</div></div>';
+    rb.innerHTML=top+rb.innerHTML;
+    setTimeout(function(){var b=rb.querySelector('.confmeter i');if(b)b.style.width=conf+'%';},60);
+  }
+  function wrapDecode(){
+    var name=window.NARC_DECODE||'decode'; var orig=window[name];
+    if(typeof orig!=='function'||orig.__nwWrapped) return;
+    var w=function(){ var r=orig.apply(this,arguments); try{polishReport();}catch(e){} return r; };
+    w.__nwWrapped=true; window[name]=w;
+  }
 
   /* ---------- walkthrough engine ---------- */
   var wi=0, walking=false, rec=null, retry=0;
@@ -84,14 +108,23 @@
   window.narcWalkToggle=start;
   window.narcInstall=doInstall;
 
-  /* ---------- mount button + label ---------- */
+  /* ---------- mount ---------- */
   function mount(){
-    if(loadState()){ /* restored */ }
+    wrapDecode();
+    loadState();
     fields().forEach(function(e){ e.addEventListener('input',saveState); e.addEventListener('change',saveState); });
     var css='#nwbtn{background:var(--mint,#5FE3C0);border:1px solid var(--mint,#5FE3C0);color:#0C2038;font-family:Lato,Inter,sans-serif;font-weight:900;font-size:13px;border-radius:999px;padding:9px 15px;cursor:pointer}'
       +'#nwbtn.rec{background:var(--bad,#E0725A);border-color:var(--bad,#E0725A);color:#2A0F0A;animation:nwp 1.3s infinite}'
       +'@keyframes nwp{0%,100%{box-shadow:0 0 0 0 rgba(224,114,90,.5)}50%{box-shadow:0 0 0 8px rgba(224,114,90,0)}}'
       +'#nwinstall{display:none;background:transparent;border:1px solid var(--sea,#8FC4BB);color:var(--sea,#8FC4BB);font-weight:800;font-size:12px;border-radius:999px;padding:9px 13px;cursor:pointer;margin-left:6px}'
+      +'.conf{display:flex;align-items:center;gap:13px;margin:0 0 14px}'
+      +'.confmeter{flex:1;height:9px;border-radius:5px;background:var(--ink800,#0A2120);overflow:hidden}'
+      +'.confmeter i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--warn,#FFC46B),var(--mint,#5FE3C0));transition:width .7s}'
+      +'.confnum{font-family:Lato,Inter,sans-serif;font-weight:900;font-size:20px}'
+      +'.confnum small{display:block;font-family:Inter;font-weight:500;font-size:10px;color:var(--sea,#8FC4BB);margin-top:-2px;letter-spacing:.03em}'
+      +'.dofirst{background:linear-gradient(180deg,rgba(230,169,60,.15),rgba(230,169,60,.05));border:1px solid var(--accent,#E6A93C);border-radius:14px;padding:14px 16px;margin:0 0 16px}'
+      +'.dofirst .k{font-family:Lato,Inter,sans-serif;font-weight:900;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent,#E6A93C);margin:0 0 5px}'
+      +'.dofirst .t{font-size:14.5px;line-height:1.5}.dofirst .t b{color:#fff}'
       +'#nwlbl{color:var(--sea,#8FC4BB);font-size:11px;margin:6px 0 0;min-height:14px;text-align:center}';
     var st=document.createElement('style'); st.textContent=css; document.head.appendChild(st);
     if(!STEPS.length) return;

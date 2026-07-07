@@ -305,6 +305,13 @@ window.NARC_WALK=[
  {id:'primary',ask:"Is this your primary residence?"},
  {id:'homestead',ask:"Last one. Is a homestead exemption already applied to your tax bill?"}
 ];
+window.NARC_FIRST=function(){
+ var g=function(id){return parseFloat((document.getElementById(id)||{}).value)||0;};
+ var a=g('assessed'); var cs=['c1','c2','c3'].map(g).filter(function(x){return x>0;});
+ var med=cs.length?cs.slice().sort(function(x,y){return x-y;})[Math.floor(cs.length/2)]:0;
+ if(a>0 && med>0 && a>med*1.05) return "<b>File a property-tax appeal.</b> Your assessment looks higher than the comparable homes you entered — exactly the case assessors expect you to make. Bring the comps below.";
+ return "<b>Confirm your assessment against the comps below</b> before the appeal deadline — even a small over-assessment is worth challenging, and it's usually a free form.";
+};
   </script>
   <script src="/narc-walk.js" defer></script>
 </body>

@@ -312,6 +312,11 @@ window.NARC_WALK=[
  {id:'ctxDenied',ask:"Did your insurance deny the claim, or say you owe the whole thing?"},
  {ask:"Great. Now add the charges from your bill using Scan a photo or Speak the charges, then tap Decode my bill.",end:true}
 ];
+window.NARC_FIRST=function(){
+ var denied=(document.getElementById('ctxDenied')||{}).checked;
+ if(denied) return "<b>Request a written appeal and an itemized bill.</b> A denial or 'you owe it all' is often a coding or coverage error — make them show every line and the reason in writing.";
+ return "<b>Request a fully itemized bill and check every line.</b> Hospitals bank on you paying the summary — duplicate charges, upcoding, and out-of-network surprises hide in the detail.";
+};
   </script>
   <script src="/narc-walk.js" defer></script>
 </body>
