@@ -67,6 +67,8 @@ body{margin:0;min-height:100vh;background:radial-gradient(120% 80% at 50% -10%,#
 .sp-t{font-size:12.5px;color:var(--off);margin-bottom:8px}
 .numchip{background:var(--ink700);border:1px solid var(--accent);color:var(--accent);font-weight:800;border-radius:999px;padding:6px 11px;margin:3px;cursor:pointer;font-size:13px}
 .sp-d{margin-top:8px;font-size:12px;color:var(--sea)}.sp-raw{margin-top:6px;font-family:ui-monospace,Menlo,monospace;font-size:11px;color:var(--sea);white-space:pre-wrap;max-height:120px;overflow:auto}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.lnk,.inbtn,.numchip{min-height:44px}
 </style>
 </head>
 <body>
@@ -134,13 +136,13 @@ function decode(){
   var F=[];
   if(sit==='sued'){
     F.push({name:'You&rsquo;ve been sued &mdash; do NOT ignore this',chip:'act',clabel:'Act now',
-      why:'This is the big one. <b>Over 70% of people lose debt-collection lawsuits simply by not showing up.</b> You usually have about <b>20&ndash;30 days</b> to file a written &ldquo;Answer&rdquo; with the court &mdash; the exact deadline is on the papers. Show up and many collectors <b>can&rsquo;t actually prove they own the debt</b>. Ignoring it hands them an automatic win (a &ldquo;default judgment&rdquo;) and they can garnish your wages.'});
+      why:'This is the big one. <b>Most default judgments happen simply because people never respond.</b> You usually have about <b>20&ndash;30 days</b> to file a written &ldquo;Answer&rdquo; with the court &mdash; the exact deadline is on the papers. Show up and many collectors <b>can&rsquo;t actually prove they own the debt</b>. Ignoring it hands them an automatic win (a &ldquo;default judgment&rdquo;) and they can garnish your wages.'});
   }
   // validation right (always)
   F.push({name:'You can make them prove it &mdash; in writing',chip:'right',clabel:'Your right',
     why:'Under the <b>Fair Debt Collection Practices Act</b>, you can send a <b>debt-validation letter</b> within 30 days of their first contact. Until they prove the debt is yours and the amount is right, they&rsquo;re supposed to <b>stop collecting</b>. There&rsquo;s a ready letter below.'+(orig?' <b>Important:</b> this validation right applies mainly to <b>third-party collection agencies</b>. If this is the <b>original company</b> you owe, the automatic 30-day stop may not apply &mdash; but you can still demand proof of the amount in writing and dispute any error.':'')+(old30?' <b>Note:</b> more than 30 days may have passed since first contact, so the automatic &ldquo;stop collecting&rdquo; window may be closed &mdash; but you can <b>still request validation in writing at any time</b>.':'')});
   if(dont){F.push({name:'You don&rsquo;t recognize it &mdash; that matters',chip:'watch',clabel:'Check this',
-    why:'<b>44% of credit reports carry an error</b>, and collectors buy old debts for pennies with sloppy records. Don&rsquo;t pay a debt you&rsquo;re unsure of &mdash; send the validation letter first, and dispute it on your credit report at <b>annualcreditreport.com</b> (free).'});}
+    why:'<b>Credit-report errors are common</b>, and collectors buy old debts for pennies with sloppy records. Don&rsquo;t pay a debt you&rsquo;re unsure of &mdash; send the validation letter first, and dispute it on your credit report at <b>annualcreditreport.com</b> (free).'});}
   if(age>=3){F.push({name:'This debt may be too old to sue over',chip:'watch',clabel:'Check your state',
     why:'Most states have a <b>statute of limitations of about 3&ndash;6 years</b> on debt. If it&rsquo;s past that, a collector <b>can&rsquo;t win a lawsuit</b> over it. But be careful: <b>making a payment or even promising to pay can restart the clock</b>. Confirm your state&rsquo;s limit before you say a word about paying.'});}
   var violations=[];
@@ -149,7 +151,7 @@ function decode(){
   if(threat)violations.push('threats, lies, or pretending to be law enforcement');
   if(repeat)violations.push('repeated calls meant to harass');
   if(violations.length){F.push({name:'They may be breaking the law',chip:'right',clabel:'Leverage',
-    why:'What you described &mdash; '+violations.join('; ')+' &mdash; can <b>violate the FDCPA</b>. You can report them to the <b>CFPB</b> (consumerfinance.gov/complaint) and your state AG. Violations can be worth up to <b>$1,000</b> to you, and the threat of a complaint is real leverage.'});}
+    why:'What you described &mdash; '+violations.join('; ')+' &mdash; can <b>violate the FDCPA</b>. You can report them to the <b>CFPB</b> (consumerfinance.gov/complaint) and your state AG. Violations can be worth up to <b>$1,000</b> in statutory damages, if you sue and win, and the threat of a complaint is real leverage.'});}
 
   var letter='[Your name]\n[Your address]\n[Date]\n\n[Collector’s name]\n[Collector’s address]\n\nRe: Account # [account number, if any]\n\nTo whom it may concern:\n\nI am responding to your contact about a debt you say I owe. I am requesting validation under the Fair Debt Collection Practices Act, 15 U.S.C. § 1692g.\n\nPlease provide: (1) proof that I owe this debt and the exact amount; (2) the name of the original creditor; and (3) proof that you are licensed to collect it in my state.\n\nUntil you provide this validation, please cease collection activity as required by law. Please also communicate with me only in writing from this point forward.\n\nSincerely,\n[Your name]';
 

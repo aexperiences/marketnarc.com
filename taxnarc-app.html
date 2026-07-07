@@ -71,6 +71,8 @@ body{margin:0;min-height:100vh;background:radial-gradient(120% 80% at 50% -10%,#
 .sp-t{font-size:12.5px;color:var(--off);margin-bottom:8px}
 .numchip{background:var(--ink700);border:1px solid var(--accent);color:var(--accent);font-weight:800;border-radius:999px;padding:6px 11px;margin:3px;cursor:pointer;font-size:13px}
 .sp-d{margin-top:8px;font-size:12px;color:var(--sea)}.sp-raw{margin-top:6px;font-family:ui-monospace,Menlo,monospace;font-size:11px;color:var(--sea);white-space:pre-wrap;max-height:120px;overflow:auto}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.lnk,.inbtn,.numchip{min-height:44px}
 </style>
 </head>
 <body>
@@ -142,7 +144,7 @@ function decode(){
   var k=Math.min(kids,3), lim=EITC[k][mfj?1:0], maxc=EITC[k][2];
   if(agi>0 && agi<=lim){
     F.push({name:'Earned Income Tax Credit (EITC)',chip:'likely',clabel:'Likely &mdash; check it',amt:maxc,
-      why:'Your income looks under the EITC line for your household, and <b>$7.6B in EITC goes unclaimed every year</b> &mdash; it&rsquo;s the credit people miss most. Worth up to about '+money(maxc)+' for your situation. You have to file a return to get it, even if you owe no tax.'});
+      why:'Your income looks under the EITC line for your household, and <b>billions in EITC go unclaimed</b> &mdash; it&rsquo;s the credit people miss most. Worth up to about '+money(maxc)+' for your situation. You have to file a return to get it, even if you owe no tax.'});
     total+=maxc;
   }
   if(kids>0 && agi < (mfj?400000:200000)){
@@ -160,7 +162,7 @@ function decode(){
   if(edu){F.push({name:'Education credit (AOTC / Lifetime Learning)',chip:'possible',clabel:'Possible',amt:2500,
     why:'Tuition you paid can be worth up to <b>$2,500 per student</b> (American Opportunity Credit), and part is refundable. Look for a <b>1098-T</b> form.'});total+=2500;}
   if(ret && agi < (mfj?76500:38250)){F.push({name:'Saver&rsquo;s Credit',chip:'possible',clabel:'Possible',amt:mfj?2000:1000,
-    why:'Putting money into an IRA/401(k) on a modest income can earn a <b>credit up to '+(mfj?'$2,000':'$1,000')+'</b> on top of the tax break &mdash; almost nobody claims it.'});total+=(mfj?2000:1000);}
+    why:'Putting money into an IRA/401(k) on a modest income can earn a <b>credit up to '+(mfj?'$2,000':'$1,000')+'</b> on top of the tax break &mdash; almost nobody claims it. It&rsquo;s <b>a percentage of what you put in, not a flat amount</b>, so the actual credit is usually less than the cap.'});total+=(mfj?2000:1000);}
   if(loan){F.push({name:'Student-loan interest deduction',chip:'possible',clabel:'Possible',amt:350,
     why:'You can <b>deduct up to $2,500</b> of student-loan interest even without itemizing &mdash; roughly $300&ndash;$550 back for most people. Look for a <b>1098-E</b>.'});total+=350;}
 
@@ -168,14 +170,14 @@ function decode(){
   if(!F.length){
     h='<p class="none">Nothing jumped out from what you entered &mdash; which is a real answer, not a dodge. The big misses are usually the <b>EITC</b> (if your income is modest) and credits for <b>kids, childcare, or college</b>. If none of those fit, you probably didn&rsquo;t leave much on the table.</p>';
   } else {
-    h='<div class="dsum">Based on what you told me, here&rsquo;s what looks worth a second look &mdash; <b>'+F.length+' item'+(F.length>1?'s':'')+'</b>. These are <b>signals to check</b>, not a promise.</div>';
+    h='<div class="dsum">Based on what you told me, here&rsquo;s what looks worth a second look &mdash; <b>'+F.length+' item'+(F.length>1?'s':'')+'</b>. These are <b>signals to check</b>, not a promise. <span style="color:var(--sea)">Income limits use <b>2024 figures</b>; confirm the current year&rsquo;s.</span></div>';
     F.forEach(function(f){
       h+='<div class="line"><div class="lrow"><span class="lname">'+f.name+'</span>'+(f.amt?'<span class="lamt">up to '+money(f.amt)+'</span>':'')+'</div>'+
          '<span class="chip '+f.chip+'">'+f.clabel+'</span><div class="lflag">'+f.why+'</div></div>';
     });
     if(total>0){
-      h+='<div class="bottom"><div class="big">Up to ~'+money(total)+' worth checking</div>'+
-         '<div class="cav">Best case, if you fully qualify for each &mdash; the real number is usually lower, and some may not apply. It&rsquo;s a reason to look, not a figure to bank on.</div></div>';
+      h+='<div class="bottom"><div class="big">Theoretical maximum ~'+money(total)+' worth checking</div>'+
+         '<div class="cav">This is a <b>theoretical maximum, not a likely refund</b> &mdash; the best case only if you fully qualify for each. The real number is usually lower, and some may not apply. It&rsquo;s a reason to look, not a figure to bank on.</div></div>';
     }
     h+='<div class="todo"><b>What I&rsquo;d do:</b><ul>'+
        '<li>If your income is under about $67,000, get it done <b>free at a VITA site</b> (irs.gov/vita) or with IRS Free File &mdash; real people, no cost.</li>'+
