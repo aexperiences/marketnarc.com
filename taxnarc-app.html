@@ -183,6 +183,7 @@ function decode(){
        '<li>Take this list to whoever does your taxes and ask about each one by name.</li></ul></div>';
   }
   h+='<div class="rowbtns" style="justify-content:center"><button class="lnk" onclick="window.print()">&#128424; Print / share this read</button></div>';
+  h+='<p class="nfa" style="color:var(--accent,#54BE86);font-weight:600">&#128161; This is a once-a-year check — add it to your home screen and run it again next tax season.</p>';
   h+='<p class="nfa"><b>Educational &middot; not tax advice.</b> TaxNarc spots things to check &mdash; it doesn&rsquo;t file, and it can&rsquo;t see your full return. Figures are rough and for a recent tax year; <b>verify anything before you act</b> with the IRS, a free VITA site, or a preparer you trust.</p>';
   document.getElementById('reportbody').innerHTML=h;
   var r=document.getElementById('report');r.style.display='block';r.scrollIntoView({behavior:'smooth'});

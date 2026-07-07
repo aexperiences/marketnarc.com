@@ -91,6 +91,7 @@ function render(c){
   var h='<div class="samplebar '+(live?'live':'')+'">'+(live?'● Live read':'▸ Sample read')+' · '+esc(c.data_note)+'</div>';
   h+='<div class="ctop"><div><div class="tk">'+esc(c.ticker)+'</div></div><div class="px"><div class="p tnum">$'+Number(c.price).toFixed(2)+'</div></div></div>';
   h+='<div class="verdict"><span class="pill '+c.verdict+'">'+c.verdict+'</span><span class="cf tnum">'+c.confidence+'%<small>CONFIDENCE</small></span></div>';
+  h+='<p style="text-align:center;color:var(--sea);font-size:11px;font-style:italic;margin:-2px 0 12px">a read, not a recommendation &mdash; weigh the case against below</p>';
   h+='<div class="cbar"><i style="width:'+c.confidence+'%"></i></div>';
   h+='<p class="why"><b>'+(c.not_sure?'I’m not sure.':'The call:')+'</b> '+esc(c.why)+'</p>';
   h+='<div class="split"><div class="bull"><div class="h">The case for</div><p>'+esc(c.bull)+'</p></div><div class="bear"><div class="h">The case against</div><p>'+esc(c.bear)+'</p></div></div>';

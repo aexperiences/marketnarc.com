@@ -99,6 +99,8 @@ body{margin:0;min-height:100vh;background:radial-gradient(120% 80% at 50% -10%,#
     <h2>2 &middot; Anything that&rsquo;s true?</h2>
     <p class="h2sub">Check what applies &mdash; some of these are the collector breaking the law.</p>
     <div class="tog">
+      <label><input type="checkbox" id="cOriginal"> This is the <b>original company</b> I owe &mdash; not a separate collection agency</label>
+      <label><input type="checkbox" id="cOld30"> It&rsquo;s been <b>more than 30 days</b> since they first contacted me</label>
       <label><input type="checkbox" id="cDont"> I <b>don&rsquo;t recognize this debt</b>, or I&rsquo;m not sure it&rsquo;s mine / the amount is right</label>
       <label><input type="checkbox" id="cTime"> They call <b>before 8am or after 9pm</b></label>
       <label><input type="checkbox" id="cWork"> They call me <b>at work</b> after I asked them to stop</label>
@@ -128,6 +130,7 @@ function decode(){
   var dont=document.getElementById('cDont').checked,time=document.getElementById('cTime').checked,
       work=document.getElementById('cWork').checked,threat=document.getElementById('cThreat').checked,
       repeat=document.getElementById('cRepeat').checked;
+  var orig=document.getElementById('cOriginal').checked,old30=document.getElementById('cOld30').checked;
   var F=[];
   if(sit==='sued'){
     F.push({name:'You&rsquo;ve been sued &mdash; do NOT ignore this',chip:'act',clabel:'Act now',
@@ -135,7 +138,7 @@ function decode(){
   }
   // validation right (always)
   F.push({name:'You can make them prove it &mdash; in writing',chip:'right',clabel:'Your right',
-    why:'Under the <b>Fair Debt Collection Practices Act</b>, you can send a <b>debt-validation letter</b> within 30 days of their first contact. Until they prove the debt is yours and the amount is right, they&rsquo;re supposed to <b>stop collecting</b>. There&rsquo;s a ready letter below.'});
+    why:'Under the <b>Fair Debt Collection Practices Act</b>, you can send a <b>debt-validation letter</b> within 30 days of their first contact. Until they prove the debt is yours and the amount is right, they&rsquo;re supposed to <b>stop collecting</b>. There&rsquo;s a ready letter below.'+(orig?' <b>Important:</b> this validation right applies mainly to <b>third-party collection agencies</b>. If this is the <b>original company</b> you owe, the automatic 30-day stop may not apply &mdash; but you can still demand proof of the amount in writing and dispute any error.':'')+(old30?' <b>Note:</b> more than 30 days may have passed since first contact, so the automatic &ldquo;stop collecting&rdquo; window may be closed &mdash; but you can <b>still request validation in writing at any time</b>.':'')});
   if(dont){F.push({name:'You don&rsquo;t recognize it &mdash; that matters',chip:'watch',clabel:'Check this',
     why:'<b>44% of credit reports carry an error</b>, and collectors buy old debts for pennies with sloppy records. Don&rsquo;t pay a debt you&rsquo;re unsure of &mdash; send the validation letter first, and dispute it on your credit report at <b>annualcreditreport.com</b> (free).'});}
   if(age>=3){F.push({name:'This debt may be too old to sue over',chip:'watch',clabel:'Check your state',
@@ -204,6 +207,8 @@ function stopRead(){try{window.speechSynthesis.cancel();}catch(e){}toggleStop(fa
 window.NARC_APP='collections';
 window.NARC_WALK=[
  {id:'age',ask:"Let's look at this debt. Roughly how old is it, in years?"},
+ {id:'cOriginal',ask:"Are you dealing with the original company you owe, rather than a separate collection agency?"},
+ {id:'cOld30',ask:"Has it been more than thirty days since they first contacted you?"},
  {id:'cDont',ask:"Do you not recognize this debt, or are you unsure the amount is right?"},
  {id:'cTime',ask:"Do they call before eight a m, or after nine p m?"},
  {id:'cWork',ask:"Do they call you at work after you asked them to stop?"},
@@ -211,8 +216,12 @@ window.NARC_WALK=[
  {id:'cRepeat',ask:"Last one. Do they call over and over to harass you?"}
 ];
 window.NARC_FIRST=function(){
- var dont=(document.getElementById('cDont')||{}).checked;
- return "<b>Send a written debt-validation letter within 30 days"+(dont?" — you said you're not sure this debt is even yours, which makes this critical":"")+".</b> It's free, it's your right under the FDCPA, and it pauses collection until they prove the debt. Don't pay or admit anything until they do.";
+ var q=function(id){return (document.getElementById(id)||{}).checked;};
+ var sitEl=document.querySelector('input[name="sit"]:checked'); var sued=sitEl&&sitEl.value==='sued';
+ if(sued) return "<b>Answer the lawsuit in writing before the deadline on the court papers</b> (usually 20–30 days). Showing up is the single most important move — most people lose only by never responding.";
+ if(q('cOriginal')) return "<b>Put your dispute in writing to the company.</b> Since this is the original creditor (not a separate agency), the automatic FDCPA validation stop may not apply — but ask in writing for proof of the exact amount, keep a copy, and don't pay or admit anything until it's confirmed.";
+ var win=q('cOld30')?"You're likely past the automatic 30-day window, but you can still request validation in writing any time — ":"Send a written debt-validation letter within 30 days — ";
+ return "<b>"+win+"it's free and it's your right under the FDCPA.</b>"+(q('cDont')?" You said you're not sure this debt is even yours, which makes this critical.":"")+" It pauses collection until an agency proves the debt. Don't pay or admit anything until they do.";
 };
   </script>
   <script src="/narc-walk.js" defer></script>

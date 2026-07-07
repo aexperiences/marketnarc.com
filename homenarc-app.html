@@ -118,7 +118,7 @@ body{margin:0;min-height:100vh;background:radial-gradient(120% 80% at 50% -10%,#
 
   <div class="card">
     <h2>2 · Comparable homes nearby</h2>
-    <p class="h2sub">Assessed value or recent sale price of a few similar homes.</p>
+    <p class="h2sub">Assessed value or recent sale price of a few similar homes. <b>Use homes close in size, age, and neighborhood</b> — cherry-picking the lowest ones only fools you, not the assessor.</p>
     <div class="rows">
       <div class="rw">
         <input value="Comparable home #1 ($)" disabled aria-hidden="true" tabindex="-1">
@@ -213,6 +213,9 @@ function decode(){
 
   // Comparable homes
   lines.push(line("Comparable homes","what similar homes are valued at",fmt(med)+" median","ok",""));
+  var spread=comps.length>1?(Math.max.apply(null,comps)-Math.min.apply(null,comps))/med:0;
+  if(spread>0.25){lines.push(line("Your comps vary a lot","double-check they&rsquo;re truly comparable","±"+Math.round(spread*100)+"%","watch","These homes differ enough that the median may be shaky — swap in ones closer in size, age, and area for a stronger case."));}
+  lines.push(line("One honest caution","assessed value isn&rsquo;t always market value","","watch","Many counties assess at a set <b>ratio</b> of market value, so where you can, compare against how similar homes are <b>assessed</b> — not just what they sold for. Only genuinely comparable homes help at an appeal."));
 
   // Property tax rate
   lines.push(line("Property tax rate","the % applied to value",(rate*100).toFixed(2)+"%"+(tax>0?"":" (assumed)"),"ok",""));
