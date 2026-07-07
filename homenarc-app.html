@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>HomeNarc — are you over-assessed?</title>
-<meta name="description" content="Enter your home's assessed value and a few comparable homes — HomeNarc checks whether you're likely over-assessed and estimates how much you may be overpaying in property tax. Runs entirely in your browser; nothing is sent anywhere.">
+<meta name="description" content="Enter your home's assessed value and a few comparable homes you look up yourself — HomeNarc checks whether you're likely over-assessed and estimates how much you may be overpaying in property tax. Runs entirely in your browser; nothing is sent anywhere.">
 <meta name="theme-color" content="#26201A">
 <link rel="icon" href="/homenarc-icon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -90,7 +90,7 @@ body{margin:0;min-height:100vh;background:radial-gradient(120% 80% at 50% -10%,#
     <span class="wm">Home<span class="n">Narc</span></span>
   </div>
   <p class="sub">are you overpaying? let's check.</p>
-  <p class="priv">🔒 Runs entirely in your browser. Nothing you type is sent anywhere.</p>
+  <p class="priv">🔒 Runs entirely in your browser. <b>It never sees your address or your neighbors</b> — it only compares the numbers you type. Nothing is sent anywhere.</p>
   <div class="inbar">
     <button class="inbtn" type="button" onclick="nScan()">&#128247; Scan a photo</button>
     <button class="inbtn" id="ntalk" type="button" onclick="nTalk()">&#127908; Talk</button>
@@ -117,8 +117,8 @@ body{margin:0;min-height:100vh;background:radial-gradient(120% 80% at 50% -10%,#
   </div>
 
   <div class="card">
-    <h2>2 · Comparable homes nearby</h2>
-    <p class="h2sub">Assessed value or recent sale price of a few similar homes. <b>Use homes close in size, age, and neighborhood</b> — cherry-picking the lowest ones only fools you, not the assessor.</p>
+    <h2>2 · A few comparable homes (you look these up)</h2>
+    <p class="h2sub">Look up a few similar homes yourself (Zillow, Redfin, or your county assessor site) and type their values in — <b>HomeNarc doesn&rsquo;t know your neighbors; you provide these.</b> Use homes close in size, age, and area; cherry-picking the lowest ones only fools you, not the assessor.</p>
     <div class="rows">
       <div class="rw">
         <input value="Comparable home #1 ($)" disabled aria-hidden="true" tabindex="-1">
@@ -192,7 +192,7 @@ function decode(){
   var rep=document.getElementById('report');
   if(!(assessed>0 && comps.length>=1)){
     document.getElementById('reportbody').innerHTML=
-      '<p class="dsum">To check your assessment, enter your <b>home\'s assessed value</b> and at least <b>one comparable home</b> nearby. Then tap “Check my assessment.”</p>';
+      '<p class="dsum">To check your assessment, enter your <b>home\'s assessed value</b> and at least <b>one comparable home you look up</b> (Zillow, Redfin, or your county site). Then tap “Check my assessment.”</p>';
     rep.style.display='block';rep.scrollIntoView({behavior:'smooth'});return;
   }
 
@@ -209,10 +209,10 @@ function decode(){
   // Assessed value
   lines.push(line("Assessed value","what the county says it's worth",fmt(assessed),
     over?"warn":"ok",
-    over?"You're about <b>"+Math.round(overPct*100)+"%</b> above comparable homes (median "+fmt(med)+"). That's roughly <b>"+fmt(estOverpay)+"/yr</b> in extra tax. You can appeal with comps.":""));
+    over?"You're about <b>"+Math.round(overPct*100)+"%</b> above the comparable homes <b>you entered</b> (median "+fmt(med)+"). That's roughly <b>"+fmt(estOverpay)+"/yr</b> in extra tax. You can appeal with comps.":""));
 
   // Comparable homes
-  lines.push(line("Comparable homes","what similar homes are valued at",fmt(med)+" median","ok",""));
+  lines.push(line("The comps you entered","median of the homes you typed in",fmt(med)+" median","ok",""));
   var spread=comps.length>1?(Math.max.apply(null,comps)-Math.min.apply(null,comps))/med:0;
   if(spread>0.25){lines.push(line("Your comps vary a lot","double-check they&rsquo;re truly comparable","±"+Math.round(spread*100)+"%","watch","These homes differ enough that the median may be shaky — swap in ones closer in size, age, and area for a stronger case."));}
   lines.push(line("One honest caution","assessed value isn&rsquo;t always market value","","watch","Many counties assess at a set <b>ratio</b> of market value, so where you can, compare against how similar homes are <b>assessed</b> — not just what they sold for. Only genuinely comparable homes help at an appeal."));
@@ -236,8 +236,8 @@ function decode(){
   var linesHtml=lines.join('');
 
   var sumTxt = over
-    ? ("Assessed at "+fmt(assessed)+", comps median "+fmt(med)+" — <b>you look about "+Math.round(overPct*100)+"% high.</b>")
-    : ("Assessed at "+fmt(assessed)+", comps median "+fmt(med)+" — <b>roughly in line.</b>");
+    ? ("Assessed at "+fmt(assessed)+"; the comps you entered run "+fmt(med)+" median — <b>you look about "+Math.round(overPct*100)+"% high.</b>")
+    : ("Assessed at "+fmt(assessed)+"; the comps you entered run "+fmt(med)+" median — <b>roughly in line.</b>");
 
   var bottomRows=[["Assessed",fmt(assessed),over],["Comps median",fmt(med),false]];
   var bottomHtml=bottomRows.map(function(r){
