@@ -23,6 +23,16 @@
   ],
   "redirects": [
     {
+      "source": "/live",
+      "destination": "/marketnarc-app",
+      "permanent": false
+    },
+    {
+      "source": "/marketnarc",
+      "destination": "/marketnarc-app",
+      "permanent": false
+    },
+    {
       "source": "/billnarc",
       "destination": "/billnarc-app",
       "permanent": false
