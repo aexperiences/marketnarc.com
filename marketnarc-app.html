@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MarketNarc — the small-stock market, read honestly</title>
+<meta name="description" content="Build a basket of the penny and mid-cap stocks you're following, see Nate's honest read on each, and watch one graph compare Nate's calls vs your basket vs the market. Educational — never buying, selling, or advice.">
+<meta name="theme-color" content="#0B1017">
+<link rel="icon" href="/marketnarc-icon.svg" type="image/svg+xml">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{--bg:#0B1017;--bg2:#0E1622;--card:#121C2A;--line:#223247;--ink:#E7EEF7;--mut:#93A3B8;--dim:#5F7089;
+ --amber:#F2A93B;--mint:#54D6A6;--sky:#6AA9FF;--coral:#F0846A;--warn:#FFC46B}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:radial-gradient(130% 80% at 50% -10%,#122132 0%,#0B1017 55%);color:var(--ink);
+ font-family:Inter,-apple-system,Segoe UI,Roboto,sans-serif;line-height:1.5;padding:22px 16px 90px}
+.wrap{max-width:720px;margin:0 auto}
+a{color:var(--sky)}
+.head{display:flex;align-items:center;gap:11px;justify-content:center;margin-bottom:4px}
+.head svg{width:34px;height:34px}
+.head .wm{font-weight:900;font-size:23px;letter-spacing:-.02em}.head .wm .n{color:var(--amber)}
+.tag{text-align:center;color:var(--mut);font-size:13.5px;margin:0 0 4px}
+.tag b{color:var(--ink)}
+.priv{text-align:center;color:var(--mint);font-size:11.5px;font-weight:600;margin:0 0 18px}
+h2{font-size:15px;font-weight:800;letter-spacing:.01em;margin:0 0 10px;display:flex;align-items:center;gap:8px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 15px;margin:0 0 16px}
+/* basket */
+.addrow{display:flex;gap:8px;margin:0 0 12px}
+.addrow input{flex:1;min-width:0;background:var(--bg2);border:1px solid var(--line);border-radius:11px;color:var(--ink);
+ font-size:15px;padding:11px 13px;text-transform:uppercase}
+.addrow input:focus{outline:none;border-color:var(--amber)}
+.btn{background:var(--amber);color:#20140a;border:none;border-radius:11px;font-weight:800;font-size:14px;padding:11px 16px;cursor:pointer;min-height:44px}
+.btn:focus-visible{outline:2px solid var(--mint);outline-offset:2px}
+.hint{color:var(--mut);font-size:11.5px;margin:0 0 4px}
+.stock{border-top:1px solid var(--line);padding:13px 0}
+.stock:first-of-type{border-top:0}
+.sr{display:flex;align-items:center;gap:10px}
+.tk{font-weight:800;font-size:16px;letter-spacing:.01em}
+.px{color:var(--mut);font-size:13px}
+.rm{margin-left:auto;background:none;border:1px solid var(--line);color:var(--mut);border-radius:9px;padding:6px 10px;cursor:pointer;font-size:12px;min-height:34px}
+.rm:hover{border-color:var(--coral);color:var(--coral)}
+.chip{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;padding:3px 9px;border-radius:999px}
+.c-buy{background:var(--mint);color:#052318}.c-sell{background:var(--coral);color:#2a0f0a}
+.c-hold{color:var(--mut);border:1px solid var(--line)}.c-watch{color:var(--warn);border:1px solid var(--warn)}
+.conf{font-size:12px;color:var(--mut);margin-left:auto}
+.why{font-size:13px;color:var(--ink);margin:8px 0 0;line-height:1.5}
+.bb{font-size:12px;color:var(--mut);margin:6px 0 0}.bb b{color:var(--ink)}
+.risk{font-size:11.5px;color:var(--warn);margin:6px 0 0}
+.empty{color:var(--mut);font-size:13.5px;text-align:center;padding:12px 0}
+/* graph */
+.gbar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:0 0 10px}
+.seg{display:inline-flex;background:var(--bg2);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.seg button{background:none;border:0;color:var(--mut);font-size:12.5px;font-weight:700;padding:8px 12px;cursor:pointer;min-height:40px}
+.seg button.on{background:var(--amber);color:#20140a}
+.mode{margin-left:auto;font-size:11px;color:var(--mut)}
+.mode.live{color:var(--mint)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;margin:10px 0 0;font-size:12px;color:var(--mut)}
+.legend i{display:inline-block;width:12px;height:3px;border-radius:2px;margin-right:6px;vertical-align:middle}
+.gnote{font-size:11.5px;color:var(--mut);margin:8px 0 0;line-height:1.5}
+canvas{width:100%!important;height:280px!important}
+/* learning */
+.lesson{border-top:1px solid var(--line)}
+.lesson:first-child{border-top:0}
+.lq{width:100%;text-align:left;background:none;border:0;color:var(--ink);font-size:14.5px;font-weight:700;
+ padding:13px 0;cursor:pointer;display:flex;align-items:center;gap:10px;min-height:44px}
+.lq .ar{margin-left:auto;color:var(--mut);transition:transform .2s}
+.lq[aria-expanded="true"] .ar{transform:rotate(90deg)}
+.la{display:none;font-size:13.5px;color:var(--mut);line-height:1.6;padding:0 0 14px}
+.la.open{display:block}
+.la b{color:var(--ink)}
+.la ul{margin:8px 0 0;padding-left:18px}.la li{margin-bottom:5px}
+.foot{text-align:center;color:var(--mut);font-size:11.5px;line-height:1.6;margin-top:20px}
+.foot b{color:var(--ink)}
+.foot a{color:var(--amber)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="head">
+    <svg viewBox="0 0 48 48" aria-hidden="true"><rect width="48" height="48" rx="12" fill="#121C2A" stroke="#223247"/><circle cx="21" cy="21" r="9" fill="none" stroke="#F2A93B" stroke-width="3"/><line x1="27.5" y1="27.5" x2="35" y2="35" stroke="#F2A93B" stroke-width="3" stroke-linecap="round"/><path d="M13 24 L18 19 L22 23 L28 15" fill="none" stroke="#54D6A6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span class="wm">Market<span class="n">Narc</span></span>
+  </div>
+  <p class="tag">The market most apps ignore: <b>penny &amp; mid-cap stocks</b> — read honestly. Big names are here too, just not the point.</p>
+  <p class="priv">🔒 Your basket lives on this device. Nothing you track is sent anywhere.</p>
+
+  <!-- BASKET -->
+  <div class="card">
+    <h2>👁️ Your basket <span style="font-weight:500;color:var(--mut);font-size:12px">— the stocks you're following</span></h2>
+    <div class="addrow">
+      <input id="tk" placeholder="Add a ticker (e.g. RVLN)" aria-label="Add a ticker" maxlength="6" autocomplete="off" autocapitalize="characters">
+      <button class="btn" id="add" type="button">Add</button>
+    </div>
+    <p class="hint">Type a symbol and Add. Listed small/mid-caps work on the live feed; true OTC pennies may show no data — MarketNarc will say so instead of faking it.</p>
+    <div id="list"></div>
+  </div>
+
+  <!-- THE ONE GRAPH -->
+  <div class="card">
+    <h2>📈 Nate vs your basket vs the market</h2>
+    <div class="gbar">
+      <div class="seg" id="win">
+        <button data-w="1M" type="button">1M</button>
+        <button data-w="3M" class="on" type="button">3M</button>
+        <button data-w="1Y" type="button">1Y</button>
+      </div>
+      <div class="seg" id="bench">
+        <button data-b="IWM" class="on" type="button">Russell 2000</button>
+        <button data-b="SPY" type="button">S&amp;P 500</button>
+      </div>
+      <span class="mode" id="mode">—</span>
+    </div>
+    <canvas id="chart" aria-label="Three-line comparison of Nate's calls, your basket, and the market"></canvas>
+    <div class="legend">
+      <span><i style="background:#6AA9FF"></i>The market</span>
+      <span><i style="background:#54D6A6"></i>Your basket (just holding)</span>
+      <span><i style="background:#F2A93B"></i>Following Nate's calls</span>
+    </div>
+    <p class="gnote" id="gnote">All three start at 100 so you compare their <b>% moves</b>, not their prices. If <b>Nate's amber line</b> sits above your basket, his timing helped; if your <b>basket</b> beats <b>the market</b>, your picks beat the small-cap field.</p>
+  </div>
+
+  <!-- LEARNING -->
+  <div class="card">
+    <h2>📚 Plain English: how this market actually works</h2>
+    <div id="lessons"></div>
+  </div>
+
+  <div class="foot">
+    <b>Educational — not financial advice.</b> MarketNarc never buys, sells, or places a trade, and never tells you to. Nate earns his confidence and says "I'm not sure" when he should. Penny stocks are the riskiest corner of the market — never risk money you can't afford to lose.<br>
+    <a href="/">← The Narcs</a>
+  </div>
+</div>
+
+<script>
+/* ---------- basket (on-device) ---------- */
+var KEY='marketnarc_basket_v1';
+function load(){try{var a=JSON.parse(localStorage.getItem(KEY));return Array.isArray(a)?a:['RVLN','SNTI','GEVO'];}catch(e){return['RVLN','SNTI','GEVO'];}}
+function save(a){try{localStorage.setItem(KEY,JSON.stringify(a));}catch(e){}}
+var basket=load();
+var win='3M', bench='IWM';
+
+/* ---------- render Nate's reads ---------- */
+function chipCls(v){return v==='BUY'?'c-buy':v==='SELL'?'c-sell':v==='WATCH'?'c-watch':'c-hold';}
+async function renderList(){
+  var el=document.getElementById('list');
+  if(!basket.length){el.innerHTML='<p class="empty">Your basket is empty — add a ticker above to get Nate\'s read.</p>';return;}
+  el.innerHTML=basket.map(function(t){return '<div class="stock" id="s-'+t+'"><div class="sr"><span class="tk">'+t+'</span><span class="px" id="px-'+t+'">…</span><button class="rm" data-t="'+t+'" type="button">Remove</button></div><div id="rd-'+t+'"></div></div>';}).join('');
+  el.querySelectorAll('.rm').forEach(function(b){b.onclick=function(){remove(b.getAttribute('data-t'));};});
+  basket.forEach(fetchRead);
+}
+async function fetchRead(t){
+  try{
+    var r=await fetch('/api/call?ticker='+encodeURIComponent(t));
+    var j=await r.json();
+    var px=document.getElementById('px-'+t); if(px) px.textContent = j.price!=null ? ('$'+j.price) : '';
+    var rd=document.getElementById('rd-'+t); if(!rd) return;
+    var conf = j.not_sure ? 'not sure' : (j.confidence+'% confidence');
+    rd.innerHTML='<div class="sr" style="margin-top:8px"><span class="chip '+chipCls(j.verdict)+'">'+j.verdict+'</span><span class="conf">'+conf+'</span></div>'+
+      '<p class="why">'+esc(j.why||'')+'</p>'+
+      (j.bull?'<p class="bb"><b>For it:</b> '+esc(j.bull)+'</p>':'')+
+      (j.bear?'<p class="bb"><b>Against it:</b> '+esc(j.bear)+'</p>':'')+
+      (j.risk?'<p class="risk">⚠ '+esc(j.risk)+(j.mode==='sample'?' · sample data':'')+'</p>':'');
+  }catch(e){
+    var rd=document.getElementById('rd-'+t); if(rd) rd.innerHTML='<p class="risk">Couldn\'t reach the read for '+esc(t)+'.</p>';
+  }
+}
+function add(){
+  var i=document.getElementById('tk');var t=(i.value||'').trim().toUpperCase().replace(/[^A-Z.]/g,'').slice(0,6);
+  if(!t) return; if(basket.indexOf(t)>=0){i.value='';return;}
+  basket.push(t); save(basket); i.value=''; renderList(); drawGraph();
+}
+function remove(t){basket=basket.filter(function(x){return x!==t;});save(basket);renderList();drawGraph();}
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+/* ---------- the one graph ---------- */
+var chart=null;
+async function drawGraph(){
+  var mode=document.getElementById('mode');
+  var note=document.getElementById('gnote');
+  if(!basket.length){ if(chart){chart.destroy();chart=null;} mode.textContent='add a stock'; return; }
+  mode.textContent='loading…';
+  try{
+    var r=await fetch('/api/history?tickers='+encodeURIComponent(basket.join(','))+'&window='+win+'&benchmark='+bench);
+    var d=await r.json();
+    mode.textContent = d.mode==='live' ? '● live feed' : '○ sample preview';
+    mode.className = 'mode'+(d.mode==='live'?' live':'');
+    var labels=d.labels||[];
+    var mk={label:'The market',data:d.market||[],borderColor:'#6AA9FF',backgroundColor:'transparent',borderWidth:2,pointRadius:0,tension:.15};
+    var bk={label:'Your basket',data:d.basket||[],borderColor:'#54D6A6',backgroundColor:'transparent',borderWidth:2,pointRadius:0,tension:.15};
+    var nt={label:'Following Nate',data:d.nate||[],borderColor:'#F2A93B',backgroundColor:'transparent',borderWidth:2.5,pointRadius:0,tension:.15};
+    if(chart) chart.destroy();
+    chart=new Chart(document.getElementById('chart'),{type:'line',
+      data:{labels:labels,datasets:[mk,bk,nt]},
+      options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+        plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return c.dataset.label+': '+c.parsed.y;}}}},
+        scales:{x:{ticks:{color:'#5F7089',maxTicksLimit:5,font:{size:10}},grid:{color:'rgba(255,255,255,.04)'}},
+          y:{ticks:{color:'#5F7089',font:{size:10}},grid:{color:'rgba(255,255,255,.05)'},title:{display:true,text:'rebased to 100',color:'#5F7089',font:{size:10}}}}}});
+    var extra = (d.dropped&&d.dropped.length)? ' No live data for '+d.dropped.join(', ')+' (often true for OTC pennies).' : '';
+    var base = d.mode==='sample' ? 'Sample preview — illustrative only. Add your Alpaca keys to switch on the real feed.' :
+      'All three start at 100 so you compare % moves. Amber above your basket = Nate\'s timing helped; basket above the market = your picks beat the small-cap field.';
+    note.innerHTML = base + extra;
+  }catch(e){ mode.textContent='couldn\'t load'; }
+}
+
+/* ---------- learning (researched, plain English) ---------- */
+var LESSONS=[
+ ['What do we even mean by "the market"?',
+  'You can\'t buy "the market" — you buy a slice of one company. So people track <b>indexes</b>: baskets that stand in for a chunk of the market. The famous <b>S&amp;P 500</b> is 500 of the biggest US companies — it\'s really a big-company index. The <b>Russell 2000</b> tracks 2,000 <b>small</b> companies. Because MarketNarc is about the small and mid stuff, our graph uses the Russell 2000 as "the market" by default — comparing your penny basket to an Apple-heavy index would be rigged. You can flip it to the S&amp;P if you want the big-picture view.'],
+ ['Penny, small, mid, large — what\'s the difference?',
+  'Two things: the <b>share price</b> and the <b>market cap</b> (price × number of shares = what the whole company is worth). The SEC calls anything under <b>$5 a share</b> a <b>penny stock</b>, and most of those trade "over-the-counter" (OTC) instead of on the big exchanges. Small-caps and mid-caps are bigger companies but still far smaller than the giants. Smaller = more room to move fast, and far more room to get burned.'],
+ ['Why MarketNarc looks at the small stuff',
+  'Most apps are a wall of Apple, Nvidia, Tesla — the names everyone already watches. The small and mid corner is where the real swings live, and also where the traps are. MarketNarc is built the other way around: <b>pennies and mids first, big names as an afterthought.</b> Not because small stocks are "better" — because that\'s the corner that actually needs an honest read.'],
+ ['The big danger: pump-and-dumps',
+  'The classic penny-stock scam. Someone quietly buys a cheap, thinly-traded stock, then <b>"pumps"</b> it with hype — social posts, group chats, emails, and now AI-generated content and bot networks — claiming secret news or a can\'t-miss breakout. Regular people pile in, the price spikes, and the promoters <b>"dump"</b> their shares on the crowd. Red flags:<ul><li>Unsolicited tips and "act NOW before it\'s too late."</li><li>Price spiking on no real, verifiable news.</li><li>Heavy promotion; "huge announcement coming" that never quite arrives.</li><li>A tiny, little-known company with almost no real information.</li></ul><b>The rule:</b> if a stock doubles on a tweet instead of an official SEC filing, treat it as a <b>warning, not an opportunity.</b>'],
+ ['Liquidity &amp; the spread — the quiet trap',
+  'A penny stock can be <b>hard to get out of.</b> If few people trade it, the gap between the buy price and the sell price (the <b>spread</b>) can be huge, and a "$1.00" quote doesn\'t mean you\'ll actually get $1.00 when you sell. Thin volume means the price on your screen and the price you can really transact at aren\'t the same thing. This is why big apps avoid these names — and why an honest read matters more here.'],
+ ['What Nate\'s calls actually mean',
+  'Nate reads price, trend, momentum and volatility and gives one of four calls with a confidence score he has to <b>earn</b> (it\'s capped — he won\'t fake certainty):<ul><li><b>BUY</b> — trend and momentum agree, pointing up.</li><li><b>SELL</b> — both point down.</li><li><b>HOLD</b> — drifting, no real edge either way.</li><li><b>WATCH</b> — the signals conflict or the data\'s too thin to call. He\'d rather wait than guess.</li></ul>He is not a financial advisor and never tells you to trade. He tells you what the numbers say, plainly, and admits when he doesn\'t know.'],
+ ['How to read the one graph',
+  'Three lines, all starting at <b>100</b> so you\'re comparing % moves, not dollar prices:<ul><li><b>Blue — the market:</b> the small-cap index (or S&amp;P if you switch).</li><li><b>Green — your basket:</b> what happens if you simply hold your watchlist.</li><li><b>Amber — following Nate:</b> what happens if you\'re in when Nate says BUY/HOLD and in cash when he says SELL/WATCH.</li></ul>If amber beats green, Nate\'s timing added something. If green beats blue, your picks beat the field. If they\'re all tangled together — that\'s honest too.'],
+];
+function renderLessons(){
+  var el=document.getElementById('lessons');
+  el.innerHTML=LESSONS.map(function(l,i){return '<div class="lesson"><button class="lq" type="button" aria-expanded="false" data-i="'+i+'">'+l[0]+'<span class="ar">›</span></button><div class="la" id="la-'+i+'">'+l[1]+'</div></div>';}).join('');
+  el.querySelectorAll('.lq').forEach(function(b){b.onclick=function(){var i=b.getAttribute('data-i');var a=document.getElementById('la-'+i);var open=a.classList.toggle('open');b.setAttribute('aria-expanded',open?'true':'false');};});
+}
+
+/* ---------- boot ---------- */
+document.getElementById('add').onclick=add;
+document.getElementById('tk').addEventListener('keydown',function(e){if(e.key==='Enter')add();});
+document.getElementById('win').querySelectorAll('button').forEach(function(b){b.onclick=function(){win=b.getAttribute('data-w');document.querySelectorAll('#win button').forEach(function(x){x.classList.remove('on');});b.classList.add('on');drawGraph();};});
+document.getElementById('bench').querySelectorAll('button').forEach(function(b){b.onclick=function(){bench=b.getAttribute('data-b');document.querySelectorAll('#bench button').forEach(function(x){x.classList.remove('on');});b.classList.add('on');drawGraph();};});
+renderList(); renderLessons(); drawGraph();
+</script>
+<script src="/family-nav.js" defer></script>
+</body>
+</html>
