@@ -285,7 +285,13 @@ function decode(){
       +'<div style="background:var(--ink800);border:1px dashed var(--line);border-radius:12px;padding:16px;margin:12px 0;font-family:ui-monospace,Menlo,monospace;font-size:12.5px;line-height:1.6;white-space:pre-wrap">'+appeal.replace(/</g,"&lt;")+'</div>'
       +'<div style="text-align:center;margin-top:10px"><button class="lnk" onclick="window.print()">🖨 Print / share this appeal</button></div>';
   }
+  html+='<div style="text-align:center;font-family:Lato;font-weight:900;color:var(--accent);margin:22px 0 8px">📸 Your shareable receipt</div><div id="billreceipt"></div>';
   document.getElementById('reportbody').innerHTML=html;
+  try{ if(window.NarcReceipt) NarcReceipt.card({el:document.getElementById('billreceipt'),narc:'BillNarc',accent:'#4FCB8E',bg:'#0A1730',
+    headline: flagged>0?('Flagged '+flagged+' charge'+(flagged>1?'s':'')+' worth challenging'):'Read your bill — nothing obvious jumped out',
+    big: fmt(total),
+    sub: flagged>0?('on this '+fmt(total)+' bill — get an itemized bill and push back.'):'Still worth comparing to your EOB.',
+    share:'BillNarc read my medical bill and flagged '+flagged+' charge'+(flagged>1?'s':'')+' worth challenging.'}); }catch(e){}
   var rep=document.getElementById('report');rep.style.display='block';rep.scrollIntoView({behavior:'smooth'});
 }
 function escapeHtml(s){return s.replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
@@ -297,6 +303,7 @@ function stopRead(){try{window.speechSynthesis.cancel();}catch(e){}toggleStop(fa
 </script>
 <div class="brandmark" aria-label="Accelerated Experiences" title="An Accelerated Experiences app"></div>
   <script src="/narc-ocr.js" defer></script>
+  <script src="/narc-receipt.js" defer></script>
   <script src="/family-nav.js" defer></script>
   <script>
 window.NARC_APP='bill';
