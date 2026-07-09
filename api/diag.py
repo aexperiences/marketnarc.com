@@ -27,6 +27,22 @@ class handler(BaseHTTPRequestHandler):
         except Exception as e:
             out["live_status"] = "EXCEPTION"
             out["live_error"] = str(e)[:300]
+        # test the exact BARS call live_snapshot makes
+        try:
+            req2 = urllib.request.Request(
+                f"{DATA_BASE}/AAPL/bars?timeframe=1Day&limit=60&feed=iex&adjustment=raw",
+                headers={"APCA-API-KEY-ID": kid.strip(), "APCA-API-SECRET-KEY": sec.strip()})
+            with urllib.request.urlopen(req2, timeout=8) as r:
+                data = json.loads(r.read().decode())
+                out["bars_status"] = r.status
+                out["bars_count"] = len(data.get("bars") or [])
+        except urllib.error.HTTPError as e:
+            out["bars_status"] = e.code
+            try: out["bars_body"] = e.read().decode()[:300]
+            except Exception: out["bars_body"] = "(no body)"
+        except Exception as e:
+            out["bars_status"] = "EXCEPTION"
+            out["bars_error"] = str(e)[:300]
         body = json.dumps(out).encode()
         self.send_response(200)
         self.send_header("Content-Type", "application/json")
