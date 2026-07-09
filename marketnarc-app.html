@@ -140,6 +140,7 @@ function load(){try{var a=JSON.parse(localStorage.getItem(KEY));return Array.isA
 function save(a){try{localStorage.setItem(KEY,JSON.stringify(a));}catch(e){}}
 var basket=load();
 var NAMES={}; /* ticker -> company name, filled by lookup/read */
+var READS={};  /* ticker -> last read (for the shareable receipt) */
 var win='3M', bench='IWM';
 
 /* ---------- render Nate's reads ---------- */
@@ -156,6 +157,7 @@ async function fetchRead(t){
     var r=await fetch('/api/call?ticker='+encodeURIComponent(t));
     var j=await r.json();
     if(j.name){NAMES[t]=j.name;var nm=document.getElementById('nm-'+t);if(nm)nm.textContent=j.name;}
+    READS[t]=j;
     var px=document.getElementById('px-'+t); if(px) px.textContent = j.price!=null ? ('$'+j.price) : '';
     var rd=document.getElementById('rd-'+t); if(!rd) return;
     var conf = j.not_sure ? 'not sure' : (j.confidence+'% confidence');
@@ -163,7 +165,10 @@ async function fetchRead(t){
       '<p class="why">'+esc(j.why||'')+'</p>'+
       (j.bull?'<p class="bb"><b>For it:</b> '+esc(j.bull)+'</p>':'')+
       (j.bear?'<p class="bb"><b>Against it:</b> '+esc(j.bear)+'</p>':'')+
-      (j.risk?'<p class="risk">⚠ '+esc(j.risk)+(j.mode==='sample'?' · sample data':'')+'</p>':'');
+      (j.risk?'<p class="risk">⚠ '+esc(j.risk)+(j.mode==='sample'?' · sample data':'')+'</p>':'')+
+      '<div style="margin-top:8px"><button class="rm" type="button" data-share="'+t+'" style="border-color:var(--amber);color:var(--amber)">📸 Share this read</button></div>'+
+      '<div id="rc-'+t+'"></div>';
+    var sb=rd.querySelector('[data-share]'); if(sb) sb.onclick=function(){shareRead(t);};
   }catch(e){
     var rd=document.getElementById('rd-'+t); if(rd) rd.innerHTML='<p class="risk">Couldn\'t reach the read for '+esc(t)+'.</p>';
   }
@@ -187,6 +192,23 @@ async function add(){
 }
 function remove(t){basket=basket.filter(function(x){return x!==t;});save(basket);renderList();drawGraph();}
 function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+/* ---------- shareable verdict receipt ---------- */
+var VACC={BUY:'#54D6A6',SELL:'#F0846A',HOLD:'#93A3B8',WATCH:'#FFC46B'};
+function shareRead(t){
+  var j=READS[t]; if(!j||!window.NarcReceipt) return;
+  var host=document.getElementById('rc-'+t); if(!host) return;
+  var v=j.verdict||'WATCH';
+  var name=(NAMES[t]||j.name||'');
+  var conf=j.not_sure?'Not sure — signals too thin to call':(j.confidence+'% confidence');
+  NarcReceipt.card({
+    el:host, narc:'MarketNarc', accent:VACC[v]||'#F2A93B', bg:'#0B1017',
+    headline: t+(name?(' · '+name):'')+' — Nate says '+v,
+    big: v,
+    sub: conf+'. '+(j.why||'')+(j.mode==='sample'?' (sample data)':''),
+    share: 'MarketNarc: Nate reads '+t+' as '+v+' ('+conf+'). Educational, not advice.'
+  });
+}
 
 /* ---------- the one graph ---------- */
 var chart=null;
@@ -248,6 +270,7 @@ document.getElementById('win').querySelectorAll('button').forEach(function(b){b.
 document.getElementById('bench').querySelectorAll('button').forEach(function(b){b.onclick=function(){bench=b.getAttribute('data-b');document.querySelectorAll('#bench button').forEach(function(x){x.classList.remove('on');});b.classList.add('on');drawGraph();};});
 renderList(); renderLessons(); drawGraph();
 </script>
+<script src="/narc-receipt.js" defer></script>
 <script src="/family-nav.js" defer></script>
 </body>
 </html>
