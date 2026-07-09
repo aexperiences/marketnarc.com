@@ -177,23 +177,16 @@ function applyParsed(rows){
   setStatus('Added <b>'+rows.length+'</b> line'+(rows.length>1?'s':'')+' &mdash; check them and fix anything that came out wrong.');
 }
 function scanBill(){
+  // On-device OCR via the shared NarcOCR kit (Tesseract.js) — works on iPhone, Android & desktop.
+  if(window.NarcOCR){ NarcOCR.scan(function(text){ applyParsed(parseLines(text)); }, setStatus); return; }
+  // Fallback if the kit hasn't loaded: the browser's built-in detector (Android/desktop only).
   var inp=document.createElement('input'); inp.type='file'; inp.accept='image/*'; inp.setAttribute('capture','environment');
   inp.onchange=function(){
     var f=inp.files&&inp.files[0]; if(!f)return;
-    if(!('TextDetector' in window)){
-      setStatus('Your browser doesn&rsquo;t have built-in text detection yet (iPhone Safari doesn&rsquo;t). Use the <b>&#127908; voice</b> button, or type it in. Chrome on Android reads photos best.');
-      return;
-    }
+    if(!('TextDetector' in window)){ setStatus('The photo reader is still loading &mdash; try again in a moment, or use <b>&#127908; voice</b> / type it in.'); return; }
     setStatus('Reading your photo <b>on your device</b>&hellip;');
     var img=new Image();
-    img.onload=function(){
-      try{
-        new TextDetector().detect(img).then(function(res){
-          var text=(res||[]).map(function(b){return b.rawValue;}).join('\n');
-          applyParsed(parseLines(text));
-        }).catch(function(){setStatus('Couldn&rsquo;t read that image &mdash; try a clearer, straight-on photo in good light, or type it in.');});
-      }catch(e){setStatus('Text detection failed on this device &mdash; type it in or use voice.');}
-    };
+    img.onload=function(){ try{ new TextDetector().detect(img).then(function(res){ applyParsed(parseLines((res||[]).map(function(b){return b.rawValue;}).join('\n'))); }).catch(function(){setStatus('Couldn&rsquo;t read that image &mdash; try a clearer photo, or type it in.');}); }catch(e){setStatus('Type it in or use voice.');} };
     img.onerror=function(){setStatus('Couldn&rsquo;t open that image.');};
     img.src=URL.createObjectURL(f);
   };
@@ -303,6 +296,7 @@ function speakRead(){if(!('speechSynthesis' in window)){return;}var t=narcText()
 function stopRead(){try{window.speechSynthesis.cancel();}catch(e){}toggleStop(false);}
 </script>
 <div class="brandmark" aria-label="Accelerated Experiences" title="An Accelerated Experiences app"></div>
+  <script src="/narc-ocr.js" defer></script>
   <script src="/family-nav.js" defer></script>
   <script>
 window.NARC_APP='bill';
