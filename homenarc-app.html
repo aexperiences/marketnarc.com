@@ -257,8 +257,16 @@ function decode(){
     +'<div class="bottom">'+bottomHtml
     +'<div class="brow big"><span>Est. overpayment</span><b>'+bigVal+'</b></div></div>'
     +'<div class="todo"><b>What I\'d do:</b><ul><li>'+todos.join('</li><li>')+'</li></ul></div>'
-    +'<p class="nfa">Educational estimate from the numbers you entered — <b>not legal or tax advice</b>. Assessment ratios and appeal deadlines vary by county; confirm yours. Nothing you typed left your browser.</p>';
+    +'<p class="nfa">Educational estimate from the numbers you entered — <b>not legal or tax advice</b>. Assessment ratios and appeal deadlines vary by county; confirm yours. Nothing you typed left your browser.</p>'
+    +'<div style="text-align:center;font-size:12.5px;color:var(--sea);margin:18px 0 8px">📸 Your shareable receipt</div><div id="homereceipt"></div>';
   document.getElementById('reportbody').innerHTML=html;
+  if(window.NarcReceipt){NarcReceipt.card({
+    el:document.getElementById('homereceipt'),narc:'HomeNarc',accent:'#E0A24E',bg:'#1B1610',
+    headline: over?('Over-assessed by about '+Math.round(overPct*100)+'% — worth appealing'):'Assessment looks roughly fair',
+    big: over?('~'+fmt(estOverpay)+'/yr'):'In line',
+    sub: over?('Assessed '+fmt(assessed)+' vs. '+fmt(med)+' median comps. You can appeal.'):('Assessed '+fmt(assessed)+', comps '+fmt(med)+' median. Recheck after a reassessment.'),
+    share: over?('HomeNarc says I may be over-assessed by ~'+Math.round(overPct*100)+'%.'):'HomeNarc checked my property assessment.'
+  });}
   rep.style.display='block';rep.scrollIntoView({behavior:'smooth'});
 }
 function escapeHtml(s){return (''+s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
@@ -302,6 +310,7 @@ function showLetter(){document.getElementById("lettertext").textContent=LETTER;v
 </script>
 <div class="brandmark" aria-label="Accelerated Experiences" title="An Accelerated Experiences app"></div>
   <script src="/narc-ocr.js" defer></script>
+  <script src="/narc-receipt.js" defer></script>
   <script src="/family-nav.js" defer></script>
   <script>
 window.NARC_APP='home';

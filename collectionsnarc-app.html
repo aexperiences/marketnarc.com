@@ -168,7 +168,15 @@ function decode(){
   h+='<div class="lettl">&#9993; Your debt-validation letter (fill in the [brackets])</div><div class="letter">'+letter+'</div>';
   h+='<div class="rowbtns" style="justify-content:center"><button class="lnk" onclick="window.print()">&#128424; Print / share this</button></div>';
   h+='<p class="nfa"><b>Educational &middot; not legal advice.</b> Debt and lawsuits are high-stakes and the rules vary by state. CollectionsNarc points you to your rights &mdash; it can&rsquo;t represent you. <b>If you&rsquo;ve been sued or anything feels serious, talk to a lawyer</b> (free legal aid at lawhelp.org).</p>';
+  h+='<div style="text-align:center;font-size:12.5px;color:var(--sea);margin:18px 0 8px">&#128248; Your shareable receipt</div><div id="colreceipt"></div>';
   document.getElementById('reportbody').innerHTML=h;
+  if(window.NarcReceipt){NarcReceipt.card({
+    el:document.getElementById('colreceipt'),narc:'CollectionsNarc',accent:'#E0725A',bg:'#241010',
+    headline: sit==='sued'?'You’ve been sued — respond by the deadline. Don’t ignore it.':'You have more rights here than they let on',
+    big: sit==='sued'?'Answer it':(F.length+' right'+(F.length>1?'s':'')),
+    sub: sit==='sued'?'Most default judgments happen only because people never respond. Make them prove the debt.':'Send the free debt-validation letter first. Don’t pay or promise to pay until they prove it’s yours.',
+    share: sit==='sued'?'CollectionsNarc: sued over a debt? Respond by the deadline — don’t hand them a default.':'CollectionsNarc showed me my rights against debt collectors.'
+  });}
   var r=document.getElementById('report');r.style.display='block';r.scrollIntoView({behavior:'smooth'});
 }
 var _lastIn=null;
@@ -208,6 +216,7 @@ function speakRead(){if(!('speechSynthesis' in window)){return;}var t=narcText()
 function stopRead(){try{window.speechSynthesis.cancel();}catch(e){}toggleStop(false);}
 </script>
   <script src="/narc-ocr.js" defer></script>
+  <script src="/narc-receipt.js" defer></script>
   <script src="/family-nav.js" defer></script>
   <script>
 window.NARC_APP='collections';

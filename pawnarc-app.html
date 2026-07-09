@@ -281,8 +281,16 @@ function decode(){
   var html='<p class="dsum">'+sumTxt+'</p>'+linesHtml
     +bottomHtml
     +'<div class="todo"><b>What I\'d do:</b><ul><li>'+todos.join('</li><li>')+'</li></ul></div>'
-    +'<p class="nfa">Educational read of the details you entered — <b>not insurance or veterinary advice</b>, and not a coverage decision. Your policy documents and insurer are the final word. Nothing you typed left your browser.</p>';
+    +'<p class="nfa">Educational read of the details you entered — <b>not insurance or veterinary advice</b>, and not a coverage decision. Your policy documents and insurer are the final word. Nothing you typed left your browser.</p>'
+    +'<div style="text-align:center;font-size:12.5px;color:var(--sea);margin:18px 0 8px">📸 Your shareable receipt</div><div id="pawreceipt"></div>';
   document.getElementById('reportbody').innerHTML=html;
+  if(window.NarcReceipt){NarcReceipt.card({
+    el:document.getElementById('pawreceipt'),narc:'PawNarc',accent:'#52C6B9',bg:'#241028',
+    headline: claim>0?('On a '+fmt(claim)+' vet bill, here’s what comes back'):(gaps>0?('Found '+gaps+' coverage gap'+(gaps>1?'s':'')+' worth knowing'):'Policy basics look solid'),
+    big: claim>0?('~'+fmt(estReimb)):String(gaps)+(gaps===1?' gap':' gaps'),
+    sub: claim>0?('Your net after reimbursement: ~'+fmt(net)+'. '+reimb+'% back after '+fmt(ded)+' deductible.'):'Know your exam-fee, hereditary, and limit terms before a big claim.',
+    share: claim>0?('PawNarc: ~'+fmt(estReimb)+' back on a '+fmt(claim)+' vet bill.'):'PawNarc read my pet policy for coverage gaps.'
+  });}
   var rep=document.getElementById('report');rep.style.display='block';rep.scrollIntoView({behavior:'smooth'});
 }
 var _lastIn=null;
@@ -325,6 +333,7 @@ function showLetter(){document.getElementById("lettertext").textContent=LETTER;v
 </script>
 <div class="brandmark" aria-label="Accelerated Experiences" title="An Accelerated Experiences app"></div>
   <script src="/narc-ocr.js" defer></script>
+  <script src="/narc-receipt.js" defer></script>
   <script src="/family-nav.js" defer></script>
   <script>
 window.NARC_APP='paw';
