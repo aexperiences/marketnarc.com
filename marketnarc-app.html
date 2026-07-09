@@ -36,7 +36,9 @@ h2{font-size:15px;font-weight:800;letter-spacing:.01em;margin:0 0 10px;display:f
 .stock:first-of-type{border-top:0}
 .sr{display:flex;align-items:center;gap:10px}
 .tk{font-weight:800;font-size:16px;letter-spacing:.01em}
+.nm{color:var(--mut);font-size:12.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:44%}
 .px{color:var(--mut);font-size:13px}
+.err{color:#C0392B;font-size:13px;margin:6px 0 0;line-height:1.4}
 .rm{margin-left:auto;background:none;border:1px solid var(--line);color:var(--mut);border-radius:9px;padding:6px 10px;cursor:pointer;font-size:12px;min-height:34px}
 .rm:hover{border-color:var(--coral);color:var(--coral)}
 .chip{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;padding:3px 9px;border-radius:999px}
@@ -90,6 +92,7 @@ canvas{width:100%!important;height:280px!important}
       <input id="tk" placeholder="Add a ticker (e.g. RVLN)" aria-label="Add a ticker" maxlength="6" autocomplete="off" autocapitalize="characters">
       <button class="btn" id="add" type="button">Add</button>
     </div>
+    <p class="err" id="addmsg" role="alert" aria-live="polite"></p>
     <p class="hint">Type a symbol and Add. Listed small/mid-caps work on the live feed; true OTC pennies may show no data — MarketNarc will say so instead of faking it.</p>
     <div id="list"></div>
   </div>
@@ -136,6 +139,7 @@ var KEY='marketnarc_basket_v1';
 function load(){try{var a=JSON.parse(localStorage.getItem(KEY));return Array.isArray(a)?a:['RVLN','SNTI','GEVO'];}catch(e){return['RVLN','SNTI','GEVO'];}}
 function save(a){try{localStorage.setItem(KEY,JSON.stringify(a));}catch(e){}}
 var basket=load();
+var NAMES={}; /* ticker -> company name, filled by lookup/read */
 var win='3M', bench='IWM';
 
 /* ---------- render Nate's reads ---------- */
@@ -143,7 +147,7 @@ function chipCls(v){return v==='BUY'?'c-buy':v==='SELL'?'c-sell':v==='WATCH'?'c-
 async function renderList(){
   var el=document.getElementById('list');
   if(!basket.length){el.innerHTML='<p class="empty">Your basket is empty — add a ticker above to get Nate\'s read.</p>';return;}
-  el.innerHTML=basket.map(function(t){return '<div class="stock" id="s-'+t+'"><div class="sr"><span class="tk">'+t+'</span><span class="px" id="px-'+t+'">…</span><button class="rm" data-t="'+t+'" type="button">Remove</button></div><div id="rd-'+t+'"></div></div>';}).join('');
+  el.innerHTML=basket.map(function(t){return '<div class="stock" id="s-'+t+'"><div class="sr"><span class="tk">'+t+'</span><span class="nm" id="nm-'+t+'">'+(NAMES[t]?esc(NAMES[t]):'')+'</span><span class="px" id="px-'+t+'">…</span><button class="rm" data-t="'+t+'" type="button">Remove</button></div><div id="rd-'+t+'"></div></div>';}).join('');
   el.querySelectorAll('.rm').forEach(function(b){b.onclick=function(){remove(b.getAttribute('data-t'));};});
   basket.forEach(fetchRead);
 }
@@ -151,6 +155,7 @@ async function fetchRead(t){
   try{
     var r=await fetch('/api/call?ticker='+encodeURIComponent(t));
     var j=await r.json();
+    if(j.name){NAMES[t]=j.name;var nm=document.getElementById('nm-'+t);if(nm)nm.textContent=j.name;}
     var px=document.getElementById('px-'+t); if(px) px.textContent = j.price!=null ? ('$'+j.price) : '';
     var rd=document.getElementById('rd-'+t); if(!rd) return;
     var conf = j.not_sure ? 'not sure' : (j.confidence+'% confidence');
@@ -163,9 +168,21 @@ async function fetchRead(t){
     var rd=document.getElementById('rd-'+t); if(rd) rd.innerHTML='<p class="risk">Couldn\'t reach the read for '+esc(t)+'.</p>';
   }
 }
-function add(){
+async function add(){
   var i=document.getElementById('tk');var t=(i.value||'').trim().toUpperCase().replace(/[^A-Z.]/g,'').slice(0,6);
+  var msg=document.getElementById('addmsg'); if(msg) msg.textContent='';
   if(!t) return; if(basket.indexOf(t)>=0){i.value='';return;}
+  var btn=document.getElementById('add'); if(btn) btn.disabled=true;
+  try{
+    var r=await fetch('/api/lookup?ticker='+encodeURIComponent(t));
+    var info=await r.json();
+    if(info && info.verified && info.valid===false){
+      if(msg) msg.innerHTML='We couldn’t find a stock with the ticker <b>'+esc(t)+'</b>. Double-check the symbol — e.g. ServiceNow is <b>NOW</b>.';
+      if(btn) btn.disabled=false; return;
+    }
+    if(info && info.name){NAMES[t]=info.name;}
+  }catch(e){/* lookup unreachable — don't block adding on a network hiccup */}
+  if(btn) btn.disabled=false;
   basket.push(t); save(basket); i.value=''; renderList(); drawGraph();
 }
 function remove(t){basket=basket.filter(function(x){return x!==t;});save(basket);renderList();drawGraph();}
