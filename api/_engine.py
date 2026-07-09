@@ -21,8 +21,14 @@ NAMES = {
     "GEVO":"Gevo, Inc.", "SNTI":"Senti Biosciences, Inc.",
 }
 
+def _alpaca_keys():
+    # strip() guards against a trailing newline/space pasted into the Vercel env value
+    return (os.environ.get("ALPACA_KEY_ID", "").strip(),
+            os.environ.get("ALPACA_SECRET_KEY", "").strip())
+
 def has_alpaca():
-    return bool(os.environ.get("ALPACA_KEY_ID") and os.environ.get("ALPACA_SECRET_KEY"))
+    k, s = _alpaca_keys()
+    return bool(k and s)
 
 def asset_info(ticker):
     """Company name + validity for a symbol.
@@ -46,9 +52,10 @@ def asset_info(ticker):
     return {"ticker": t, "name": nm, "valid": (True if nm else None), "verified": False}
 
 def _get(url):
+    k, s = _alpaca_keys()
     req = urllib.request.Request(url, headers={
-        "APCA-API-KEY-ID": os.environ.get("ALPACA_KEY_ID", ""),
-        "APCA-API-SECRET-KEY": os.environ.get("ALPACA_SECRET_KEY", ""),
+        "APCA-API-KEY-ID": k,
+        "APCA-API-SECRET-KEY": s,
     })
     with urllib.request.urlopen(req, timeout=8) as r:
         return json.loads(r.read().decode())
