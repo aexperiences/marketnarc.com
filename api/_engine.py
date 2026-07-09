@@ -2,14 +2,48 @@
 MarketNarc engine (shared) — Alpaca snapshot -> Rex (technicals) + Pat (fundamentals, limited)
 -> Nate -> honest call. Deterministic. Sample mode when Alpaca keys absent. Never places trades.
 """
-import os, json, statistics, urllib.request, hashlib
+import os, json, statistics, urllib.request, urllib.error, hashlib
 
-DATA_BASE = "https://data.alpaca.markets/v2/stocks"
+DATA_BASE  = "https://data.alpaca.markets/v2/stocks"
+ASSET_BASE = "https://api.alpaca.markets/v2/assets"
 CONF_CEILING = 78
 WATCH_FLOOR  = 45
 
+# Bundled fallback names for well-known symbols (used in sample mode / when the
+# live assets lookup is unavailable). Only symbols we're confident about — an
+# unknown symbol returns no name rather than a guessed one.
+NAMES = {
+    "NOW":"ServiceNow, Inc.", "AAPL":"Apple Inc.", "MSFT":"Microsoft Corporation",
+    "TSLA":"Tesla, Inc.", "NVDA":"NVIDIA Corporation", "AMZN":"Amazon.com, Inc.",
+    "GOOGL":"Alphabet Inc.", "GOOG":"Alphabet Inc.", "META":"Meta Platforms, Inc.",
+    "AMD":"Advanced Micro Devices, Inc.", "PLTR":"Palantir Technologies Inc.",
+    "SOFI":"SoFi Technologies, Inc.", "NIO":"NIO Inc.", "F":"Ford Motor Company",
+    "GEVO":"Gevo, Inc.", "SNTI":"Senti Biosciences, Inc.",
+}
+
 def has_alpaca():
     return bool(os.environ.get("ALPACA_KEY_ID") and os.environ.get("ALPACA_SECRET_KEY"))
+
+def asset_info(ticker):
+    """Company name + validity for a symbol.
+    Live (key present): Alpaca Assets endpoint -> real name; 404 -> not a real ticker.
+    Sample/no key/error: best-effort from the bundled NAMES map, marked unverified."""
+    t = (ticker or "").strip().upper()
+    if not t:
+        return {"ticker": "", "name": "", "valid": False, "verified": True}
+    if has_alpaca():
+        try:
+            a = _get(f"{ASSET_BASE}/{t}")
+            return {"ticker": t, "name": a.get("name", "") or "", "valid": True,
+                    "verified": True, "exchange": a.get("exchange", ""),
+                    "tradable": bool(a.get("tradable", True))}
+        except urllib.error.HTTPError as e:
+            if e.code == 404:
+                return {"ticker": t, "name": "", "valid": False, "verified": True}
+        except Exception:
+            pass
+    nm = NAMES.get(t, "")
+    return {"ticker": t, "name": nm, "valid": (True if nm else None), "verified": False}
 
 def _get(url):
     req = urllib.request.Request(url, headers={
@@ -100,11 +134,16 @@ def nate(snap, rex, pat):
                          else "Sample data — illustrative preview, not live or a recommendation."}
 
 def make_call(ticker):
+    t = (ticker or "").strip().upper()
+    info = asset_info(t)
     try:
-        snap = live_snapshot(ticker) if has_alpaca() else sample_snapshot(ticker)
+        snap = live_snapshot(t) if has_alpaca() else sample_snapshot(t)
+        out = nate(snap, rex_technicals(snap), pat_fundamentals(snap))
     except Exception:
-        snap = sample_snapshot(ticker)
+        snap = sample_snapshot(t)
         out = nate(snap, rex_technicals(snap), pat_fundamentals(snap))
         out["mode"] = "sample"; out["data_note"] = "Live data unavailable — showing a sample read, not a recommendation."
-        return out
-    return nate(snap, rex_technicals(snap), pat_fundamentals(snap))
+    out["name"] = info.get("name", "")
+    out["valid"] = info.get("valid")
+    out["verified"] = info.get("verified", False)
+    return out
