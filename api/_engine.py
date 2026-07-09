@@ -30,6 +30,15 @@ def has_alpaca():
     k, s = _alpaca_keys()
     return bool(k and s)
 
+def _asset_base():
+    # The /v2/assets reference endpoint lives on the TRADING API, which differs for paper vs live keys.
+    # Paper keys start with "PK" -> paper-api; live keys ("AK...") -> api.alpaca.markets. Match them so
+    # ticker names/validation are real for either key type.
+    k, _ = _alpaca_keys()
+    if k.upper().startswith("PK"):
+        return "https://paper-api.alpaca.markets/v2/assets"
+    return ASSET_BASE
+
 def asset_info(ticker):
     """Company name + validity for a symbol.
     Live (key present): Alpaca Assets endpoint -> real name; 404 -> not a real ticker.
@@ -39,7 +48,7 @@ def asset_info(ticker):
         return {"ticker": "", "name": "", "valid": False, "verified": True}
     if has_alpaca():
         try:
-            a = _get(f"{ASSET_BASE}/{t}")
+            a = _get(f"{_asset_base()}/{t}")
             return {"ticker": t, "name": a.get("name", "") or "", "valid": True,
                     "verified": True, "exchange": a.get("exchange", ""),
                     "tradable": bool(a.get("tradable", True))}
