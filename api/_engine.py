@@ -2,7 +2,7 @@
 MarketNarc engine (shared) — Alpaca snapshot -> Rex (technicals) + Pat (fundamentals, limited)
 -> Nate -> honest call. Deterministic. Sample mode when Alpaca keys absent. Never places trades.
 """
-import os, json, statistics, urllib.request, urllib.error, hashlib
+import os, json, statistics, urllib.request, urllib.error, hashlib, datetime
 
 DATA_BASE  = "https://data.alpaca.markets/v2/stocks"
 ASSET_BASE = "https://api.alpaca.markets/v2/assets"
@@ -68,8 +68,11 @@ def live_price(ticker):
         return bars[-1]["c"]
 
 def live_snapshot(ticker):
-    bars = _get(f"{DATA_BASE}/{ticker}/bars?timeframe=1Day&limit=60&feed=iex&adjustment=raw")
-    closes = [b["c"] for b in bars.get("bars", [])]
+    # Alpaca defaults to "today" when no start is given -> empty daily bars. Ask for a real window,
+    # then keep the most recent 60 closes.
+    start = (datetime.datetime.utcnow().date() - datetime.timedelta(days=130)).isoformat()
+    bars = _get(f"{DATA_BASE}/{ticker}/bars?timeframe=1Day&limit=1000&feed=iex&adjustment=raw&start={start}")
+    closes = [b["c"] for b in bars.get("bars", [])][-60:]
     if len(closes) < 25:
         raise ValueError("not enough history")
     try:

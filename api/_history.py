@@ -15,8 +15,10 @@ WARMUP = 55  # bars before the window so Nate's SMA50 signal is valid from day o
 
 
 def _live_closes(ticker, n):
-    bars = _get(f"{DATA_BASE}/{ticker}/bars?timeframe=1Day&limit={n}&feed=iex&adjustment=raw").get("bars", [])
-    return [b["c"] for b in bars]
+    # Alpaca needs a real start date (no start -> today only -> empty). Ask wide, keep the most recent n.
+    start = (date.today() - timedelta(days=int(n * 1.6) + 15)).isoformat()
+    bars = _get(f"{DATA_BASE}/{ticker}/bars?timeframe=1Day&limit=10000&feed=iex&adjustment=raw&start={start}").get("bars", [])
+    return [b["c"] for b in bars][-n:]
 
 
 def _sample_closes(ticker, n):
