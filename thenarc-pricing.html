@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Narc — one subscription, six doors</title>
+<meta name="description" content="One subscription unlocks all six modes of The Narc — Bills, Home, Pet, Tax, Debt, and open-enrollment Benefits. Lead with the annual plan; 3-day free trial. Runs on your device, private by design.">
+<meta name="theme-color" content="#0A1730">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--off:#EAF3F0;--ink800:#0A1730;--ink700:#1A3A66;--line:#294A78;--accent:#4FCB8E;--accent6:#3DB87B;--sea:#86B8E0;--warn:#E6B45C}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;min-height:100vh;color:var(--off);font-family:Inter,-apple-system,Segoe UI,Roboto,sans-serif;
+ background:radial-gradient(120% 80% at 50% -10%,#163460 0%,#0A1730 55%,#070F22 100%);background-attachment:fixed;padding:26px 18px 60px}
+.wrap{max-width:720px;margin:0 auto}
+.head{display:flex;align-items:center;gap:11px;justify-content:center;margin-bottom:4px}
+.head svg{width:36px;height:36px;border-radius:9px}
+.head .wm{font-family:Lato;font-weight:900;font-size:27px;letter-spacing:-.01em}.head .wm .n{color:var(--accent)}
+.tag{text-align:center;color:var(--sea);font-size:14px;margin:0 0 4px}
+.tag b{color:var(--off)}
+.priv{text-align:center;color:var(--accent);font-size:12px;font-weight:600;margin:0 0 16px}
+.doors{display:flex;gap:7px;flex-wrap:wrap;justify-content:center;margin:0 auto 18px;max-width:560px}
+.door{background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:12.5px;font-weight:700;color:var(--off)}
+.door .e{margin-right:5px}
+.season{display:none;text-align:center;background:rgba(230,180,92,.12);border:1px solid var(--warn);border-radius:12px;
+ padding:10px 14px;margin:0 auto 18px;max-width:560px;font-size:13px;color:var(--off);line-height:1.5}
+.season b{color:var(--warn)}
+.plans{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:0 0 14px}
+@media(max-width:560px){.plans{grid-template-columns:1fr}}
+.plan{background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:18px;padding:20px 18px;display:flex;flex-direction:column}
+.plan.feat{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent),0 14px 40px rgba(0,0,0,.35);position:relative}
+.badge{position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:var(--accent);color:var(--ink800);
+ font-family:Lato;font-weight:900;font-size:11px;letter-spacing:.06em;text-transform:uppercase;padding:4px 12px;border-radius:999px}
+.plan h3{font-family:Lato;font-weight:900;font-size:15px;margin:0 0 8px;letter-spacing:.02em}
+.price{font-family:Lato;font-weight:900;font-size:34px;line-height:1}
+.price small{font-size:15px;color:var(--sea);font-weight:700}
+.was{color:var(--sea);font-size:13px;margin:6px 0 0}.was s{opacity:.7}
+.per{color:var(--sea);font-size:12.5px;margin:4px 0 0;min-height:34px;line-height:1.4}
+.cta{margin-top:14px;background:var(--accent);color:var(--ink800);font-family:Lato;font-weight:900;font-size:16px;border:0;border-radius:13px;padding:15px;cursor:pointer;transition:.14s;min-height:48px}
+.cta:hover{background:var(--accent6)}
+.cta.alt{background:transparent;color:var(--accent);border:1px solid var(--line)}
+.cta.alt:hover{border-color:var(--accent)}
+.trial{text-align:center;color:var(--sea);font-size:12.5px;margin:2px 0 14px}
+.trial b{color:var(--off)}
+.msg{text-align:center;font-size:13px;line-height:1.5;background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:0 0 14px;display:none}
+.msg a{color:var(--accent);font-weight:700}
+.opena{display:block;text-align:center;color:var(--accent);font-weight:700;text-decoration:none;font-size:14px;margin:6px 0 18px}
+.fineprint{color:var(--sea);font-size:11.5px;line-height:1.6;text-align:center;max-width:600px;margin:14px auto 0}
+.brandmark{width:46px;height:46px;margin:22px auto 6px;opacity:.9;background:url(/ae-mark.png) center/contain no-repeat}
+.credit{text-align:center;color:var(--sea);font-size:11px}
+button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="head">
+    <svg viewBox="0 0 1024 1024" aria-hidden="true"><rect width="1024" height="1024" rx="232" fill="#0A1730"/><circle cx="445" cy="430" r="235" fill="none" stroke="#4FCB8E" stroke-width="64"/><polyline points="362,525 362,335 528,525 528,335" fill="none" stroke="#4FCB8E" stroke-width="46" stroke-linecap="round" stroke-linejoin="round"/><line x1="612" y1="597" x2="775" y2="760" stroke="#4FCB8E" stroke-width="82" stroke-linecap="round"/></svg>
+    <span class="wm">The<span class="n">Narc</span></span>
+  </div>
+  <p class="tag"><b>Snap anything that's costing you money.</b> One subscription, six doors.</p>
+  <p class="priv">🔒 Runs on your device. Private by design. Cancel anytime.</p>
+
+  <div class="doors">
+    <span class="door"><span class="e">🧾</span>Bills</span>
+    <span class="door"><span class="e">🏠</span>Home</span>
+    <span class="door"><span class="e">🐾</span>Pet</span>
+    <span class="door"><span class="e">🧮</span>Tax</span>
+    <span class="door"><span class="e">⚖️</span>Debt</span>
+    <span class="door"><span class="e">🩺</span>Benefits</span>
+  </div>
+
+  <div class="season" id="season"></div>
+  <div class="msg" id="msg"></div>
+
+  <div class="plans">
+    <div class="plan feat">
+      <div class="badge" id="annualBadge">Best value</div>
+      <h3>Annual</h3>
+      <div class="price" id="annualPrice">$69.99<small>/yr</small></div>
+      <div class="was" id="annualWas"></div>
+      <div class="per" id="annualPer">Just $5.83/mo, billed yearly. Unlocks all six modes.</div>
+      <button class="cta" onclick="startCheckout('annual',this)">Start 3-day free trial →</button>
+    </div>
+    <div class="plan">
+      <h3>Monthly</h3>
+      <div class="price" id="monthlyPrice">$9.99<small>/mo</small></div>
+      <div class="was" id="monthlyWas"></div>
+      <div class="per" id="monthlyPer">Month to month. Unlocks all six modes.</div>
+      <button class="cta alt" onclick="startCheckout('monthly',this)">Start 3-day free trial →</button>
+    </div>
+  </div>
+  <p class="trial">✓ <b>3-day free trial</b> on every plan · ✓ one price unlocks <b>all six modes</b> · ✓ cancel anytime</p>
+
+  <a class="opena" href="/thenarc-app">Just want to look first? Open The Narc free →</a>
+
+  <p class="fineprint" id="fineprint">Prices are confirmed at checkout. The Narc is educational and runs on your device — it flags what's wrong and drafts the letter; you decide and file. Not legal, medical, tax, or financial advice.</p>
+
+  <div class="brandmark" aria-label="Accelerated Experiences"></div>
+  <p class="credit">Built by Accelerated Experiences, LLC</p>
+</div>
+
+<script>
+/* ---- pricing config (display). The server /api/narc-checkout is the source of truth for the actual charge. ---- */
+var PRICING={
+  standard:{ annual:{price:'$69.99',per:'Just $5.83/mo, billed yearly. Unlocks all six modes.'},
+             monthly:{price:'$9.99',per:'Month to month. Unlocks all six modes.'} },
+  seasonal:{ annual:{price:'$59.99',was:'$69.99',per:'In-season rate — $5.00/mo, billed yearly. Locks in your price for the year.'},
+             monthly:{price:'$7.99',was:'$9.99',per:'Intro rate for your first 3 months, then $9.99/mo. Cancel anytime.'} }
+};
+var SEASONS={ tax:{label:'Tax season',line:'It\'s <b>tax season</b> — the Tax mode is the wedge, and the annual plan is at its lowest. Come for the refund check, keep it for Bills, Home, Pet, Debt and Benefits all year.'},
+              benefits:{label:'Open enrollment',line:'It\'s <b>open-enrollment season</b> — scan your benefits packet with the new Benefits mode, and lock in the annual plan at its lowest.'} };
+function seasonNow(){var m=new Date().getMonth()+1; if(m>=1&&m<=4)return 'tax'; if(m>=10&&m<=12)return 'benefits'; return null;}
+
+function applyPricing(){
+  var s=seasonNow(), set=s?PRICING.seasonal:PRICING.standard;
+  document.getElementById('annualPrice').innerHTML=set.annual.price+'<small>/yr</small>';
+  document.getElementById('monthlyPrice').innerHTML=set.monthly.price+'<small>/mo</small>';
+  document.getElementById('annualPer').textContent=set.annual.per;
+  document.getElementById('monthlyPer').textContent=set.monthly.per;
+  document.getElementById('annualWas').innerHTML=set.annual.was?('<s>'+set.annual.was+'/yr</s> in-season saving'):'';
+  document.getElementById('monthlyWas').innerHTML=set.monthly.was?('then '+set.monthly.was+'/mo'):'';
+  document.getElementById('annualBadge').textContent=s?'Best value · in-season':'Best value';
+  if(s){var sb=document.getElementById('season');sb.style.display='block';sb.innerHTML='🗓️ '+SEASONS[s].line;}
+}
+
+function showMsg(html){var m=document.getElementById('msg');m.style.display='block';m.innerHTML=html;m.scrollIntoView({behavior:'smooth'});}
+
+async function startCheckout(plan,btn){
+  var old=btn.textContent; btn.disabled=true; btn.textContent='One sec…';
+  try{
+    var r=await fetch('/api/narc-checkout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({plan:plan})});
+    var j=await r.json();
+    if(j && j.url){ location.href=j.url; return; }
+    if(j && j.staged){
+      showMsg("💚 <b>The Narc launches paid access soon.</b> For now, every mode is <b>free</b> while we finish setup — <a href=\"/thenarc-app\">open The Narc and try all six doors →</a>");
+    } else {
+      showMsg("Couldn't start checkout just now. You can still <a href=\"/thenarc-app\">use The Narc free →</a>");
+    }
+  }catch(e){
+    showMsg("Couldn't reach checkout. You can still <a href=\"/thenarc-app\">use The Narc free →</a>");
+  }
+  btn.disabled=false; btn.textContent=old;
+}
+
+/* ---- return from Stripe: verify + store the unlock token ---- */
+async function handleReturn(){
+  var q=new URLSearchParams(location.search);
+  if(q.get('canceled')){ showMsg("No charge made — checkout was canceled. Whenever you're ready, your <b>3-day free trial</b> is right here."); return; }
+  var paid=q.get('paid');
+  if(paid && paid.indexOf('cs_')===0){
+    showMsg("Confirming your subscription…");
+    try{
+      var r=await fetch('/api/narc-verify',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({session_id:paid})});
+      var j=await r.json();
+      if(j && j.ok && j.token){
+        try{localStorage.setItem('narc_token',j.token);localStorage.setItem('narc_until',String(j.until||''));}catch(e){}
+        showMsg("✅ <b>You're in — all six modes unlocked.</b> <a href=\"/thenarc-app\">Open The Narc →</a>");
+      } else {
+        showMsg("We couldn't confirm that just yet. If you were charged, it can take a moment — refresh, or <a href=\"/thenarc-app\">open The Narc →</a>");
+      }
+    }catch(e){ showMsg("We couldn't confirm that just yet. <a href=\"/thenarc-app\">Open The Narc →</a>"); }
+  }
+}
+
+applyPricing();
+handleReturn();
+</script>
+<script src="/family-nav.js" defer></script>
+</body>
+</html>

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>MarketNarc — the small-stock market, read honestly</title>
-<meta name="description" content="Build a basket of the penny and mid-cap stocks you're following, see Nate's honest read on each, and watch one graph compare Nate's calls vs your basket vs the market. Educational — never buying, selling, or advice.">
+<meta name="description" content="Build a basket of the penny and mid-cap stocks you're following, see Nate's honest risk read on each, and watch one graph ask whether following Nate's read hurt less than just holding. Educational — never buying, selling, or advice.">
 <meta name="theme-color" content="#0B1017">
 <link rel="icon" href="/marketnarc-icon.svg" type="image/svg+xml">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
@@ -99,7 +99,7 @@ canvas{width:100%!important;height:280px!important}
 
   <!-- THE ONE GRAPH -->
   <div class="card">
-    <h2>📈 Nate vs your basket vs the market</h2>
+    <h2>📉 The risk story — does following Nate hurt <b>less</b>?</h2>
     <div class="gbar">
       <div class="seg" id="win">
         <button data-w="1M" type="button">1M</button>
@@ -112,13 +112,13 @@ canvas{width:100%!important;height:280px!important}
       </div>
       <span class="mode" id="mode">—</span>
     </div>
-    <canvas id="chart" aria-label="Three-line comparison of Nate's calls, your basket, and the market"></canvas>
+    <canvas id="chart" aria-label="Three-line comparison: following Nate's read vs your basket vs the market"></canvas>
     <div class="legend">
       <span><i style="background:#6AA9FF"></i>The market</span>
       <span><i style="background:#54D6A6"></i>Your basket (just holding)</span>
-      <span><i style="background:#F2A93B"></i>Following Nate's calls</span>
+      <span><i style="background:#F2A93B"></i>Following Nate's read</span>
     </div>
-    <p class="gnote" id="gnote">All three start at 100 so you compare their <b>% moves</b>, not their prices. If <b>Nate's amber line</b> sits above your basket, his timing helped; if your <b>basket</b> beats <b>the market</b>, your picks beat the small-cap field.</p>
+    <p class="gnote" id="gnote">All three start at 100 so you compare their <b>% moves</b>, not their prices. The amber line's job isn't to <i>win</i> — it's to <b>lose less</b>. Watch the drops: when the small-cap market dives, does <b>following Nate's read</b> fall less than just holding your basket? That's the honest question. Timing rarely beats buy-and-hold on the upside — but a good read can spare you some of the pain on the way down.</p>
   </div>
 
   <!-- LEARNING -->
@@ -128,7 +128,7 @@ canvas{width:100%!important;height:280px!important}
   </div>
 
   <div class="foot">
-    <b>Educational — not financial advice.</b> MarketNarc never buys, sells, or places a trade, and never tells you to. Nate earns his confidence and says "I'm not sure" when he should. Penny stocks are the riskiest corner of the market — never risk money you can't afford to lose.<br>
+    <b>Educational — not financial advice.</b> MarketNarc never buys, sells, or places a trade, and never tells you to. Nate tells you the <b>risk story</b> — where the danger is and how sure he is — never a call to act. He earns his confidence and says "I'm not sure" when he should. Penny stocks are the riskiest corner of the market — never risk money you can't afford to lose.<br>
     <a href="/">← The Narcs</a>
   </div>
 </div>
@@ -145,6 +145,9 @@ var win='3M', bench='IWM';
 
 /* ---------- render Nate's reads ---------- */
 function chipCls(v){return v==='BUY'?'c-buy':v==='SELL'?'c-sell':v==='WATCH'?'c-watch':'c-hold';}
+/* Verdicts are risk-reads, not trade calls. Raw API value drives color; user sees the risk-read label. */
+var VLABEL={BUY:'LEANS UP',SELL:'LEANS DOWN',HOLD:'NO EDGE',WATCH:'TOO THIN'};
+function vlabel(v){return VLABEL[v]||v||'TOO THIN';}
 async function renderList(){
   var el=document.getElementById('list');
   if(!basket.length){el.innerHTML='<p class="empty">Your basket is empty — add a ticker above to get Nate\'s read.</p>';return;}
@@ -161,7 +164,7 @@ async function fetchRead(t){
     var px=document.getElementById('px-'+t); if(px) px.textContent = j.price!=null ? ('$'+j.price) : '';
     var rd=document.getElementById('rd-'+t); if(!rd) return;
     var conf = j.not_sure ? 'not sure' : (j.confidence+'% confidence');
-    rd.innerHTML='<div class="sr" style="margin-top:8px"><span class="chip '+chipCls(j.verdict)+'">'+j.verdict+'</span><span class="conf">'+conf+'</span></div>'+
+    rd.innerHTML='<div class="sr" style="margin-top:8px"><span class="chip '+chipCls(j.verdict)+'">'+vlabel(j.verdict)+'</span><span class="conf">'+conf+'</span></div>'+
       '<p class="why">'+esc(j.why||'')+'</p>'+
       (j.bull?'<p class="bb"><b>For it:</b> '+esc(j.bull)+'</p>':'')+
       (j.bear?'<p class="bb"><b>Against it:</b> '+esc(j.bear)+'</p>':'')+
@@ -203,10 +206,10 @@ function shareRead(t){
   var conf=j.not_sure?'Not sure — signals too thin to call':(j.confidence+'% confidence');
   NarcReceipt.card({
     el:host, narc:'MarketNarc', accent:VACC[v]||'#F2A93B', bg:'#0B1017',
-    headline: t+(name?(' · '+name):'')+' — Nate says '+v,
-    big: v,
+    headline: t+(name?(' · '+name):'')+" — Nate's read: "+vlabel(v),
+    big: vlabel(v),
     sub: conf+'. '+(j.why||'')+(j.mode==='sample'?' (sample data)':''),
-    share: 'MarketNarc: Nate reads '+t+' as '+v+' ('+conf+'). Educational, not advice.'
+    share: 'MarketNarc: Nate reads '+t+' as "'+vlabel(v)+'" ('+conf+'). A risk read — not advice.'
   });
 }
 
@@ -235,7 +238,7 @@ async function drawGraph(){
           y:{ticks:{color:'#5F7089',font:{size:10}},grid:{color:'rgba(255,255,255,.05)'},title:{display:true,text:'rebased to 100',color:'#5F7089',font:{size:10}}}}}});
     var extra = (d.dropped&&d.dropped.length)? ' No live data for '+d.dropped.join(', ')+' (often true for OTC pennies).' : '';
     var base = d.mode==='sample' ? 'Sample preview — illustrative only. Add your Alpaca keys to switch on the real feed.' :
-      'All three start at 100 so you compare % moves. Amber above your basket = Nate\'s timing helped; basket above the market = your picks beat the small-cap field.';
+      'All three start at 100 so you compare % moves. The amber line\'s job is to lose less, not to win — look at the worst dips and ask whether following Nate\'s read softened the fall. It often won\'t beat buy-and-hold going up; the honest test is whether it hurt less going down.';
     note.innerHTML = base + extra;
   }catch(e){ mode.textContent='couldn\'t load'; }
 }
@@ -252,10 +255,10 @@ var LESSONS=[
   'The classic penny-stock scam. Someone quietly buys a cheap, thinly-traded stock, then <b>"pumps"</b> it with hype — social posts, group chats, emails, and now AI-generated content and bot networks — claiming secret news or a can\'t-miss breakout. Regular people pile in, the price spikes, and the promoters <b>"dump"</b> their shares on the crowd. Red flags:<ul><li>Unsolicited tips and "act NOW before it\'s too late."</li><li>Price spiking on no real, verifiable news.</li><li>Heavy promotion; "huge announcement coming" that never quite arrives.</li><li>A tiny, little-known company with almost no real information.</li></ul><b>The rule:</b> if a stock doubles on a tweet instead of an official SEC filing, treat it as a <b>warning, not an opportunity.</b>'],
  ['Liquidity &amp; the spread — the quiet trap',
   'A penny stock can be <b>hard to get out of.</b> If few people trade it, the gap between the buy price and the sell price (the <b>spread</b>) can be huge, and a "$1.00" quote doesn\'t mean you\'ll actually get $1.00 when you sell. Thin volume means the price on your screen and the price you can really transact at aren\'t the same thing. This is why big apps avoid these names — and why an honest read matters more here.'],
- ['What Nate\'s calls actually mean',
-  'Nate reads price, trend, momentum and volatility and gives one of four calls with a confidence score he has to <b>earn</b> (it\'s capped — he won\'t fake certainty):<ul><li><b>BUY</b> — trend and momentum agree, pointing up.</li><li><b>SELL</b> — both point down.</li><li><b>HOLD</b> — drifting, no real edge either way.</li><li><b>WATCH</b> — the signals conflict or the data\'s too thin to call. He\'d rather wait than guess.</li></ul>He is not a financial advisor and never tells you to trade. He tells you what the numbers say, plainly, and admits when he doesn\'t know.'],
+ ['What Nate\'s read actually means (a risk story, not a call)',
+  'Nate reads price, trend, momentum and volatility and gives one of four <b>risk reads</b> with a confidence score he has to <b>earn</b> (it\'s capped — he won\'t fake certainty). Think of them as "how much pain is likely here," not "buy this":<ul><li><b>Leans up</b> — trend and momentum agree, pointing up; the calmer side of a volatile name <i>for now</i> — still risky.</li><li><b>Leans down</b> — both point down; elevated risk of more pain from here.</li><li><b>No edge</b> — drifting, no real read either way.</li><li><b>Too thin</b> — the signals conflict or the data\'s too sparse to call. Highest uncertainty; he\'d rather wait than guess.</li></ul>(The color still tracks the underlying signal — green up, coral down, amber uncertain.)He is not a financial advisor and never tells you to trade. He tells you the <b>risk story</b> — where the danger is and how sure he is — and admits when he doesn\'t know. What you do with it is yours.'],
  ['How to read the one graph',
-  'Three lines, all starting at <b>100</b> so you\'re comparing % moves, not dollar prices:<ul><li><b>Blue — the market:</b> the small-cap index (or S&amp;P if you switch).</li><li><b>Green — your basket:</b> what happens if you simply hold your watchlist.</li><li><b>Amber — following Nate:</b> what happens if you\'re in when Nate says BUY/HOLD and in cash when he says SELL/WATCH.</li></ul>If amber beats green, Nate\'s timing added something. If green beats blue, your picks beat the field. If they\'re all tangled together — that\'s honest too.'],
+  'Three lines, all starting at <b>100</b> so you\'re comparing % moves, not dollar prices:<ul><li><b>Blue — the market:</b> the small-cap index (or S&amp;P if you switch).</li><li><b>Green — your basket:</b> what happens if you simply hold your watchlist.</li><li><b>Amber — following Nate\'s read:</b> what happens if you\'re in when Nate reads lower-risk (Leans up / No edge) and in cash when he reads higher-risk (Leans down / Too thin).</li></ul>The point isn\'t to "win." Watch the <b>drops</b>: if amber falls less than green when the market dives, Nate\'s read spared you some pain. On the upside it often <i>won\'t</i> beat simply holding — and that\'s honest too. Less pain, not a hot streak.'],
 ];
 function renderLessons(){
   var el=document.getElementById('lessons');

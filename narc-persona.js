@@ -23,8 +23,8 @@
       tag: "I lay out your rights against debt collectors in plain English. In your corner — not theirs.",
       signoff: "Know your rights and they lose their leverage. Put everything in writing." },
     market: { emoji: "👁️", name: "MarketNarc",
-      tag: "Nate reads the small-cap corner honestly, earns his confidence, and says “not sure” when he should. Never a trade, never advice.",
-      signoff: "I told you what the numbers say — the decision is yours. —Nate" }
+      tag: "Nate reads the small-cap corner as a risk story, not a hot tip — where the danger is, how thin the data is, and when he honestly can't tell. Never a trade, never advice.",
+      signoff: "That's the risk as I read it — not a call to act. The decision, and the downside, are yours. —Nate" }
   };
 
   function keyFromPath() {

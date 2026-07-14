@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Narc — snap anything that's costing you money</title>
+<meta name="description" content="One tool, six doors: bills, home assessment, pet policy, taxes, debt collectors, and open-enrollment benefits. The Narc reads what's costing you money, tells you plainly what's wrong, and writes the letter to fight it. Runs entirely in your browser — nothing you enter is sent anywhere.">
+<meta name="theme-color" content="#0A1730">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+ --off:#EAF3F0;
+ --ink800:#0A1730;--ink700:#1A3A66;--ink600:#224676;--line:#294A78;
+ --accent:#4FCB8E;--accent6:#3DB87B;--sea:#86B8E0;
+ --bg1:#163460;--bg2:#0A1730;--bg3:#070F22;
+ --ok:#56C98B;--warn:#E6B45C;--bad:#F0846A}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;min-height:100vh;color:var(--off);
+ background:radial-gradient(120% 80% at 50% -10%,var(--bg1) 0%,var(--bg2) 55%,var(--bg3) 100%);
+ background-attachment:fixed;
+ font-family:Inter,-apple-system,Segoe UI,Roboto,sans-serif;
+ padding:24px 18px calc(104px + env(safe-area-inset-bottom,0px));
+ transition:background .35s ease}
+.tnum{font-variant-numeric:tabular-nums}
+.app{max-width:660px;margin:0 auto}
+.head{display:flex;align-items:center;gap:11px;justify-content:center;margin-bottom:4px}
+.head svg{width:34px;height:34px;border-radius:9px;transition:.3s}
+.head .wm{font-family:Lato;font-weight:900;font-size:25px;letter-spacing:-.01em}
+.head .wm .n{color:var(--accent);transition:color .3s}
+.modechip{display:block;text-align:center;font-family:Lato;font-weight:900;font-size:11px;letter-spacing:.14em;
+ text-transform:uppercase;color:var(--accent);margin:0 0 2px;transition:color .3s}
+.sub{text-align:center;color:var(--sea);font-size:13.5px;font-style:italic;margin:0 0 4px;transition:color .3s}
+.priv{text-align:center;color:var(--accent);font-size:12px;font-weight:600;margin:0 0 18px;transition:color .3s}
+.priv b{color:var(--off)}
+/* shared input bar */
+.inbar{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin:0 0 6px}
+.inbtn{background:var(--ink700);border:1px solid var(--accent);color:var(--accent);font-family:Lato;font-weight:900;
+ font-size:13px;border-radius:999px;padding:9px 14px;cursor:pointer;min-height:44px;transition:.14s}
+.inbtn:hover{background:var(--accent);color:var(--ink800)}
+.inbtn.rec{background:var(--bad);border-color:var(--bad);color:#2A0F0A}
+.inhint{color:var(--sea);font-size:12px}
+.innote{color:var(--sea);font-size:11px;margin:0 0 16px;line-height:1.5}
+.scanpanel{background:var(--ink800);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:0 0 16px}
+.sp-t{font-size:12.5px;color:var(--off);margin-bottom:8px}
+.numchip{background:var(--ink700);border:1px solid var(--accent);color:var(--accent);font-weight:800;border-radius:999px;
+ padding:6px 11px;margin:3px;cursor:pointer;font-size:13px;min-height:44px}
+.sp-d{margin-top:8px;font-size:12px;color:var(--sea)}
+.sp-raw{margin-top:6px;font-family:ui-monospace,Menlo,monospace;font-size:11px;color:var(--sea);white-space:pre-wrap;max-height:120px;overflow:auto}
+/* persona signature */
+.narcsig{display:flex;gap:11px;align-items:flex-start;max-width:660px;margin:0 auto 16px;
+ background:rgba(255,255,255,.035);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.narcsig .av{flex:0 0 auto;width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;
+ font-size:18px;background:rgba(255,255,255,.05);border:1px solid var(--line)}
+.narcsig .tx{font-size:12.5px;line-height:1.5;color:var(--sea)}
+.narcsig .tx b{color:var(--accent);font-weight:800}
+.narcsignoff{margin:16px 0 2px;padding:12px 14px;border-radius:12px;border-left:3px solid var(--accent);
+ background:rgba(255,255,255,.035);font-size:13.5px;line-height:1.5;font-style:italic;color:var(--off)}
+.narcsignoff b{font-style:normal;color:var(--accent);font-weight:800}
+/* cards */
+.card{background:rgba(255,255,255,.035);border:1px solid var(--line);border-radius:20px;padding:22px 20px;margin-bottom:18px}
+.card h2{font-family:Lato;font-weight:900;font-size:16px;margin:0 0 4px}
+.card .h2sub{color:var(--sea);font-size:13px;margin:0 0 15px;line-height:1.5}
+.tog{display:flex;flex-direction:column;gap:10px;margin-bottom:4px}
+.tog label{display:flex;align-items:flex-start;gap:11px;font-size:14px;cursor:pointer;color:var(--off);line-height:1.4}
+.tog input{margin-top:2px;width:18px;height:18px;accent-color:var(--accent);flex:0 0 auto}
+.rows{display:flex;flex-direction:column;gap:9px;margin-bottom:12px}
+.rw{display:grid;grid-template-columns:1fr 108px 34px;gap:8px;align-items:center}
+.rw input{background:var(--ink800);border:1px solid var(--line);border-radius:10px;color:var(--off);
+ font-family:Inter;font-size:14px;padding:11px 12px;width:100%}
+.rw input:focus{outline:none;border-color:var(--accent)}
+.rw input::placeholder{color:#5c789e}
+.rw .amtwrap{position:relative}.rw .amtwrap::before{content:"$";position:absolute;left:11px;top:11px;color:var(--sea);font-size:14px}
+.rw .amtwrap input{padding-left:22px;text-align:right}
+.rmx{background:none;border:1px solid var(--line);color:var(--sea);border-radius:9px;height:44px;min-height:44px;cursor:pointer;font-size:16px}
+.rmx:hover{border-color:var(--bad);color:var(--bad)}
+.fld{display:flex;flex-direction:column;gap:9px;margin-bottom:4px}
+.fld .amtwrap{position:relative}.fld .amtwrap::before{content:"$";position:absolute;left:13px;top:13px;color:var(--sea);font-size:14px}
+.fld input{background:var(--ink800);border:1px solid var(--line);border-radius:10px;color:var(--off);font-family:Inter;font-size:14px;padding:12px 13px;width:100%}
+.fld .amtwrap input{padding-left:24px}
+.fld input:focus{outline:none;border-color:var(--accent)}
+.fld input::placeholder{color:#5c789e}
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:520px){.fg{grid-template-columns:1fr}}
+.f label{display:block;font-size:12.5px;color:var(--sea);margin-bottom:5px;font-weight:600}
+.f input,.f select{width:100%;background:var(--ink800);border:1px solid var(--line);border-radius:10px;color:var(--off);font-family:Inter;font-size:15px;padding:11px 12px}
+.f input:focus,.f select:focus{outline:none;border-color:var(--accent)}
+.f .money{position:relative}.f .money input{padding-left:22px}.f .money::before{content:"$";position:absolute;left:11px;top:34px;color:var(--sea);font-size:14px}
+.seg{display:flex;gap:9px;margin-bottom:16px;flex-wrap:wrap}
+.seg label{flex:1;min-width:180px;display:flex;gap:9px;align-items:flex-start;background:var(--ink800);border:1px solid var(--line);border-radius:12px;padding:12px 13px;cursor:pointer;font-size:14px}
+.seg input{margin-top:2px;accent-color:var(--accent)}
+.seg label:has(input:checked){border-color:var(--accent)}
+.rowbtns{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}
+.lnk{background:var(--ink700);border:1px solid var(--line);color:var(--off);font-weight:600;font-size:13px;border-radius:999px;padding:9px 15px;cursor:pointer;min-height:44px}
+.lnk:hover{border-color:var(--accent)}
+.go{display:block;width:100%;margin-top:16px;background:var(--accent);color:var(--ink800);font-family:Lato;font-weight:900;
+ font-size:17px;border:0;border-radius:14px;padding:16px;cursor:pointer;transition:.14s}
+.go:hover{background:var(--accent6)}
+.go:disabled{opacity:.45;cursor:default}
+/* report */
+#report{display:none}
+.dsum{font-size:14px;color:var(--off);background:var(--ink800);border:1px solid var(--line);border-radius:11px;padding:11px 14px;margin:0 0 14px;line-height:1.5}
+.dsum b{color:var(--accent)}
+.line{border-top:1px solid var(--line);padding:11px 0}.line:first-child{border-top:0}
+.lrow{display:flex;align-items:baseline;gap:8px}
+.lname{font-weight:700;font-size:14.5px;line-height:1.25}
+.lwhat{display:block;color:var(--sea);font-size:12.5px;font-weight:400;margin-top:2px}
+.lamt{margin-left:auto;font-family:Lato;font-weight:900;font-size:14px;white-space:nowrap}
+.chip{display:inline-block;margin-top:7px;font-size:9.5px;font-weight:800;letter-spacing:.3px;padding:3px 9px;border-radius:999px;text-transform:uppercase}
+.chip.ok,.chip.likely,.chip.right{color:#08210F;background:var(--ok)}
+.chip.warn,.chip.watch,.chip.possible{color:var(--warn);border:1px solid var(--warn)}
+.chip.info{color:var(--sea);border:1px solid var(--sea)}
+.chip.did{color:#2A0F0A;background:var(--warn)}
+.chip.bad,.chip.act{color:#2A0F0A;background:var(--bad)}
+.lflag{margin-top:8px;font-size:13px;line-height:1.45;border-radius:9px;padding:9px 12px}
+.lflag.warn,.lflag.watch{background:rgba(230,180,92,.10);border-left:3px solid var(--warn)}
+.lflag.bad,.lflag.act{background:rgba(240,132,106,.11);border-left:3px solid var(--bad)}
+.lflag.ok,.lflag.likely,.lflag.possible,.lflag.right,.lflag.info,.lflag.did{background:rgba(255,255,255,.04);border-left:3px solid var(--accent)}
+.lflag b{color:var(--off)}
+.bottom{background:var(--ink800);border:1px solid var(--line);border-radius:12px;padding:14px;margin:12px 0}
+.brow{display:flex;align-items:baseline;justify-content:space-between;font-size:14px;padding:4px 0}
+.brow span{color:var(--sea)}.brow b{font-family:Lato;font-weight:900}
+.brow.big{border-top:1px solid var(--line);margin-top:6px;padding-top:10px}.brow.big b{font-size:20px;color:var(--accent)}
+.bottom .big{font-family:Lato;font-weight:900;font-size:22px;color:var(--accent)}
+.bottom .cav{font-size:12.5px;color:var(--sea);margin-top:6px;line-height:1.5}
+.strike{text-decoration:line-through;opacity:.6}
+.todo{font-size:14px;line-height:1.55;color:var(--off);background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:11px;padding:12px 14px;margin-bottom:12px}
+.todo b{color:var(--accent)}.todo ul{margin:8px 0 0;padding-left:18px}.todo li{margin-bottom:5px}
+.letter{background:var(--ink800);border:1px dashed var(--line);border-radius:12px;padding:16px;margin:12px 0;font-family:ui-monospace,Menlo,monospace;font-size:12.5px;line-height:1.6;white-space:pre-wrap;color:var(--off)}
+.lettl{font-family:Lato;font-weight:900;font-size:14px;color:var(--accent);margin:14px 0 6px}
+.nfa{font-size:12px;color:var(--sea);text-align:center;line-height:1.5;margin:6px 0 0}
+.none{color:var(--sea);font-size:14px;line-height:1.6}
+.rcpt-t{text-align:center;font-family:Lato;font-weight:900;color:var(--accent);margin:22px 0 8px;font-size:13px}
+.foot{text-align:center;margin-top:20px}
+.foot a{color:var(--accent);font-weight:700;text-decoration:none;font-size:14px}
+.brandmark{width:46px;height:46px;margin:22px auto 8px;opacity:.9;background:url(/ae-mark.png) center/contain no-repeat}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+/* paywall — gate at the reveal (only shows when NARC_PAYMENTS_LIVE is on and no unlock token) */
+.pw-wrap{position:fixed;inset:0;z-index:120;display:flex;align-items:center;justify-content:center;padding:22px;
+ background:rgba(6,12,26,.72);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.pw-card{max-width:400px;width:100%;background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.03));
+ border:1px solid var(--line);border-radius:20px;padding:26px 22px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.55)}
+.pw-lock{font-size:30px;margin-bottom:4px}
+.pw-doors{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin:0 0 14px;font-size:17px}
+.pw-h{font-family:Lato;font-weight:900;font-size:19px;margin:0 0 8px}
+.pw-p{font-size:13.5px;color:var(--sea);line-height:1.55;margin:0 0 18px}
+.pw-p b{color:var(--off)}
+.pw-cta{display:block;width:100%;background:var(--accent);color:var(--ink800);font-family:Lato;font-weight:900;font-size:16px;border:0;border-radius:13px;padding:15px;cursor:pointer;min-height:48px}
+.pw-cta:hover{background:var(--accent6)}
+.pw-alt{display:block;width:100%;margin-top:10px;background:transparent;color:var(--accent);border:1px solid var(--line);font-weight:700;font-size:14px;border-radius:12px;padding:12px;cursor:pointer;min-height:44px}
+.pw-alt:hover{border-color:var(--accent)}
+.pw-note{font-size:11.5px;color:var(--sea);margin:10px 0 0;min-height:15px;line-height:1.4}
+.pw-close{margin-top:10px;background:none;border:0;color:var(--sea);font-size:12.5px;cursor:pointer;text-decoration:underline}
+/* frosted-glass ("glossed ice") bottom mode switcher */
+.ntab-wrap{position:fixed;left:0;right:0;bottom:0;z-index:80;display:flex;justify-content:center;
+ padding:0 12px calc(11px + env(safe-area-inset-bottom,0px));pointer-events:none}
+.ntab{pointer-events:auto;display:flex;width:100%;max-width:560px;justify-content:space-between;gap:2px;
+ background:rgba(16,26,40,.5);backdrop-filter:blur(20px) saturate(170%);-webkit-backdrop-filter:blur(20px) saturate(170%);
+ border:1px solid rgba(255,255,255,.16);border-radius:23px;padding:7px 8px;
+ box-shadow:0 12px 44px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.28),inset 0 -1px 0 rgba(255,255,255,.05)}
+.ntab button{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 3px;border:0;background:none;
+ border-radius:16px;color:#c1d0e6;font-family:Inter;font-size:10px;font-weight:700;letter-spacing:.01em;cursor:pointer;
+ transition:background .15s,color .15s,transform .1s}
+.ntab button:active{transform:scale(.94)}
+.ntab button .ic{font-size:20px;line-height:1}
+.ntab button.on{background:rgba(255,255,255,.13);color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.3)}
+.ntab button.on .ic{filter:drop-shadow(0 0 9px var(--g))}
+@media(max-width:400px){.ntab button{font-size:9px}.ntab button .ic{font-size:18px}}
+@media print{.ntab-wrap,.inbar,.innote,.scanpanel,.foot,.priv,.rowbtns,.readbar{display:none!important}body{background:#fff;color:#111}.card{border:0}}
+</style>
+</head>
+<body data-mode="bill">
+<div class="app">
+  <div class="head">
+    <svg id="hlogo" viewBox="0 0 1024 1024" aria-hidden="true"></svg>
+    <span class="wm">The<span class="n">Narc</span></span>
+  </div>
+  <span class="modechip" id="modechip">Bills</span>
+  <p class="sub" id="sub">your medical bill, decoded — in plain English</p>
+  <p class="priv" id="priv">🔒 Runs entirely in your browser. Nothing you type is sent anywhere.</p>
+
+  <div class="inbar">
+    <button class="inbtn" type="button" onclick="M('scan')">📷 Scan a photo</button>
+    <button class="inbtn" id="talkbtn" type="button" onclick="M('talk')">🎙️ Talk</button>
+    <span class="inhint">— or just type below</span>
+  </div>
+  <p class="innote" id="nstatus">Scanning &amp; voice run <b>on your device</b> with your browser's own tools — the photo and audio never leave your phone.</p>
+  <div class="scanpanel" id="scanpanel" style="display:none"></div>
+
+  <div class="narcsig" id="personaSig"></div>
+
+  <div id="modeHost"></div>
+
+  <div class="card" id="report">
+    <h2 id="reportTitle">The Narc's read</h2>
+    <div id="reportbody"></div>
+    <div class="readbar" style="margin-top:14px;display:flex;gap:9px;justify-content:center;flex-wrap:wrap">
+      <button class="lnk" id="letterBtn" type="button" style="display:none" onclick="M('letter')">✉ Get your letter</button>
+      <button class="lnk" type="button" onclick="speakRead()">🔊 Read it to me</button>
+      <button class="lnk" id="stopread" type="button" style="display:none" onclick="stopRead()">⏹ Stop</button>
+    </div>
+    <div id="letterwrap" style="display:none;margin-top:14px">
+      <div class="lettl">✉ Here's your letter — fill in the [brackets], send it certified, keep a copy</div>
+      <div class="letter" id="lettertext"></div>
+      <div style="text-align:center;margin-top:10px"><button class="lnk" type="button" onclick="window.print()">🖨 Print / share</button></div>
+    </div>
+  </div>
+
+  <div class="foot"><a href="/">← The Narc home</a> &nbsp;·&nbsp; <a href="/marketnarc-app">Try MarketNarc</a></div>
+</div>
+
+<div id="paywall" class="pw-wrap" style="display:none" role="dialog" aria-modal="true" aria-label="Unlock The Narc">
+  <div class="pw-card">
+    <div class="pw-lock">🔒</div>
+    <div class="pw-doors">🧾 🏠 🐾 🧮 ⚖️ 🩺</div>
+    <h3 class="pw-h">Unlock all six doors</h3>
+    <p class="pw-p">Start your <b>3-day free trial</b>, then <b id="pwPrice">$69.99/yr</b>. One subscription unlocks Bills, Home, Pet, Tax, Debt and Benefits — all on your device, private.</p>
+    <button class="pw-cta" type="button" onclick="location.href='/thenarc-pricing'">Start 3-day free trial →</button>
+    <button class="pw-alt" type="button" onclick="pwRecheck()">I already subscribed</button>
+    <div class="pw-note" id="pwNote"></div>
+    <button class="pw-close" type="button" onclick="closePaywall()">Maybe later</button>
+  </div>
+</div>
+
+<nav class="ntab-wrap"><div class="ntab" id="ntab" aria-label="The Narc modes"></div></nav>
+<div class="brandmark" aria-label="Accelerated Experiences" title="An Accelerated Experiences, LLC app"></div>
+
+<script>
+/* ================================================================
+   THE NARC — one engine, six modes (config swap).
+   Accelerated Experiences, LLC. On-device, private, deterministic.
+   ================================================================ */
+
+/* ---------- shared helpers ---------- */
+function money(v){v=(''+v).replace(/[^0-9.\-]/g,'');var n=parseFloat(v);return isNaN(n)?0:n;}
+function fmt(n){return '$'+Math.round(n).toLocaleString();}
+function fmt2(n){return '$'+n.toLocaleString(undefined,{minimumFractionDigits:0,maximumFractionDigits:2});}
+function median(a){var b=a.slice().sort(function(x,y){return x-y;});var m=Math.floor(b.length/2);return b.length%2?b[m]:(b[m-1]+b[m])/2;}
+function norm(s){return (s||'').toLowerCase().replace(/[^a-z0-9]/g,'').trim();}
+function escapeHtml(s){return (''+s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+function $(id){return document.getElementById(id);}
+function nStatus(m){var e=$('nstatus');if(e)e.innerHTML=m;}
+function logoSVG(fill){return '<rect width="1024" height="1024" rx="232" fill="var(--bg2)"/>'
+ +'<circle cx="445" cy="430" r="235" fill="none" stroke="'+fill+'" stroke-width="64"/>'
+ +'<polyline points="362,525 362,335 528,525 528,335" fill="none" stroke="'+fill+'" stroke-width="46" stroke-linecap="round" stroke-linejoin="round"/>'
+ +'<line x1="612" y1="597" x2="775" y2="760" stroke="'+fill+'" stroke-width="82" stroke-linecap="round"/>';}
+
+/* last-focused input (for scan/talk drop-in) */
+var _lastIn=null;
+document.addEventListener('focusin',function(e){var t=e.target;if(t&&(t.tagName==='INPUT'||t.tagName==='TEXTAREA')&&t.type!=='checkbox'&&t.type!=='radio'&&t.type!=='button')_lastIn=t;});
+function fillLast(v){if(!_lastIn){nStatus('First <b>tap the box</b> you want to fill, then use Scan or Talk.');return false;}_lastIn.value=v;_lastIn.dispatchEvent(new Event('input',{bubbles:true}));_lastIn.dispatchEvent(new Event('change',{bubbles:true}));return true;}
+function pickNum(n){if(fillLast(n))nStatus('Dropped $'+n+' in. Tap another box + number to keep going.');}
+
+/* generic OCR: read numbers, show as tap-to-fill chips (used by home/pet/tax/debt/benefits) */
+function genericScan(){
+  function handle(text){
+    var m=text.match(/\$?\s?[0-9][0-9,]*(?:\.[0-9]{1,2})?/g)||[];var uniq=[];
+    m.forEach(function(x){var n=x.replace(/[^0-9.]/g,'');if(n&&uniq.indexOf(n)<0)uniq.push(n);});
+    var chips=uniq.slice(0,16).map(function(n){return '<button type="button" class="numchip" onclick="pickNum(\''+n+'\')">$'+n+'</button>';}).join('');
+    $('scanpanel').innerHTML='<div class="sp-t">📄 What I read — tap a number to drop it in the box you last tapped:</div><div>'+(chips||'<span style="color:var(--sea)">no numbers found</span>')+'</div><details class="sp-d"><summary>see all text</summary><div class="sp-raw">'+text.replace(/</g,'&lt;')+'</div></details>';
+    $('scanpanel').style.display='block';nStatus('Read on your device — nothing was sent anywhere.');
+  }
+  if(window.NarcOCR){NarcOCR.scan(handle,nStatus);return;}
+  nStatus('The photo reader is still loading — try again in a moment, or just type it in.');
+}
+function genericTalk(){
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition;var btn=$('talkbtn');
+  if(!SR){nStatus("Voice isn't supported in this browser — type it in, or try Chrome or Safari.");return;}
+  if(window._nrec){try{window._nrec.stop();}catch(e){}window._nrec=null;return;}
+  var rec=new SR();window._nrec=rec;rec.lang='en-US';rec.interimResults=false;rec.maxAlternatives=1;if(btn)btn.classList.add('rec');
+  nStatus('Listening… tap a box first, then say the answer (e.g. tap income, say "38000").');
+  rec.onresult=function(e){var t=e.results[0][0].transcript.trim();var num=t.replace(/[^0-9.]/g,'');fillLast((/\d/.test(num))?num:t);nStatus('Filled it — check it and fix anything.');};
+  rec.onerror=function(){nStatus("Didn't catch that — try again, or type it in.");};
+  rec.onend=function(){window._nrec=null;if(btn)btn.classList.remove('rec');};rec.start();
+}
+
+/* read-it-to-me */
+function narcText(){var el=$('reportbody');if(!el)return '';var t=el.innerText||el.textContent||'';return t.replace(/ /g,' ').replace(/\s+/g,' ').trim();}
+function toggleStop(on){var s=$('stopread');if(s)s.style.display=on?'inline-block':'none';}
+function speakRead(){if(!('speechSynthesis' in window))return;var t=narcText();if(!t)return;try{window.speechSynthesis.cancel();}catch(e){}var u=new SpeechSynthesisUtterance(t);u.rate=0.98;u.onend=function(){toggleStop(false);};u.onerror=function(){toggleStop(false);};window.speechSynthesis.speak(u);toggleStop(true);}
+function stopRead(){try{window.speechSynthesis.cancel();}catch(e){}toggleStop(false);}
+
+/* report plumbing shared by every mode */
+function showReport(html,receiptFn){
+  var m=MODES[ACTIVE];
+  var body=$('reportbody');
+  body.innerHTML=html;
+  // persona sign-off
+  var so=document.createElement('div');so.className='narcsignoff';
+  so.innerHTML=m.persona.signoff+' <b>— The Narc</b>';
+  body.appendChild(so);
+  $('reportTitle').textContent="The Narc's read · "+m.label;
+  try{ if(receiptFn && window.NarcReceipt) receiptFn(); }catch(e){}
+  var rep=$('report');rep.style.display='block';rep.scrollIntoView({behavior:'smooth'});
+}
+function chipRow(name,what,amt,s,chipTxt,why){
+  return '<div class="line"><div class="lrow"><span class="lname">'+name
+    +(what?'<span class="lwhat">'+what+'</span>':'')+'</span>'
+    +(amt!==''&&amt!=null?'<span class="lamt tnum">'+amt+'</span>':'')+'</div>'
+    +'<div><span class="chip '+s+'">'+chipTxt+'</span></div>'
+    +(why?'<div class="lflag '+s+'">'+why+'</div>':'')+'</div>';
+}
+
+/* ---------- MODE DISPATCH ---------- */
+var MODES={};
+var ORDER=['bill','home','paw','tax','collections','benefits'];
+var ACTIVE='bill';
+function M(action){
+  // gate the reveal: inputs/scan/talk stay free; the decode is what unlocks
+  if(action==='decode' && PAY.live && !PAY.unlocked){ openPaywall(); return; }
+  var m=MODES[ACTIVE];if(m&&typeof m[action]==='function')return m[action]();
+}
+
+function applyTheme(m){
+  var r=document.documentElement.style;
+  r.setProperty('--accent',m.accent);r.setProperty('--accent6',m.accent6);
+  r.setProperty('--sea',m.sea);r.setProperty('--line',m.line);
+  r.setProperty('--ink800',m.ink800);r.setProperty('--ink700',m.ink700);r.setProperty('--ink600',m.ink600);
+  r.setProperty('--bg1',m.bg1);r.setProperty('--bg2',m.bg2);r.setProperty('--bg3',m.bg3);
+  document.body.setAttribute('data-mode',m.key);
+  var mt=document.querySelector('meta[name=theme-color]');if(mt)mt.setAttribute('content',m.bg2);
+}
+function renderPersona(m){
+  $('personaSig').innerHTML='<div class="av">'+m.persona.emoji+'</div>'
+   +'<div class="tx"><b>'+m.persona.name+'</b> — '+m.persona.tag+'</div>';
+}
+function renderTabs(){
+  $('ntab').innerHTML=ORDER.map(function(k){var m=MODES[k];
+    return '<button type="button" data-k="'+k+'"'+(k===ACTIVE?' class="on"':'')+' style="--g:'+m.accent+'" onclick="switchMode(\''+k+'\')" aria-label="'+m.label+'">'
+      +'<span class="ic" aria-hidden="true">'+m.tabIc+'</span>'+m.label+'</button>';
+  }).join('');
+}
+function switchMode(k){
+  if(!MODES[k])return;
+  ACTIVE=k;var m=MODES[k];
+  applyTheme(m);
+  $('hlogo').innerHTML=logoSVG(m.accent);
+  $('modechip').textContent=m.label;
+  $('sub').innerHTML=m.sub;
+  $('priv').innerHTML=m.priv||'🔒 Runs entirely in your browser. Nothing you type is sent anywhere.';
+  renderPersona(m);
+  $('scanpanel').style.display='none';$('scanpanel').innerHTML='';
+  nStatus("Scanning &amp; voice run <b>on your device</b> with your browser's own tools — the photo and audio never leave your phone.");
+  $('modeHost').innerHTML=m.inputHTML;
+  $('report').style.display='none';
+  $('reportbody').innerHTML='';
+  $('letterwrap').style.display='none';
+  $('letterBtn').style.display=m.letter?'inline-block':'none';
+  document.querySelectorAll('.ntab button').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-k')===k);});
+  if(typeof m.init==='function')m.init();
+  try{history.replaceState(null,'','#'+k);}catch(e){}
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ================= MODE: BILLS ================= */
+MODES.bill={
+  key:'bill',label:'Bills',tabIc:'🧾',
+  accent:'#4FCB8E',accent6:'#3DB87B',sea:'#86B8E0',line:'#294A78',
+  ink800:'#0A1730',ink700:'#1A3A66',ink600:'#224676',bg1:'#163460',bg2:'#0A1730',bg3:'#070F22',
+  sub:'your medical bill, decoded — in plain English',
+  persona:{emoji:'🧾',name:'Bills desk',
+    tag:"I read medical bills line by line and flag what looks padded, duplicated, or worth challenging. I check the math and the codes — I don't guess your diagnosis.",
+    signoff:"That's my read. I flag, you decide — and you can always demand an itemized bill."},
+  inputHTML:
+   '<div class="card"><h2>1 · A little context</h2>'
+   +'<p class="h2sub">This helps me catch coverage you might be owed.</p>'
+   +'<div class="tog">'
+   +'<label><input type="checkbox" id="ctxPrev"> This visit was an <b>annual physical / preventive checkup</b></label>'
+   +'<label><input type="checkbox" id="ctxNet"> The hospital / ER was <b>in-network</b> for me</label>'
+   +'<label><input type="checkbox" id="ctxHsa"> I\'m paying with an <b>HSA / FSA</b></label>'
+   +'<label><input type="checkbox" id="ctxDenied"> My insurance <b>denied this claim</b> or says I owe the whole thing</label>'
+   +'</div></div>'
+   +'<div class="card"><h2>2 · Your bill\'s line items</h2>'
+   +'<p class="h2sub">Copy each charge and amount from your itemized bill. Scan, speak, or "Load a sample" instead of typing it all.</p>'
+   +'<div class="rows" id="rows"></div>'
+   +'<div class="rowbtns"><button class="lnk" onclick="billAddRow()">+ Add line</button>'
+   +'<button class="lnk" onclick="M(\'sample\')">Load a sample</button>'
+   +'<button class="lnk" onclick="M(\'clear\')">Clear</button></div>'
+   +'<button class="go" id="go" onclick="M(\'decode\')">Decode my bill →</button></div>',
+  init:function(){rowData=[];billAddRow();},
+  scan:function(){
+    if(window.NarcOCR){NarcOCR.scan(function(text){billApplyParsed(billParseLines(text));},nStatus);return;}
+    nStatus('The photo reader is still loading — try again in a moment, or type it in.');
+  },
+  talk:function(){
+    var SR=window.SpeechRecognition||window.webkitSpeechRecognition;var btn=$('talkbtn');
+    if(!SR){nStatus("Voice input isn't supported here — type it in, or try Chrome or Safari.");return;}
+    if(window._brec){try{window._brec.stop();}catch(e){}window._brec=null;if(btn)btn.classList.remove('rec');return;}
+    var rec=new SR();window._brec=rec;rec.lang='en-US';rec.interimResults=false;rec.continuous=true;rec.maxAlternatives=1;if(btn)btn.classList.add('rec');
+    nStatus('Listening… say each charge and its amount, e.g. "ER facility fee 1842". Tap Talk again to stop.');
+    var buf='';
+    rec.onresult=function(e){for(var i=e.resultIndex;i<e.results.length;i++){if(e.results[i].isFinal)buf+=e.results[i][0].transcript+'\n';}};
+    rec.onerror=function(){nStatus("Didn't catch that — try again, or type it in.");};
+    rec.onend=function(){window._brec=null;if(btn)btn.classList.remove('rec');billApplyParsed(billParseLines(buf));};rec.start();
+  },
+  sample:function(){
+    rowData=[{desc:"ER facility fee (Level 4)",amt:"1842"},{desc:"Emergency physician",amt:"680"},
+     {desc:"CT scan, head",amt:"1150"},{desc:"IV hydration",amt:"175"},{desc:"IV hydration",amt:"175"},
+     {desc:"Supplies & medication",amt:"175"}];
+    var n=$('ctxNet');if(n)n.checked=true;var p=$('ctxPrev');if(p)p.checked=false;
+    billRender();
+  },
+  clear:function(){rowData=[];billAddRow();$('report').style.display='none';},
+  decode:function(){
+    var ctx={prev:$('ctxPrev').checked,net:$('ctxNet').checked,hsa:$('ctxHsa').checked,denied:($('ctxDenied')||{}).checked};
+    var rules=BILL_RULES(ctx);
+    var rows=rowData.filter(function(r){return r.desc.trim();}).map(function(r){return {desc:r.desc.trim(),amt:money(r.amt)};});
+    var counts={};rows.forEach(function(r){var k=norm(r.desc)+'|'+r.amt;counts[k]=(counts[k]||0)+1;});
+    var tags={dup:false,net:false,prev:false,img:false,notnec:false,iv:false,unmatched:false};
+    var total=0;
+    var linesHtml=rows.map(function(r,idx){
+      total+=r.amt;
+      var k=norm(r.desc)+'|'+r.amt,res=null,what="",why="",s="ok";
+      if(counts[k]>1){s="bad";what="appears more than once on your bill";
+        why="This exact charge is listed <b>more than once</b> — a likely duplicate. Ask for an itemized bill and have the extra removed.";tags.dup=true;}
+      else{
+        for(var i=0;i<rules.length;i++){if(rules[i].re.test(r.desc)){res=rules[i];break;}}
+        if(res){what=res.what;s=res.flag.s;why=res.flag.why;
+          if(s==='warn'||s==='bad'){
+            if(/no surprises/i.test(why))tags.net=true;
+            if(/preventive/i.test(why))tags.prev=true;
+            if(/imaging center/i.test(why))tags.img=true;
+            if(/not medically necessary/i.test(why))tags.notnec=true;
+            if(/duplicate charges/i.test(why))tags.iv=true;}
+        } else {what="I couldn't match this line automatically";s="warn";
+          why="Ask the provider for an <b>itemized description</b> — vague or bundled line items are worth questioning.";tags.unmatched=true;}
+      }
+      var chipTxt={ok:"✓ Looks standard",warn:"⚠ Worth checking",bad:"✕ Likely error"}[s];
+      return chipRow((idx+1)+'. '+escapeHtml(r.desc),what,fmt2(r.amt),s,chipTxt,why);
+    }).join('');
+    var flagged=rows.length-(linesHtml.match(/chip ok/g)||[]).length;
+    var todos=[];
+    if(tags.dup)todos.push("Ask for an <b>itemized bill</b> and get the duplicate charge(s) removed.");
+    if(tags.net)todos.push("Confirm every provider was <b>in-network</b> — the No Surprises Act may cap out-of-network charges.");
+    if(tags.prev)todos.push("If this was a <b>preventive</b> visit, ask them to recheck the lab coding — you may owe $0.");
+    if(tags.notnec)todos.push("Challenge the <b>'not medically necessary'</b> line with your doctor's matching diagnosis.");
+    if(tags.img)todos.push("For non-urgent <b>imaging</b>, price-shop a standalone outpatient center next time.");
+    if(tags.iv)todos.push("Double-check the <b>IV / infusion</b> lines for repeated charges.");
+    if(tags.unmatched)todos.push("Request <b>itemized descriptions</b> for the lines I couldn't match.");
+    if(ctx.hsa)todos.push("Keep this itemized bill for your <b>HSA/FSA</b> records at tax time.");
+    if(todos.length===0)todos.push("Nothing jumped out — but always request an <b>itemized bill</b> and compare it line-by-line to your insurer's EOB.");
+    var sumTxt=flagged>0?(rows.length+" charges read. <b>"+flagged+" worth a closer look.</b>")
+      :(rows.length+" charges read. <b>Nothing obvious jumped out</b> — still worth comparing to your EOB.");
+    var html='<p class="dsum">'+sumTxt+'</p>'+linesHtml
+      +'<div class="bottom"><div class="brow"><span>Total entered</span><b class="tnum">'+fmt2(total)+'</b></div>'
+      +'<div class="brow big"><span>Charges flagged</span><b>'+flagged+' of '+rows.length+'</b></div></div>'
+      +'<div class="todo"><b>What I\'d do:</b><ul><li>'+todos.join('</li><li>')+'</li></ul></div>'
+      +'<p class="nfa">Educational read of the lines you entered — <b>not billing or medical advice</b>, and not a guarantee. Your insurer\'s EOB and your provider are the final word. Nothing you typed left your browser.</p>';
+    if(ctx.denied){
+      html+='<div class="lettl">✉ Here\'s your appeal</div>'
+        +'<div class="todo"><b>Almost nobody does this.</b> Very few people appeal, and appeals often succeed. They\'re betting you won\'t. Don\'t just pay a denial — appeal it. Fill in the [brackets], send it certified, keep a copy.</div>'
+        +'<div class="letter">'+BILL_APPEAL.replace(/</g,"&lt;")+'</div>'
+        +'<div style="text-align:center;margin-top:10px"><button class="lnk" onclick="window.print()">🖨 Print / share this appeal</button></div>';
+    }
+    html+='<div class="rcpt-t">📸 Your shareable receipt</div><div id="billreceipt"></div>';
+    showReport(html,function(){NarcReceipt.card({el:$('billreceipt'),narc:'The Narc',accent:MODES.bill.accent,bg:'#0A1730',
+      headline:flagged>0?('Flagged '+flagged+' charge'+(flagged>1?'s':'')+' worth challenging'):'Read your bill — nothing obvious jumped out',
+      big:fmt2(total),
+      sub:flagged>0?('on this '+fmt2(total)+' bill — get an itemized bill and push back.'):'Still worth comparing to your EOB.',
+      share:'The Narc read my medical bill and flagged '+flagged+' charge'+(flagged>1?'s':'')+' worth challenging.'});});
+  }
+};
+/* bill-specific state + engine */
+var rowData=[];
+function billAddRow(desc,amt){rowData.push({desc:desc||'',amt:amt||''});billRender();}
+function billRmRow(i){rowData.splice(i,1);if(rowData.length===0)rowData.push({desc:'',amt:''});billRender();}
+function billRender(){
+  var el=$('rows');if(!el)return;
+  el.innerHTML=rowData.map(function(r,i){return (
+   '<div class="rw">'
+   +'<input placeholder="Charge description (e.g. ER facility fee)" value="'+(r.desc.replace(/"/g,'&quot;'))+'" oninput="rowData['+i+'].desc=this.value">'
+   +'<div class="amtwrap"><input inputmode="decimal" placeholder="0.00" value="'+(r.amt)+'" oninput="rowData['+i+'].amt=this.value"></div>'
+   +'<button class="rmx" onclick="billRmRow('+i+')" title="Remove">×</button></div>');}).join('');
+  var go=$('go');if(go)go.disabled=rowData.filter(function(r){return r.desc.trim();}).length===0;
+}
+function billParseLines(text){
+  var out=[];
+  (text||'').split(/\n|;|,(?=\s*[A-Za-z])/).forEach(function(ln){
+    ln=ln.replace(/\s+/g,' ').trim();if(!ln)return;
+    var m=ln.match(/^(.*?)[\s\.\:\-]*\$?\s*([0-9][0-9,]*(?:\.[0-9]{1,2})?)\s*(?:dollars?)?\s*$/i);
+    if(m&&m[1].replace(/[^a-z]/gi,'').length>=2){out.push({desc:m[1].replace(/[\.\-\:\s]+$/,'').trim(),amt:m[2].replace(/,/g,'')});}
+  });
+  return out;
+}
+function billApplyParsed(rows){
+  if(!rows||!rows.length){nStatus("Couldn't pick out charges from that — you can still <b>type them in</b> below.");return;}
+  var keep=rowData.filter(function(r){return (r.desc||'').trim();});
+  rowData=keep.concat(rows);billRender();
+  nStatus('Added <b>'+rows.length+'</b> line'+(rows.length>1?'s':'')+' — check them and fix anything that came out wrong.');
+}
+function BILL_RULES(ctx){return [
+ {re:/vitamin\s*d|25[-\s]?hydroxy/i,what:"a vitamin D blood test",
+   flag:{s:"bad",why:"Frequently <b>denied as 'not medically necessary'</b> unless coded with a matching diagnosis. If it was ordered routinely, this can often be removed or appealed."}},
+ {re:/facility fee|facility charge/i,what:"the charge for using the facility itself",
+   flag:{s:"warn",why:"Legit to bill — but often <b>negotiable</b>, and usually avoidable at a standalone outpatient center."}},
+ {re:/lipid|cholesterol|metabolic panel|\bcbc\b|a1c|glucose|wellness|preventive/i,what:"a routine blood test / screening",
+   flag:ctx.prev?{s:"warn",why:"On an annual physical this is usually <b>100% covered as preventive care</b>. If you're being billed, ask them to recheck the coding — you may owe $0."}:{s:"ok",why:""}},
+ {re:/mri|ct scan|\bct\b|cat scan|imaging|x-?ray|ultrasound|mammogram|\bmri\b/i,what:"medical imaging",
+   flag:{s:"warn",why:"Hospitals often charge <b>2–3×</b> a standalone imaging center for the identical scan. For non-urgent imaging, price-shopping can cut this a lot."}},
+ {re:/physician|provider|surgeon|anesthes|radiolog|attending|consult|\bmd\b|\bdr\b|doctor/i,what:"a doctor's professional fee, billed separately from the facility",
+   flag:ctx.net?{s:"warn",why:"If this doctor was <b>out-of-network</b> while the facility was in-network, the <b>No Surprises Act</b> may cap what you owe. Don't pay a balance bill without checking."}:{s:"ok",why:"Billing the doctor apart from the facility is normal."}},
+ {re:/iv |i\.v\.|hydration|infusion|\biv\b|injection/i,what:"medication or fluids given by IV",
+   flag:{s:"warn",why:"Scan the rest of your bill — <b>IV administration is a common spot for duplicate charges</b>."}},
+ {re:/ambulance|transport/i,what:"ambulance transport",
+   flag:{s:"warn",why:"Ambulance bills are a frequent surprise-billing spot. Check whether No Surprises Act protections apply to you."}},
+ {re:/venipuncture|blood draw|phlebotomy|specimen/i,what:"the fee to draw or handle your blood",flag:{s:"ok",why:""}},
+ {re:/room|\bbed\b|board|semi-private|\bicu\b|observation/i,what:"a daily room / stay charge",flag:{s:"ok",why:""}},
+ {re:/supply|supplies|pharmacy|medication|\bdrug\b|\bdose\b|tablet/i,what:"supplies or medication",flag:{s:"ok",why:""}},
+ {re:/emergency|\ber\b|emergency room|triage/i,what:"an emergency-room charge",flag:{s:"ok",why:""}},
+ {re:/lab|test|panel|culture|biopsy|pathology/i,what:"a lab test",flag:{s:"ok",why:""}},
+];}
+var BILL_APPEAL="[Your name]\n[Your address]\n[Date]\n\n[Insurer name] — Appeals Department\n[Insurer address]\n\nRe: Appeal of denied claim · Member ID [ ___ ] · Claim # [ ___ ] · Date of service [ ___ ]\n\nTo whom it may concern:\n\nI am formally appealing your denial of the claim above and requesting an internal review.\n\nUnder my plan, this service should be covered because [reason — e.g., it was medically necessary / preventive / from an in-network provider]. Please reprocess and pay the claim.\n\nPlease also send me (1) the exact plan provision you used to deny it, and (2) any medical-necessity criteria applied.\n\nIf you uphold the denial, treat this as my request for the plan's external review.\n\nSincerely,\n[Your name]";
+
+/* ================= MODE: HOME ================= */
+MODES.home={
+  key:'home',label:'Home',tabIc:'🏠',
+  accent:'#E0A24E',accent6:'#C08A3E',sea:'#AEC9A6',line:'#453A2C',
+  ink800:'#191510',ink700:'#372F26',ink600:'#453D32',bg1:'#3A3226',bg2:'#14100B',bg3:'#0B0906',
+  sub:'are you over-assessed? let\'s check.',
+  priv:'🔒 Runs entirely in your browser. <b>It never sees your address or your neighbors</b> — it only compares the numbers you type.',
+  persona:{emoji:'🏠',name:'Home desk',
+    tag:"I check whether your home is assessed too high against comps you pull yourself. I never see your address — just the numbers you type.",
+    signoff:"Numbers don't lie, but the county's counting on you not to check. Now you have."},
+  scan:genericScan,talk:genericTalk,
+  inputHTML:
+   '<div class="card"><h2>1 · Your assessment</h2><div class="rows">'
+   +'<div class="rw"><input value="Your home\'s assessed value ($)" disabled aria-hidden="true" tabindex="-1"><div class="amtwrap"><input inputmode="decimal" id="assessed" placeholder="0" aria-label="Your home\'s assessed value in dollars"></div><span></span></div>'
+   +'<div class="rw"><input value="Your annual property tax ($) — optional" disabled aria-hidden="true" tabindex="-1"><div class="amtwrap"><input inputmode="decimal" id="tax" placeholder="0" aria-label="Your annual property tax in dollars (optional)"></div><span></span></div>'
+   +'</div></div>'
+   +'<div class="card"><h2>2 · A few comparable homes (you look these up)</h2>'
+   +'<p class="h2sub">Look up similar homes yourself (Zillow, Redfin, or your county assessor site) and type their values in — <b>I don\'t know your neighbors; you provide these.</b> Use homes close in size, age, and area; cherry-picking the lowest ones only fools you, not the assessor.</p>'
+   +'<div class="rows">'
+   +'<div class="rw"><input value="Comparable home #1 ($)" disabled aria-hidden="true" tabindex="-1"><div class="amtwrap"><input inputmode="decimal" id="c1" placeholder="0" aria-label="Comparable home 1 value in dollars"></div><span></span></div>'
+   +'<div class="rw"><input value="Comparable home #2 ($)" disabled aria-hidden="true" tabindex="-1"><div class="amtwrap"><input inputmode="decimal" id="c2" placeholder="0" aria-label="Comparable home 2 value in dollars"></div><span></span></div>'
+   +'<div class="rw"><input value="Comparable home #3 ($)" disabled aria-hidden="true" tabindex="-1"><div class="amtwrap"><input inputmode="decimal" id="c3" placeholder="0" aria-label="Comparable home 3 value in dollars"></div><span></span></div>'
+   +'</div></div>'
+   +'<div class="card"><h2>3 · Two quick questions</h2><div class="tog">'
+   +'<label><input type="checkbox" id="primary"> This is my <b>primary residence</b></label>'
+   +'<label><input type="checkbox" id="homestead"> A <b>homestead exemption</b> is already applied to my tax bill</label>'
+   +'</div><div class="rowbtns"><button class="lnk" onclick="M(\'sample\')">Load a sample</button><button class="lnk" onclick="M(\'clear\')">Clear</button></div>'
+   +'<button class="go" id="go" onclick="M(\'decode\')">Check my assessment →</button></div>',
+  sample:function(){
+    $('assessed').value='420000';$('tax').value='6300';
+    $('c1').value='355000';$('c2').value='360000';$('c3').value='365000';
+    $('primary').checked=true;$('homestead').checked=false;
+  },
+  clear:function(){['assessed','tax','c1','c2','c3'].forEach(function(id){$(id).value='';});$('primary').checked=false;$('homestead').checked=false;$('report').style.display='none';},
+  letter:function(){$('lettertext').textContent=HOME_LETTER;var w=$('letterwrap');w.style.display='block';w.scrollIntoView({behavior:'smooth'});},
+  decode:function(){
+    var assessed=money($('assessed').value),tax=money($('tax').value);
+    var comps=[$('c1').value,$('c2').value,$('c3').value].map(money).filter(function(v){return v>0;});
+    var primary=$('primary').checked,homestead=$('homestead').checked;
+    var rep=$('report');
+    if(!(assessed>0&&comps.length>=1)){
+      $('reportbody').innerHTML='<p class="dsum">To check your assessment, enter your <b>home\'s assessed value</b> and at least <b>one comparable home you look up</b> (Zillow, Redfin, or your county site). Then tap "Check my assessment."</p>';
+      rep.style.display='block';rep.scrollIntoView({behavior:'smooth'});return;
+    }
+    var med=median(comps),overPct=(assessed-med)/med,rate=tax>0?tax/assessed:0.012;
+    var overAmt=Math.max(0,assessed-med),estOverpay=overAmt*rate,over=overPct>=0.10;
+    var chipTxt={ok:"✓ Looks fair",warn:"⚠ Worth appealing",watch:"⚠ Keep in mind",bad:"✕ Fix this"};
+    var L=[];
+    L.push(chipRow("Assessed value","what the county says it's worth",fmt(assessed),over?"warn":"ok",chipTxt[over?"warn":"ok"],
+      over?"You're about <b>"+Math.round(overPct*100)+"%</b> above the comparable homes <b>you entered</b> (median "+fmt(med)+"). That's roughly <b>"+fmt(estOverpay)+"/yr</b> in extra tax. You can appeal with comps.":""));
+    L.push(chipRow("The comps you entered","median of the homes you typed in",fmt(med)+" median","ok",chipTxt.ok,""));
+    var spread=comps.length>1?(Math.max.apply(null,comps)-Math.min.apply(null,comps))/med:0;
+    if(spread>0.25)L.push(chipRow("Your comps vary a lot","double-check they're truly comparable","±"+Math.round(spread*100)+"%","watch",chipTxt.watch,"These homes differ enough that the median may be shaky — swap in ones closer in size, age, and area for a stronger case."));
+    L.push(chipRow("One honest caution","assessed value isn't always market value","","watch",chipTxt.watch,"Many counties assess at a set <b>ratio</b> of market value, so where you can, compare against how similar homes are <b>assessed</b> — not just what they sold for. Only genuinely comparable homes help at an appeal."));
+    L.push(chipRow("Property tax rate","the % applied to value",(rate*100).toFixed(2)+"%"+(tax>0?"":" (assumed)"),"ok",chipTxt.ok,""));
+    var hsFix=primary&&!homestead;
+    L.push(chipRow("Homestead exemption","a discount for your primary home",(homestead?"applied":"not applied"),hsFix?"bad":"ok",chipTxt[hsFix?"bad":"ok"],
+      hsFix?"If you live here, you likely qualify (often $25k–50k off the taxable value). It's not applied — <b>applying it lowers your bill going forward.</b>":""));
+    var sumTxt=over?("Assessed at "+fmt(assessed)+"; the comps you entered run "+fmt(med)+" median — <b>you look about "+Math.round(overPct*100)+"% high.</b>")
+      :("Assessed at "+fmt(assessed)+"; the comps you entered run "+fmt(med)+" median — <b>roughly in line.</b>");
+    var bottomHtml='<div class="brow"><span>Assessed</span><b class="tnum'+(over?' strike':'')+'">'+fmt(assessed)+'</b></div>'
+      +'<div class="brow"><span>Comps median</span><b class="tnum">'+fmt(med)+'</b></div>'
+      +'<div class="brow big"><span>Est. overpayment</span><b>'+(over?"~"+fmt(estOverpay)+"/yr":"none obvious")+'</b></div>';
+    var todos=[];
+    if(over)todos.push("File an assessment appeal with 2–3 comps — <b>deadlines are usually 30–45 days after your notice</b>, so check yours now.");
+    if(primary&&!homestead)todos.push("Apply for the homestead exemption.");
+    if(tax<=0)todos.push("Grab your actual tax rate off your bill for a sharper estimate.");
+    if(!over&&!(primary&&!homestead))todos.push("Looks fair — recheck after any reassessment or nearby sales.");
+    var html='<p class="dsum">'+sumTxt+'</p>'+L.join('')
+      +'<div class="bottom">'+bottomHtml+'</div>'
+      +'<div class="todo"><b>What I\'d do:</b><ul><li>'+todos.join('</li><li>')+'</li></ul></div>'
+      +'<p class="nfa">Educational estimate from the numbers you entered — <b>not legal or tax advice</b>. Assessment ratios and appeal deadlines vary by county; confirm yours. Nothing you typed left your browser.</p>'
+      +'<div style="text-align:center;font-size:12.5px;color:var(--sea);margin:8px 0 4px">Tap <b>✉ Get your letter</b> below for a ready assessment-appeal letter.</div>'
+      +'<div class="rcpt-t">📸 Your shareable receipt</div><div id="homereceipt"></div>';
+    showReport(html,function(){NarcReceipt.card({el:$('homereceipt'),narc:'The Narc',accent:MODES.home.accent,bg:'#1B1610',
+      headline:over?('Over-assessed by about '+Math.round(overPct*100)+'% — worth appealing'):'Assessment looks roughly fair',
+      big:over?('~'+fmt(estOverpay)+'/yr'):'In line',
+      sub:over?('Assessed '+fmt(assessed)+' vs. '+fmt(med)+' median comps. You can appeal.'):('Assessed '+fmt(assessed)+', comps '+fmt(med)+' median. Recheck after a reassessment.'),
+      share:over?('The Narc says I may be over-assessed by ~'+Math.round(overPct*100)+'%.'):'The Narc checked my property assessment.'});});
+  }
+};
+var HOME_LETTER="[Your name]\n[Your address]\n[Date]\n\n[County] Assessor / Board of Review\n[Address]\n\nRe: Appeal of assessed value — [property address], Parcel # [ ___ ], Tax year [ ___ ]\n\nTo whom it may concern:\n\nI am formally appealing the assessed value of my property. Based on the recent sale prices and assessments of comparable homes in my area, my assessment appears too high.\n\nI request a review and a reduction of the assessed value to reflect fair market value. I can provide comparable sales, photos, and any errors I found in the property record.\n\nPlease send me the appeal deadline and any hearing date, and confirm what documentation you need.\n\nSincerely,\n[Your name]";
+
+/* ================= MODE: PET ================= */
+MODES.paw={
+  key:'paw',label:'Pet',tabIc:'🐾',
+  accent:'#52C6B9',accent6:'#3FA99D',sea:'#F2B79C',line:'#55305A',
+  ink800:'#230F28',ink700:'#472653',ink600:'#553363',bg1:'#4A2452',bg2:'#1E0F23',bg3:'#120A15',
+  sub:'what you\'re really covered for.',
+  persona:{emoji:'🐾',name:'Pet desk',
+    tag:"I read pet-insurance fine print for the gaps that bite at claim time. Warm heart, cold eye on the exclusions.",
+    signoff:"Read the exclusions before the emergency, not after it. That's the whole game."},
+  scan:genericScan,talk:genericTalk,
+  inputHTML:
+   '<div class="card"><h2>1 · Your policy</h2>'
+   +'<p class="h2sub">The core numbers from your pet insurance plan — usually on the "schedule of benefits" or declarations page. Reimbursement is usually 70, 80, or 90%. Not sure? Tap <b>Load a sample</b>.</p>'
+   +'<div class="fld"><input id="reimb" inputmode="decimal" placeholder="Reimbursement % (e.g. 80)" aria-label="Reimbursement percentage">'
+   +'<div class="amtwrap"><input id="ded" inputmode="decimal" placeholder="Annual deductible ($)" aria-label="Annual deductible in dollars"></div>'
+   +'<div class="amtwrap"><input id="limit" inputmode="decimal" placeholder="Annual limit ($)" aria-label="Annual payout limit in dollars"></div></div></div>'
+   +'<div class="card"><h2>2 · The fine print</h2><p class="h2sub">The exclusions that quietly decide what you\'ll actually pay.</p>'
+   +'<div class="tog"><label><input type="checkbox" id="exam"> Exam fees are covered</label>'
+   +'<label><input type="checkbox" id="hered"> Hereditary / breed conditions are covered</label></div></div>'
+   +'<div class="card"><h2>3 · A claim (optional)</h2><p class="h2sub">Add a vet bill to estimate what comes back.</p>'
+   +'<div class="fld"><div class="amtwrap"><input id="claim" inputmode="decimal" placeholder="A vet bill amount to estimate ($)" aria-label="A vet bill amount to estimate in dollars"></div></div>'
+   +'<div class="tog" style="margin-top:12px"><label><input type="checkbox" id="denied"> This claim was denied as \'pre-existing\'</label></div>'
+   +'<div class="rowbtns"><button class="lnk" onclick="M(\'sample\')">Load a sample</button><button class="lnk" onclick="M(\'clear\')">Clear</button></div>'
+   +'<button class="go" id="go" onclick="M(\'decode\')">Read my policy →</button></div>',
+  sample:function(){$('reimb').value='80';$('ded').value='250';$('limit').value='5000';$('exam').checked=false;$('hered').checked=false;$('claim').value='1240';$('denied').checked=false;},
+  clear:function(){['reimb','ded','limit','claim'].forEach(function(id){$(id).value='';});$('exam').checked=false;$('hered').checked=false;$('denied').checked=false;$('report').style.display='none';},
+  letter:function(){$('lettertext').textContent=PET_LETTER;var w=$('letterwrap');w.style.display='block';w.scrollIntoView({behavior:'smooth'});},
+  decode:function(){
+    var reimb=money($('reimb').value),ded=money($('ded').value),limit=money($('limit').value),claim=money($('claim').value);
+    var exam=$('exam').checked,hered=$('hered').checked,denied=$('denied').checked;
+    var chipTxt={ok:"✓ Covered",warn:"⚠ Watch this",info:"Add your reimbursement %",bad:"✕ Gap / fight it"};
+    var L=[];
+    L.push({name:"Reimbursement",what:"how much comes back after your deductible",right:(reimb>0?reimb+"% after "+fmt(ded):"—"),
+      chip:(reimb<=0)?"info":((reimb<70)?"warn":"ok"),why:(reimb<=0)?"Add your reimbursement % (usually 70, 80, or 90) so the estimate can run.":((reimb<70)?"Lower than typical (70–90%) — you'll shoulder more of each bill.":"")});
+    L.push({name:"Annual limit",what:"the yearly ceiling on payouts",right:(limit>0?fmt(limit):"—"),
+      chip:(limit>0&&limit<5000)?"warn":"ok",why:(limit>0&&limit<5000)?"One big surgery with complications can hit this fast. Know your ceiling before you rely on it.":""});
+    L.push({name:"Exam fees",what:"the visit charge itself",right:(exam?"covered":"not covered"),
+      chip:(exam?"ok":"warn"),why:(!exam)?"Many plans exclude the exam fee — <b>you'll pay that part every visit</b>, even on covered claims.":""});
+    L.push({name:"Hereditary conditions",what:"breed-linked issues (hips, knees)",right:(hered?"covered":"excluded"),
+      chip:(hered?"ok":"warn"),why:(!hered)?"Your breed's <b>most likely</b> problems may be excluded. Read this closely before you count on the policy.":""});
+    if(denied)L.push({name:"Claim status",what:"flagged pre-existing",right:"denied",chip:"bad",
+      why:"Denied as pre-existing? If the first symptom was <b>after</b> your coverage/waiting period, that's often wrong. Get the vet to document the first-symptom date and appeal."});
+    var linesHtml=L.map(function(l){return chipRow(l.name,l.what,l.right,l.chip,chipTxt[l.chip],l.why);}).join('');
+    var gaps=L.filter(function(l){return l.chip==='warn'||l.chip==='bad';}).length;
+    var estReimb=0,net=0;
+    if(claim>0){estReimb=Math.min(limit>0?limit:Infinity,Math.max(0,claim-ded)*reimb/100);net=claim-estReimb;}
+    var sumTxt=claim>0?("On a "+fmt(claim)+" bill, you'd get about <b>"+fmt(estReimb)+" back</b> — your net ~"+fmt(net)+".")
+      :("Policy read — <b>"+gaps+" gap"+(gaps===1?'':'s')+" worth knowing</b> before you need them.");
+    var bottomRows,bottomBig;
+    if(claim>0){bottomRows=[["Vet bill",fmt(claim)],["Est. reimbursement","~"+fmt(estReimb)]];bottomBig=["Your net","~"+fmt(net)];}
+    else{bottomRows=[["Reimbursement",reimb+"%"],["Gaps to know",String(gaps)]];bottomBig=["Before you rely on it","ask 2 things"];}
+    var bottomHtml='<div class="bottom">'+bottomRows.map(function(r){return '<div class="brow"><span>'+r[0]+'</span><b class="tnum">'+r[1]+'</b></div>';}).join('')
+      +'<div class="brow big"><span>'+bottomBig[0]+'</span><b>'+bottomBig[1]+'</b></div></div>';
+    var todos=[];
+    if(!exam)todos.push("Ask whether exam fees can be added to the plan.");
+    if(!hered)todos.push("Confirm whether your breed's common conditions are covered.");
+    if(limit>0&&limit<5000)todos.push("Consider a higher annual limit.");
+    if(denied)todos.push("Appeal the pre-existing denial with a dated medical record.");
+    if(reimb>0&&reimb<70)todos.push("Compare a higher reimbursement tier.");
+    if(todos.length===0)todos.push("Solid basics — just confirm exclusions before a big claim.");
+    var html='<p class="dsum">'+sumTxt+'</p>'+linesHtml+bottomHtml
+      +'<div class="todo"><b>What I\'d do:</b><ul><li>'+todos.join('</li><li>')+'</li></ul></div>'
+      +'<p class="nfa">Educational read of the details you entered — <b>not insurance or veterinary advice</b>, and not a coverage decision. Your policy documents and insurer are the final word. Nothing you typed left your browser.</p>'
+      +(denied?'<div style="text-align:center;font-size:12.5px;color:var(--sea);margin:8px 0 4px">Tap <b>✉ Get your letter</b> below for a ready denial-appeal letter.</div>':'')
+      +'<div class="rcpt-t">📸 Your shareable receipt</div><div id="pawreceipt"></div>';
+    showReport(html,function(){NarcReceipt.card({el:$('pawreceipt'),narc:'The Narc',accent:MODES.paw.accent,bg:'#241028',
+      headline:claim>0?('On a '+fmt(claim)+' vet bill, here\'s what comes back'):(gaps>0?('Found '+gaps+' coverage gap'+(gaps>1?'s':'')+' worth knowing'):'Policy basics look solid'),
+      big:claim>0?('~'+fmt(estReimb)):String(gaps)+(gaps===1?' gap':' gaps'),
+      sub:claim>0?('Your net after reimbursement: ~'+fmt(net)+'. '+reimb+'% back after '+fmt(ded)+' deductible.'):'Know your exam-fee, hereditary, and limit terms before a big claim.',
+      share:claim>0?('The Narc: ~'+fmt(estReimb)+' back on a '+fmt(claim)+' vet bill.'):'The Narc read my pet policy for coverage gaps.'});});
+  }
+};
+var PET_LETTER="[Your name]\n[Your address]\n[Date]\n\n[Insurer] — Claims Appeals Department\n[Address]\n\nRe: Appeal of denied claim — Policy # [ ___ ], Claim # [ ___ ], Pet: [name]\n\nTo whom it may concern:\n\nI am appealing your denial of the claim above and requesting a full review.\n\nThis condition is not pre-existing: the first sign appeared on [date], after my coverage began on [date]. My vet's records confirm the timeline. Please reprocess and pay the claim.\n\nPlease also send me the exact policy provision you relied on to deny it, and the criteria used.\n\nIf you uphold the denial, please treat this as my request for any further/external review available under my policy.\n\nSincerely,\n[Your name]";
+
+/* ================= MODE: TAX ================= */
+MODES.tax={
+  key:'tax',label:'Tax',tabIc:'🧮',
+  accent:'#54BE86',accent6:'#42A972',sea:'#93C7AC',line:'#2C5140',
+  ink800:'#0C1B13',ink700:'#1D3B2C',ink600:'#264A38',bg1:'#173626',bg2:'#0B1D14',bg3:'#06120C',
+  sub:'did you overpay? — a plain-English check',
+  seasonal:'tax',
+  persona:{emoji:'🧮',name:'Tax desk',
+    tag:"Billions in credits go unclaimed every year. I point at the ones worth a second look. I don't file — I flag.",
+    signoff:"Don't leave your own money sitting with the IRS. Go check each one by name."},
+  scan:genericScan,talk:genericTalk,
+  inputHTML:
+   '<div class="card"><h2>1 · A few plain numbers</h2>'
+   +'<p class="h2sub">Rough is fine — this is a check, not your return. From last year\'s taxes if you have them.</p>'
+   +'<div class="fg">'
+   +'<div class="f"><label>Filing status</label><select id="fstatus"><option value="single">Single</option><option value="hoh">Head of household</option><option value="mfj">Married, filing jointly</option></select></div>'
+   +'<div class="f"><label>Kids under 17 you support</label><input id="kids" type="number" min="0" value="0"></div>'
+   +'<div class="f money"><label>Your income last year (AGI, roughly)</label><input id="agi" type="number" min="0" placeholder="e.g. 38000"></div>'
+   +'<div class="f money"><label>Refund you got (blank if you owed)</label><input id="refund" type="number" min="0" placeholder="e.g. 3200"></div>'
+   +'</div></div>'
+   +'<div class="card"><h2>2 · Anything that applied to you?</h2>'
+   +'<p class="h2sub">Check what\'s true — I use these to spot credits people miss.</p>'
+   +'<div class="tog">'
+   +'<label><input type="checkbox" id="cCare"> I <b>paid for childcare / daycare</b> so I could work or look for work</label>'
+   +'<label><input type="checkbox" id="cEdu"> I or a dependent <b>paid college tuition</b></label>'
+   +'<label><input type="checkbox" id="cRet"> I put money into an <b>IRA or 401(k)</b> on a modest income</label>'
+   +'<label><input type="checkbox" id="cLoan"> I <b>paid student-loan interest</b></label>'
+   +'</div><button class="go" onclick="M(\'decode\')">Check if I overpaid →</button></div>',
+  sample:function(){$('fstatus').value='hoh';$('kids').value='2';$('agi').value='38000';$('refund').value='3200';$('cCare').checked=true;$('cEdu').checked=false;$('cRet').checked=false;$('cLoan').checked=true;},
+  clear:function(){$('fstatus').value='single';$('kids').value='0';$('agi').value='';$('refund').value='';['cCare','cEdu','cRet','cLoan'].forEach(function(id){$(id).checked=false;});$('report').style.display='none';},
+  decode:function(){
+    var EITC={0:[18591,25511,632],1:[49084,56004,4213],2:[55768,62688,6960],3:[59899,66819,7830]};
+    var status=$('fstatus').value,kids=Math.max(0,parseInt($('kids').value)||0),agi=Math.max(0,parseFloat($('agi').value)||0),refund=parseFloat($('refund').value);
+    var care=$('cCare').checked,edu=$('cEdu').checked,ret=$('cRet').checked,loan=$('cLoan').checked,mfj=status==='mfj';
+    var F=[],total=0,k=Math.min(kids,3),lim=EITC[k][mfj?1:0],maxc=EITC[k][2];
+    if(agi>0&&agi<=lim){F.push({name:'Earned Income Tax Credit (EITC)',chip:'likely',clabel:'Likely — check it',amt:maxc,
+      why:'Your income looks under the EITC line for your household, and <b>billions in EITC go unclaimed</b> — it\'s the credit people miss most. Worth up to about '+fmt(maxc)+' for your situation. You have to file a return to get it, even if you owe no tax.'});total+=maxc;}
+    if(kids>0&&agi<(mfj?400000:200000)){var ctc=kids*2000;F.push({name:'Child Tax Credit',chip:'likely',clabel:'Likely',amt:ctc,
+      why:'Up to <b>$2,000 per child under 17</b> ('+kids+' × $2,000 = '+fmt(ctc)+'). Part of it is refundable, so you can get money back even with little tax owed.'});total+=ctc;}
+    if(!isNaN(refund)&&refund>2500){F.push({name:'You over-withheld all year',chip:'did',clabel:'You did',amt:0,
+      why:'A '+fmt(refund)+' refund isn\'t a bonus — it\'s <b>your money the IRS held interest-free all year</b>. Adjusting your W-4 at work puts more in each paycheck now. (Not money missed — just money you lent for free.)'});}
+    if(care){F.push({name:'Child &amp; Dependent Care Credit',chip:'possible',clabel:'Possible',amt:1050,
+      why:'You said you paid for care so you could work — that can be worth up to about <b>$1,050 for one child, $2,100 for two</b>. Different from the FSA at work; you may be able to use both.'});total+=1050;}
+    if(edu){F.push({name:'Education credit (AOTC / Lifetime Learning)',chip:'possible',clabel:'Possible',amt:2500,
+      why:'Tuition you paid can be worth up to <b>$2,500 per student</b> (American Opportunity Credit), and part is refundable. Look for a <b>1098-T</b> form.'});total+=2500;}
+    if(ret&&agi<(mfj?76500:38250)){F.push({name:'Saver\'s Credit',chip:'possible',clabel:'Possible',amt:mfj?2000:1000,
+      why:'Putting money into an IRA/401(k) on a modest income can earn a <b>credit up to '+(mfj?'$2,000':'$1,000')+'</b> on top of the tax break — almost nobody claims it. It\'s <b>a percentage of what you put in, not a flat amount</b>, so the actual credit is usually less than the cap.'});total+=(mfj?2000:1000);}
+    if(loan){F.push({name:'Student-loan interest deduction',chip:'possible',clabel:'Possible',amt:350,
+      why:'You can <b>deduct up to $2,500</b> of student-loan interest even without itemizing — roughly $300–$550 back for most people. Look for a <b>1098-E</b>.'});total+=350;}
+    var h='';
+    if(!F.length){
+      h='<p class="none">Nothing jumped out from what you entered — which is a real answer, not a dodge. The big misses are usually the <b>EITC</b> (if your income is modest) and credits for <b>kids, childcare, or college</b>. If none of those fit, you probably didn\'t leave much on the table.</p>';
+    } else {
+      h='<div class="dsum">Based on what you told me, here\'s what looks worth a second look — <b>'+F.length+' item'+(F.length>1?'s':'')+'</b>. These are <b>signals to check</b>, not a promise. <span style="color:var(--sea)">Income limits use <b>2024 figures</b>; confirm the current year\'s.</span></div>';
+      F.forEach(function(f){h+='<div class="line"><div class="lrow"><span class="lname">'+f.name+'</span>'+(f.amt?'<span class="lamt">up to '+fmt(f.amt)+'</span>':'')+'</div><span class="chip '+f.chip+'">'+f.clabel+'</span><div class="lflag">'+f.why+'</div></div>';});
+      if(total>0){h+='<div class="bottom"><div class="big">Theoretical maximum ~'+fmt(total)+' worth checking</div><div class="cav">This is a <b>theoretical maximum, not a likely refund</b> — the best case only if you fully qualify for each. The real number is usually lower, and some may not apply. It\'s a reason to look, not a figure to bank on.</div></div>';}
+      h+='<div class="todo"><b>What I\'d do:</b><ul>'
+        +'<li>If your income is under about $67,000, get it done <b>free at a VITA site</b> (irs.gov/vita) or with IRS Free File — real people, no cost.</li>'
+        +'<li>Already filed and missed one of these? You can <b>amend with Form 1040-X</b> for up to 3 years back and still get the money.</li>'
+        +'<li>Take this list to whoever does your taxes and ask about each one by name.</li></ul></div>';
+    }
+    h+='<div class="rowbtns" style="justify-content:center"><button class="lnk" onclick="window.print()">🖨 Print / share this read</button></div>';
+    h+='<p class="nfa" style="color:var(--accent);font-weight:600">💡 This is a once-a-year check — add it to your home screen and run it again next tax season.</p>';
+    h+='<p class="nfa"><b>Educational · not tax advice.</b> I spot things to check — I don\'t file, and I can\'t see your full return. Figures are rough and for a recent tax year; <b>verify anything before you act</b> with the IRS, a free VITA site, or a preparer you trust.</p>';
+    h+='<div class="rcpt-t">📸 Your shareable receipt</div><div id="taxreceipt"></div>';
+    showReport(h,function(){NarcReceipt.card({el:$('taxreceipt'),narc:'The Narc',accent:MODES.tax.accent,bg:'#0E1E15',
+      headline:F.length?('Found '+F.length+' credit'+(F.length>1?'s':'')+' worth a second look'):'Nothing obvious left on the table',
+      big:(F.length&&total>0)?('up to ~'+fmt(total)):'Clear',
+      sub:F.length?('Theoretical max — the real number is usually lower. Confirm each before you file or amend.'):'The big misses are EITC and credits for kids, childcare, or college. None seemed to fit.',
+      share:F.length?('The Narc flagged up to ~'+fmt(total)+' in credits I should check.'):'The Narc checked my return for missed credits.'});});
+  }
+};
+
+/* ================= MODE: DEBT (collections) ================= */
+MODES.collections={
+  key:'collections',label:'Debt',tabIc:'⚖️',
+  accent:'#E0725A',accent6:'#C85E48',sea:'#C79E96',line:'#512C2A',
+  ink800:'#1E0E0E',ink700:'#3C1E1C',ink600:'#4A2624',bg1:'#3A1C1A',bg2:'#200F0F',bg3:'#150909',
+  sub:'a collector came at you? here are your rights — in plain English',
+  persona:{emoji:'⚖️',name:'Debt desk',
+    tag:"I lay out your rights against debt collectors in plain English. In your corner — not theirs.",
+    signoff:"Know your rights and they lose their leverage. Put everything in writing."},
+  scan:genericScan,talk:genericTalk,
+  inputHTML:
+   '<div class="card"><h2>1 · What are you dealing with?</h2>'
+   +'<div class="seg"><label><input type="radio" name="sit" value="letter" checked> A <b>collection letter or phone call</b></label>'
+   +'<label><input type="radio" name="sit" value="sued"> I\'ve been <b>sued</b> (court papers)</label></div>'
+   +'<div class="f"><label>Roughly how old is this debt? (years)</label><input id="age" type="number" min="0" value="0"></div></div>'
+   +'<div class="card"><h2>2 · Anything that\'s true?</h2>'
+   +'<p class="h2sub">Check what applies — some of these are the collector breaking the law.</p>'
+   +'<div class="tog">'
+   +'<label><input type="checkbox" id="cOriginal"> This is the <b>original company</b> I owe — not a separate collection agency</label>'
+   +'<label><input type="checkbox" id="cOld30"> It\'s been <b>more than 30 days</b> since they first contacted me</label>'
+   +'<label><input type="checkbox" id="cDont"> I <b>don\'t recognize this debt</b>, or I\'m not sure it\'s mine / the amount is right</label>'
+   +'<label><input type="checkbox" id="cTime"> They call <b>before 8am or after 9pm</b></label>'
+   +'<label><input type="checkbox" id="cWork"> They call me <b>at work</b> after I asked them to stop</label>'
+   +'<label><input type="checkbox" id="cThreat"> They <b>threatened me, lied, or claimed to be law enforcement</b></label>'
+   +'<label><input type="checkbox" id="cRepeat"> They <b>call over and over</b> to annoy or harass</label>'
+   +'</div><button class="go" onclick="M(\'decode\')">Show me my rights →</button></div>',
+  sample:function(){var s=document.querySelector('input[name="sit"][value="letter"]');if(s)s.checked=true;$('age').value='4';$('cOriginal').checked=false;$('cOld30').checked=false;$('cDont').checked=true;$('cTime').checked=true;$('cWork').checked=false;$('cThreat').checked=false;$('cRepeat').checked=false;},
+  clear:function(){var s=document.querySelector('input[name="sit"][value="letter"]');if(s)s.checked=true;$('age').value='0';['cOriginal','cOld30','cDont','cTime','cWork','cThreat','cRepeat'].forEach(function(id){$(id).checked=false;});$('report').style.display='none';},
+  decode:function(){
+    var sit=(document.querySelector('input[name="sit"]:checked')||{}).value||'letter';
+    var age=Math.max(0,parseFloat($('age').value)||0);
+    var dont=$('cDont').checked,time=$('cTime').checked,work=$('cWork').checked,threat=$('cThreat').checked,repeat=$('cRepeat').checked;
+    var orig=$('cOriginal').checked,old30=$('cOld30').checked;
+    var F=[];
+    if(sit==='sued'){F.push({name:'You\'ve been sued — do NOT ignore this',chip:'act',clabel:'Act now',
+      why:'This is the big one. <b>Most default judgments happen simply because people never respond.</b> You usually have about <b>20–30 days</b> to file a written "Answer" with the court — the exact deadline is on the papers. Show up and many collectors <b>can\'t actually prove they own the debt</b>. Ignoring it hands them an automatic win (a "default judgment") and they can garnish your wages.'});}
+    F.push({name:'You can make them prove it — in writing',chip:'right',clabel:'Your right',
+      why:'Under the <b>Fair Debt Collection Practices Act</b>, you can send a <b>debt-validation letter</b> within 30 days of their first contact. Until they prove the debt is yours and the amount is right, they\'re supposed to <b>stop collecting</b>. There\'s a ready letter below.'+(orig?' <b>Important:</b> this validation right applies mainly to <b>third-party collection agencies</b>. If this is the <b>original company</b> you owe, the automatic 30-day stop may not apply — but you can still demand proof of the amount in writing and dispute any error.':'')+(old30?' <b>Note:</b> more than 30 days may have passed since first contact, so the automatic "stop collecting" window may be closed — but you can <b>still request validation in writing at any time</b>.':'')});
+    if(dont)F.push({name:'You don\'t recognize it — that matters',chip:'watch',clabel:'Check this',
+      why:'<b>Credit-report errors are common</b>, and collectors buy old debts for pennies with sloppy records. Don\'t pay a debt you\'re unsure of — send the validation letter first, and dispute it on your credit report at <b>annualcreditreport.com</b> (free).'});
+    if(age>=3)F.push({name:'This debt may be too old to sue over',chip:'watch',clabel:'Check your state',
+      why:'Most states have a <b>statute of limitations of about 3–6 years</b> on debt. If it\'s past that, a collector <b>can\'t win a lawsuit</b> over it. But be careful: <b>making a payment or even promising to pay can restart the clock</b>. Confirm your state\'s limit before you say a word about paying.'});
+    var violations=[];
+    if(time)violations.push('calling before 8am or after 9pm');
+    if(work)violations.push('calling you at work after you told them to stop');
+    if(threat)violations.push('threats, lies, or pretending to be law enforcement');
+    if(repeat)violations.push('repeated calls meant to harass');
+    if(violations.length)F.push({name:'They may be breaking the law',chip:'right',clabel:'Leverage',
+      why:'What you described — '+violations.join('; ')+' — can <b>violate the FDCPA</b>. You can report them to the <b>CFPB</b> (consumerfinance.gov/complaint) and your state AG. Violations can be worth up to <b>$1,000</b> in statutory damages, if you sue and win, and the threat of a complaint is real leverage.'});
+    var letter='[Your name]\n[Your address]\n[Date]\n\n[Collector’s name]\n[Collector’s address]\n\nRe: Account # [account number, if any]\n\nTo whom it may concern:\n\nI am responding to your contact about a debt you say I owe. I am requesting validation under the Fair Debt Collection Practices Act, 15 U.S.C. § 1692g.\n\nPlease provide: (1) proof that I owe this debt and the exact amount; (2) the name of the original creditor; and (3) proof that you are licensed to collect it in my state.\n\nUntil you provide this validation, please cease collection activity as required by law. Please also communicate with me only in writing from this point forward.\n\nSincerely,\n[Your name]';
+    var h='<div class="dsum">Here\'s where you stand — <b>'+F.length+' thing'+(F.length>1?'s':'')+'</b> to know. Collectors count on you not knowing any of this.</div>';
+    F.forEach(function(f){h+='<div class="line"><span class="lname">'+f.name+'</span><br><span class="chip '+f.chip+'">'+f.clabel+'</span><div class="lflag '+f.chip+'">'+f.why+'</div></div>';});
+    h+='<div class="todo"><b>What I\'d do, in order:</b><ul>'
+      +(sit==='sued'?'<li><b>Respond to the lawsuit by the deadline on the papers</b> — even a simple Answer stops an automatic loss. This is the one thing you can\'t skip.</li>':'')
+      +'<li><b>Send the validation letter below</b> (certified mail, keep a copy) before you pay anything.</li>'
+      +(age>=3?'<li><b>Don\'t pay or promise to pay</b> until you\'ve checked your state\'s statute of limitations.</li>':'')
+      +'<li><b>Dispute any error</b> on your credit report at annualcreditreport.com (free).</li>'
+      +'<li>Get <b>free legal help</b> — if you qualify, legal aid is no cost: <b>lawhelp.org</b>. For a lawsuit, this is worth it.</li></ul></div>';
+    h+='<div class="lettl">✉ Your debt-validation letter (fill in the [brackets])</div><div class="letter">'+letter+'</div>';
+    h+='<div class="rowbtns" style="justify-content:center"><button class="lnk" onclick="window.print()">🖨 Print / share this</button></div>';
+    h+='<p class="nfa"><b>Educational · not legal advice.</b> Debt and lawsuits are high-stakes and the rules vary by state. I point you to your rights — I can\'t represent you. <b>If you\'ve been sued or anything feels serious, talk to a lawyer</b> (free legal aid at lawhelp.org).</p>';
+    h+='<div class="rcpt-t">📸 Your shareable receipt</div><div id="colreceipt"></div>';
+    showReport(h,function(){NarcReceipt.card({el:$('colreceipt'),narc:'The Narc',accent:MODES.collections.accent,bg:'#241010',
+      headline:sit==='sued'?'You\'ve been sued — respond by the deadline. Don\'t ignore it.':'You have more rights here than they let on',
+      big:sit==='sued'?'Answer it':(F.length+' right'+(F.length>1?'s':'')),
+      sub:sit==='sued'?'Most default judgments happen only because people never respond. Make them prove the debt.':'Send the free debt-validation letter first. Don\'t pay or promise to pay until they prove it\'s yours.',
+      share:sit==='sued'?'The Narc: sued over a debt? Respond by the deadline — don\'t hand them a default.':'The Narc showed me my rights against debt collectors.'});});
+  }
+};
+
+/* ================= MODE: BENEFITS (open enrollment / SBC) ================= */
+MODES.benefits={
+  key:'benefits',label:'Benefits',tabIc:'🩺',
+  accent:'#6E9BE6',accent6:'#567FCB',sea:'#A9B6D6',line:'#2E3A5E',
+  ink800:'#0F1428',ink700:'#24305A',ink600:'#2E3A66',bg1:'#1C2440',bg2:'#0F1428',bg3:'#080B18',
+  sub:'open enrollment is a trap — lay your plans side by side',
+  seasonal:'benefits',
+  persona:{emoji:'🩺',name:'Benefits desk',
+    tag:"I read the standardized SBC pages and lay your plan options side by side in plain English — premium, deductible, out-of-pocket max, the real trade-off. I compare what's in the packet; I can't predict your health.",
+    signoff:"The cheapest premium isn't always the cheapest year. Match the plan to how much care you actually use."},
+  scan:genericScan,talk:genericTalk,
+  inputHTML:
+   '<div class="card"><h2>1 · How much care do you expect this year?</h2>'
+   +'<p class="h2sub">Every plan must give you a <b>Summary of Benefits and Coverage (SBC)</b> — a federally standardized form. Enter each plan\'s numbers below and I\'ll show which wins <b>for how you actually use care</b>.</p>'
+   +'<div class="f"><label>Your expected year</label><select id="usage">'
+   +'<option value="500">Rarely — checkups, maybe one sick visit</option>'
+   +'<option value="3000" selected>Average — a few visits, some meds, a minor thing</option>'
+   +'<option value="9000">A lot — chronic meds, specialists, imaging</option>'
+   +'<option value="25000">Major — surgery or ongoing treatment</option>'
+   +'</select></div></div>'
+   +BEN_PLANCARD('a','Plan A','280','4000','6500','20',true)
+   +BEN_PLANCARD('b','Plan B','440','1500','4500','20',false)
+   +BEN_PLANCARD('c','Plan C (optional)','','','','',false)
+   +'<div class="card"><div class="rowbtns" style="margin-top:0"><button class="lnk" onclick="M(\'sample\')">Load a sample</button><button class="lnk" onclick="M(\'clear\')">Clear</button></div>'
+   +'<button class="go" onclick="M(\'decode\')">Compare my plans →</button></div>',
+  sample:function(){
+    $('usage').value='9000';
+    BEN_SET('a','HDHP + HSA','280','4000','6500','20',true,false);
+    BEN_SET('b','PPO','440','1500','4500','20',false,false);
+    BEN_SET('c','','','','','',false,false);
+  },
+  clear:function(){['a','b','c'].forEach(function(x){BEN_SET(x,'','','','','',false,false);});$('usage').value='3000';$('report').style.display='none';},
+  decode:function(){
+    var spend=parseFloat($('usage').value)||3000;
+    var usageLbl=$('usage').options[$('usage').selectedIndex].text.split('—')[0].trim();
+    var plans=['a','b','c'].map(function(x){
+      return {x:x,name:($('bname'+x).value||('Plan '+x.toUpperCase())).trim(),
+        prem:money($('prem'+x).value),ded:money($('ded'+x).value),oop:money($('oop'+x).value),
+        coins:money($('coins'+x).value),coinsRaw:$('coins'+x).value.trim(),
+        hsa:$('hsa'+x).checked,narrow:$('narrow'+x).checked};
+    }).filter(function(p){return p.prem>0||p.ded>0;});
+    if(plans.length<2){
+      $('reportbody').innerHTML='<p class="dsum">Enter at least <b>two plans</b> — for each, the <b>monthly premium</b> and the <b>deductible</b> from its SBC (out-of-pocket max and coinsurance make it sharper). Then tap "Compare my plans."</p>';
+      var rp=$('report');rp.style.display='block';rp.scrollIntoView({behavior:'smooth'});return;
+    }
+    plans.forEach(function(p){
+      var coins=p.coinsRaw?p.coins:20; p.coinsUsed=coins; p.coinsAssumed=!p.coinsRaw;
+      var annualPrem=p.prem*12,care;
+      if(spend<=p.ded)care=spend;
+      else care=Math.min(p.oop>0?p.oop:Infinity,p.ded+(coins/100)*(spend-p.ded));
+      p.annualPrem=annualPrem;p.care=care;p.total=annualPrem+care;
+    });
+    var ranked=plans.slice().sort(function(a,b){return a.total-b.total;});
+    var best=ranked[0],second=ranked[1];
+    var lines=ranked.map(function(p,i){
+      var s=i===0?'right':'watch',lab=i===0?'✓ Best value for you':(i===1?'Runner-up':'Higher cost');
+      var gotchas=[];
+      if(p.hsa)gotchas.push("Pairs with an <b>HSA</b> — money you contribute is triple tax-advantaged (in tax-free, grows tax-free, out tax-free for medical). A real edge if you can fund it.");
+      if(p.narrow)gotchas.push("<b>Narrow network</b> — confirm your doctors and nearest hospital are in it before you pick this, or an 'in-network' plan can still bill you out-of-network.");
+      if(p.coinsUsed>=30)gotchas.push("<b>High coinsurance ("+p.coinsUsed+"%)</b> — after the deductible you still pay a big share until you hit the out-of-pocket max.");
+      if(p.oop<=0)gotchas.push("No <b>out-of-pocket max</b> entered — that number is your worst-case ceiling; add it from the SBC for a true comparison.");
+      if(p.coinsAssumed&&p.oop>0)gotchas.push("Coinsurance was blank — I assumed <b>20%</b>. Enter the real figure from the SBC to sharpen this.");
+      var breakdown="Premiums <b>"+fmt(p.annualPrem)+"/yr</b> + estimated care <b>"+fmt(p.care)+"</b> at "+usageLbl.toLowerCase()+" usage.";
+      var why=breakdown+(gotchas.length?' '+gotchas.join(' '):'');
+      return chipRow(escapeHtml(p.name),"premium "+fmt(p.prem)+"/mo · deductible "+fmt(p.ded),fmt(p.total)+"/yr",s,lab,why);
+    }).join('');
+    // plain-English trade-off between the top two
+    var trade='';
+    if(second){
+      var dPrem=(second.prem-best.prem)*12,dTotal=second.total-best.total;
+      if(best.prem>second.prem){
+        trade=best.name+" has the <b>higher</b> monthly premium (+"+fmt((best.prem-second.prem))+"/mo), but at <b>"+usageLbl.toLowerCase()+"</b> usage its lower deductible/coinsurance still make it <b>~"+fmt(dTotal)+" cheaper for the year</b>. Premium isn't the whole story.";
+      } else {
+        trade=best.name+" is <b>"+fmt(Math.abs(dPrem))+"/yr cheaper on premium</b> and — at <b>"+usageLbl.toLowerCase()+"</b> usage — comes out <b>~"+fmt(dTotal)+" cheaper overall</b> than "+second.name+". If you expect to use <b>more</b> care than that, re-run at a higher usage; the winner can flip.";
+      }
+    }
+    var html='<p class="dsum">At <b>'+usageLbl.toLowerCase()+'</b> usage, <b>'+escapeHtml(best.name)+'</b> looks cheapest — about <b>'+fmt(best.total)+' for the year</b> all in. '+trade+'</p>'+lines
+      +'<div class="bottom"><div class="brow"><span>Winner at '+usageLbl.toLowerCase()+' usage</span><b>'+escapeHtml(best.name)+'</b></div>'
+      +'<div class="brow big"><span>All-in for the year</span><b>~'+fmt(best.total)+'</b></div></div>'
+      +'<div class="todo"><b>What I\'d do:</b><ul>'
+      +'<li><b>Re-run at a different usage level.</b> The cheapest plan flips depending on how much care you use — try the level above and below your guess.</li>'
+      +'<li><b>Check the network</b> — confirm your doctors and hospital are in-network on the plan you pick.</li>'
+      +(plans.some(function(p){return p.hsa;})?'<li><b>If you pick the HSA plan</b>, decide what you can contribute — the tax break can beat a lower-deductible plan\'s richer coverage.</li>':'')
+      +'<li><b>Look past premium.</b> The lowest monthly cost is often the most expensive year if you actually use care.</li></ul></div>'
+      +'<p class="nfa">Educational estimate from the SBC numbers you entered and the usage level you picked — <b>not insurance or medical advice</b>. It can\'t know your future health, copays, or drug tiers. Confirm details in each plan\'s SBC before you enroll. Nothing you typed left your browser.</p>'
+      +'<div class="rcpt-t">📸 Your shareable receipt</div><div id="benreceipt"></div>';
+    showReport(html,function(){NarcReceipt.card({el:$('benreceipt'),narc:'The Narc',accent:MODES.benefits.accent,bg:'#0F1428',
+      headline:'At '+usageLbl.toLowerCase()+' usage, '+best.name+' wins',
+      big:'~'+fmt(best.total)+'/yr',
+      sub:'All-in (premiums + estimated care) beat '+(second?second.name:'the rest')+'. Re-run at a different usage — the winner can flip.',
+      share:'The Narc compared my health plans side by side and found the cheapest for how I actually use care.'});});
+  }
+};
+function BEN_PLANCARD(x,title,prem,ded,oop,coins,hsa){
+  return '<div class="card"><h2>'+title+'</h2>'
+   +'<div class="fld"><input id="bname'+x+'" placeholder="Nickname (e.g. HDHP, PPO)" value=""></div>'
+   +'<div class="fg" style="margin-top:9px">'
+   +'<div class="fld"><div class="amtwrap"><input id="prem'+x+'" inputmode="decimal" placeholder="Monthly premium" value="'+prem+'"></div></div>'
+   +'<div class="fld"><div class="amtwrap"><input id="ded'+x+'" inputmode="decimal" placeholder="Deductible" value="'+ded+'"></div></div>'
+   +'<div class="fld"><div class="amtwrap"><input id="oop'+x+'" inputmode="decimal" placeholder="Out-of-pocket max" value="'+oop+'"></div></div>'
+   +'<div class="fld"><input id="coins'+x+'" inputmode="decimal" placeholder="Coinsurance % (e.g. 20)" value="'+coins+'"></div>'
+   +'</div>'
+   +'<div class="tog" style="margin-top:12px"><label><input type="checkbox" id="hsa'+x+'"'+(hsa?' checked':'')+'> HSA-eligible plan</label>'
+   +'<label><input type="checkbox" id="narrow'+x+'"> Narrow / limited network</label></div></div>';
+}
+function BEN_SET(x,name,prem,ded,oop,coins,hsa,narrow){
+  var g=function(id){return $(id);};
+  if(g('bname'+x))g('bname'+x).value=name;if(g('prem'+x))g('prem'+x).value=prem;if(g('ded'+x))g('ded'+x).value=ded;
+  if(g('oop'+x))g('oop'+x).value=oop;if(g('coins'+x))g('coins'+x).value=coins;
+  if(g('hsa'+x))g('hsa'+x).checked=!!hsa;if(g('narrow'+x))g('narrow'+x).checked=!!narrow;
+}
+
+/*__MODE_SLOT__*/
+
+/* ---------- paywall: gate the reveal. ONE server switch (NARC_PAYMENTS_LIVE) turns it on. ---------- */
+var PAY={live:false,unlocked:false};
+function pwToken(){try{var t=localStorage.getItem('narc_token');var u=parseInt(localStorage.getItem('narc_until')||'0',10);return (t&&u&&u>Date.now())?t:null;}catch(e){return null;}}
+function pwSeasonPrice(){var m=new Date().getMonth()+1;return ((m>=1&&m<=4)||(m>=10&&m<=12))?'$59.99/yr':'$69.99/yr';}
+function openPaywall(){var p=$('pwPrice');if(p)p.textContent=pwSeasonPrice();var n=$('pwNote');if(n)n.textContent='';var pw=$('paywall');if(pw)pw.style.display='flex';}
+function closePaywall(){var pw=$('paywall');if(pw)pw.style.display='none';}
+function pwRecheck(){ if(pwToken()){PAY.unlocked=true;closePaywall();M('decode');return;} var n=$('pwNote');if(n)n.textContent='Not seeing a subscription yet. If you just started your trial, give it a moment and tap again.'; }
+function verifyPaid(sid){
+  try{fetch('/api/narc-verify',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({session_id:sid})})
+    .then(function(r){return r.json();}).then(function(j){if(j&&j.ok&&j.token){try{localStorage.setItem('narc_token',j.token);localStorage.setItem('narc_until',String(j.until||''));}catch(e){}PAY.unlocked=true;closePaywall();}}).catch(function(){});}catch(e){}
+}
+function initPay(){
+  PAY.unlocked=!!pwToken();
+  try{var q=new URLSearchParams(location.search);var paid=q.get('paid');if(paid&&paid.indexOf('cs_')===0)verifyPaid(paid);}catch(e){}
+  // ask the server whether paid access is live; fail-safe = stay free (never lock people out on a hiccup)
+  try{fetch('/api/narc-config',{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){PAY.live=!!(j&&j.live);}).catch(function(){PAY.live=false;});}catch(e){PAY.live=false;}
+}
+
+/* ---------- boot ---------- */
+function boot(){
+  initPay();
+  renderTabs();
+  switchMode((location.hash||'').replace('#','')||'bill');
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
+</script>
+<script src="/narc-ocr.js" defer></script>
+<script src="/narc-receipt.js" defer></script>
+<script src="/family-nav.js" defer></script>
+</body>
+</html>
