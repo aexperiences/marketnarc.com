@@ -22,40 +22,17 @@
     }
   ],
   "redirects": [
-    {
-      "source": "/live",
-      "destination": "/marketnarc-app",
-      "permanent": false
-    },
-    {
-      "source": "/marketnarc",
-      "destination": "/marketnarc-app",
-      "permanent": false
-    },
-    {
-      "source": "/billnarc",
-      "destination": "/billnarc-app",
-      "permanent": false
-    },
-    {
-      "source": "/homenarc",
-      "destination": "/homenarc-app",
-      "permanent": false
-    },
-    {
-      "source": "/pawnarc",
-      "destination": "/pawnarc-app",
-      "permanent": false
-    },
-    {
-      "source": "/taxnarc",
-      "destination": "/taxnarc-app",
-      "permanent": false
-    },
-    {
-      "source": "/collectionsnarc",
-      "destination": "/collectionsnarc-app",
-      "permanent": false
-    }
+    { "source": "/live", "destination": "/marketnarc-app", "permanent": false },
+    { "source": "/marketnarc", "destination": "/marketnarc-app", "permanent": false },
+    { "source": "/thenarc", "destination": "/thenarc-app", "permanent": false },
+    { "source": "/narc", "destination": "/thenarc-app", "permanent": false },
+    { "source": "/pricing", "destination": "/thenarc-pricing", "permanent": false },
+    { "source": "/billnarc", "destination": "/thenarc-app#bill", "permanent": false },
+    { "source": "/homenarc", "destination": "/thenarc-app#home", "permanent": false },
+    { "source": "/pawnarc", "destination": "/thenarc-app#paw", "permanent": false },
+    { "source": "/taxnarc", "destination": "/thenarc-app#tax", "permanent": false },
+    { "source": "/collectionsnarc", "destination": "/thenarc-app#collections", "permanent": false },
+    { "source": "/benefits", "destination": "/thenarc-app#benefits", "permanent": false },
+    { "source": "/benefitsnarc", "destination": "/thenarc-app#benefits", "permanent": false }
   ]
 }

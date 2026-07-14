@@ -948,7 +948,8 @@ function initPay(){
 function boot(){
   initPay();
   renderTabs();
-  switchMode((location.hash||'').replace('#','')||'bill');
+  var k=(location.hash||'').replace('#','')||'bill';
+  switchMode(MODES[k]?k:'bill');
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
 </script>
