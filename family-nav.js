@@ -24,6 +24,10 @@
       + 'font-weight="900" font-size="620" fill="' + accent + '">' + letter + '</text></svg>';
   }
 
+  // THE brand mark — Anthony's REAL logo (ae-brand ONE RULE: never an invented SVG / fake æ / emoji).
+  // Used in the bar for EVERY family. The pearl disc reads on both light and dark backgrounds.
+  var AEMARK = '<img class="aem" src="/ae-mark.png" alt="Accelerated Experiences" width="26" height="26">';
+
   /* ---------- every property ---------- */
   // Each family: how to detect it, its home, brand words, theme colors, mark, and its in-site apps.
   var FAMILIES = {
@@ -86,16 +90,12 @@
     },
     narc: {
       hostRe: /marketnarc\.com$/i, home: "https://marketnarc.com/",
-      brand: "Market", accentWord: "Narc",
+      brand: "The ", accentWord: "Narcs",
       accent: "#E6A93C", bg: "#08100F", line: "#214F4C", ink: "#EAF3F0", dim: "#8FC4BB",
       logo: GLASS, ownedKey: "espo_owned_narc",
       apps: [
-        { k: "market", name: "MarketNarc", url: "/marketnarc-app" },
-        { k: "bill", name: "BillNarc", url: "/billnarc-app" },
-        { k: "tax", name: "TaxNarc", url: "/taxnarc-app" },
-        { k: "collections", name: "CollectionsNarc", url: "/collectionsnarc-app" },
-        { k: "home", name: "HomeNarc", url: "/homenarc-app" },
-        { k: "paw", name: "PawNarc", url: "/pawnarc-app" }
+        { k: "narc", name: "The Narc", url: "/thenarc-app" },
+        { k: "market", name: "MarketNarc", url: "/marketnarc-app" }
       ]
     },
     nd: {
@@ -167,7 +167,7 @@
     + 'border-bottom:1px solid ' + fam.line + ';font-family:Inter,-apple-system,Segoe UI,Roboto,sans-serif;box-sizing:border-box}'
     + '#aenav a{text-decoration:none}'
     + '#aenav .brand{display:flex;align-items:center;gap:9px;color:' + fam.ink + '}'
-    + '#aenav .brand svg{width:26px;height:26px;border-radius:7px;display:block}'
+    + '#aenav .brand svg,#aenav .brand img.aem{width:26px;height:26px;border-radius:7px;display:block;object-fit:contain}'
     + '#aenav .brand b{font-family:Lato,Inter,sans-serif;font-weight:900;font-size:16px;letter-spacing:.2px;white-space:nowrap}'
     + '#aenav .brand b i{font-style:normal;color:' + fam.accent + '}'
     + '#aenav .brand .hm{color:' + fam.dim + ';font-size:11px;font-weight:700;margin-left:2px;opacity:.9;white-space:nowrap}'
@@ -252,7 +252,7 @@
     var style = document.createElement('style'); style.textContent = css; document.head.appendChild(style);
     navEl = document.createElement('header'); navEl.id = 'aenav';
     navEl.innerHTML =
-      '<a class="brand" href="' + fam.home + '" title="Back to ' + fam.brand + fam.accentWord + '">' + fam.logo
+      '<a class="brand" href="' + fam.home + '" title="Back to ' + fam.brand + fam.accentWord + '">' + AEMARK
       + '<b>' + fam.brand + '<i>' + fam.accentWord + '</i></b><span class="hm">&#8962; home</span></a>'
       + '<span class="spacer"></span>'
       + (current ? '<span class="cur">' + current.name + '</span>' : '')
