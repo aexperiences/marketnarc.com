@@ -48,15 +48,29 @@ body{margin:0;min-height:100vh;color:var(--off);
  padding:6px 11px;margin:3px;cursor:pointer;font-size:13px;min-height:44px}
 .sp-d{margin-top:8px;font-size:12px;color:var(--sea)}
 .sp-raw{margin-top:6px;font-family:ui-monospace,Menlo,monospace;font-size:11px;color:var(--sea);white-space:pre-wrap;max-height:120px;overflow:auto}
-/* persona signature */
-.narcsig{display:flex;gap:11px;align-items:flex-start;max-width:660px;margin:0 auto 16px;
- background:rgba(255,255,255,.035);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
-.narcsig .av{flex:0 0 auto;width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;
- font-size:18px;background:rgba(255,255,255,.05);border:1px solid var(--line)}
-.narcsig .tx{font-size:12.5px;line-height:1.5;color:var(--sea)}
+/* persona signature — iced out */
+.narcsig{display:flex;gap:12px;align-items:flex-start;max-width:660px;margin:0 auto 16px;position:relative;overflow:hidden;
+ background:linear-gradient(120deg,rgba(255,255,255,.07),rgba(165,195,240,.06));
+ border:1px solid rgba(190,215,250,.3);border-radius:16px;padding:13px 15px;
+ box-shadow:0 6px 22px -12px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.14)}
+.narcsig::after{content:"";position:absolute;top:0;bottom:0;width:40%;left:-55%;pointer-events:none;
+ background:linear-gradient(105deg,transparent,rgba(255,255,255,.1) 48%,rgba(255,255,255,.22) 52%,transparent);
+ animation:iceglint 7.5s 1.2s ease-in-out infinite}
+.narcsig .av{flex:0 0 auto;width:42px;height:42px;border-radius:13px;display:flex;align-items:center;justify-content:center;
+ font-size:21px;position:relative;
+ background:linear-gradient(160deg,#EDF3FC 0%,#C9D8EC 60%,#AABFDC 100%);
+ border:1px solid rgba(255,255,255,.65);
+ box-shadow:0 4px 12px rgba(0,0,0,.4), inset 0 1px 0 #fff}
+.narcsig .av::after{content:"✦";position:absolute;top:-6px;right:-5px;font-size:12px;color:#EAF3FF;
+ text-shadow:0 0 8px rgba(190,220,255,.9);animation:sparkle 2.8s ease-in-out infinite}
+@keyframes sparkle{0%,100%{opacity:.25;transform:scale(.8) rotate(0)}50%{opacity:1;transform:scale(1.15) rotate(18deg)}}
+.narcsig .tx{font-size:12.5px;line-height:1.55;color:var(--sea)}
 .narcsig .tx b{color:var(--accent);font-weight:800}
-.narcsignoff{margin:16px 0 2px;padding:12px 14px;border-radius:12px;border-left:3px solid var(--accent);
- background:rgba(255,255,255,.035);font-size:13.5px;line-height:1.5;font-style:italic;color:var(--off)}
+.narcsignoff{margin:16px 0 2px;padding:13px 15px;border-radius:14px;position:relative;
+ border:1px solid rgba(190,215,250,.25);border-left:3px solid var(--accent);
+ background:linear-gradient(120deg,rgba(255,255,255,.05),rgba(165,195,240,.04));
+ font-size:13.5px;line-height:1.55;font-style:italic;color:var(--off);
+ box-shadow:inset 0 1px 0 rgba(255,255,255,.1)}
 .narcsignoff b{font-style:normal;color:var(--accent);font-weight:800}
 /* cards */
 .card{background:rgba(255,255,255,.035);border:1px solid var(--line);border-radius:20px;padding:22px 20px;margin-bottom:18px}
@@ -134,7 +148,8 @@ body{margin:0;min-height:100vh;color:var(--off);
 .rcpt-t{text-align:center;font-family:Lato;font-weight:900;color:var(--accent);margin:22px 0 8px;font-size:13px}
 .foot{text-align:center;margin-top:20px}
 .foot a{color:var(--accent);font-weight:700;text-decoration:none;font-size:14px}
-.brandmark{width:46px;height:46px;margin:22px auto 8px;opacity:.9;background:url(/ae-mark.png) center/contain no-repeat}
+.brandmark{width:54px;height:54px;margin:24px auto 6px;opacity:1;background:url(/ae-mark.png) center/contain no-repeat;filter:drop-shadow(0 3px 10px rgba(0,0,0,.4))}
+.brandcap{text-align:center;font-size:11px;letter-spacing:.08em;color:var(--sea);margin:0 0 20px}
 button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 /* paywall — gate at the reveal (only shows when NARC_PAYMENTS_LIVE is on and no unlock token) */
 .pw-wrap{position:fixed;inset:0;z-index:120;display:flex;align-items:center;justify-content:center;padding:22px;
@@ -154,19 +169,27 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 .pw-close{margin-top:10px;background:none;border:0;color:var(--sea);font-size:12.5px;cursor:pointer;text-decoration:underline}
 /* frosted-glass ("glossed ice") bottom mode switcher */
 .ntab-wrap{position:fixed;left:0;right:0;bottom:0;z-index:80;display:flex;justify-content:center;
- padding:0 12px calc(11px + env(safe-area-inset-bottom,0px));pointer-events:none}
-.ntab{pointer-events:auto;display:flex;width:100%;max-width:560px;justify-content:space-between;gap:2px;
- background:rgba(16,26,40,.5);backdrop-filter:blur(20px) saturate(170%);-webkit-backdrop-filter:blur(20px) saturate(170%);
- border:1px solid rgba(255,255,255,.16);border-radius:23px;padding:7px 8px;
- box-shadow:0 12px 44px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.28),inset 0 -1px 0 rgba(255,255,255,.05)}
-.ntab button{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 3px;border:0;background:none;
- border-radius:16px;color:#c1d0e6;font-family:Inter;font-size:10px;font-weight:700;letter-spacing:.01em;cursor:pointer;
- transition:background .15s,color .15s,transform .1s}
-.ntab button:active{transform:scale(.94)}
-.ntab button .ic{font-size:20px;line-height:1}
-.ntab button.on{background:rgba(255,255,255,.13);color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.3)}
-.ntab button.on .ic{filter:drop-shadow(0 0 9px var(--g))}
-@media(max-width:400px){.ntab button{font-size:9px}.ntab button .ic{font-size:18px}}
+ padding:0 10px calc(10px + env(safe-area-inset-bottom));pointer-events:none}
+.ntab{pointer-events:auto;position:relative;display:flex;width:100%;max-width:560px;justify-content:space-between;gap:2px;
+ padding:6px;border-radius:24px;overflow:hidden;
+ background:linear-gradient(180deg,rgba(34,46,70,.78),rgba(14,20,34,.85));
+ backdrop-filter:blur(24px) saturate(1.4);-webkit-backdrop-filter:blur(24px) saturate(1.4);
+ border:1px solid rgba(185,210,245,.28);
+ box-shadow:0 14px 40px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.22), inset 0 -1px 0 rgba(0,0,0,.3)}
+.ntab::after{content:"";position:absolute;top:0;bottom:0;width:46%;left:-60%;pointer-events:none;
+ background:linear-gradient(105deg,transparent 0%,rgba(255,255,255,.16) 45%,rgba(255,255,255,.32) 50%,rgba(255,255,255,.16) 55%,transparent 100%);
+ animation:iceglint 6.5s ease-in-out infinite}
+@keyframes iceglint{0%,64%{left:-60%}88%,100%{left:120%}}
+.ntab button{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 4px;border:0;background:none;
+ color:rgba(233,240,252,.72);font-family:Lato,sans-serif;font-weight:800;font-size:10.5px;letter-spacing:.06em;border-radius:18px;cursor:pointer;
+ transition:transform .16s ease,background .2s ease,color .2s ease,box-shadow .2s ease}
+.ntab button:active{transform:scale(.93)}
+.ntab button .ic{font-size:21px;line-height:1}
+.ntab button.on{background:linear-gradient(165deg,#F6FAFF 0%,#D6E3F5 55%,#B4C9E4 100%);color:#14203A;
+ transform:translateY(-3px);
+ box-shadow:0 6px 18px rgba(126,164,224,.5), 0 1px 0 rgba(255,255,255,.9) inset, 0 -6px 14px -8px rgba(20,32,58,.5) inset}
+.ntab button.on .ic{filter:none}
+@media(max-width:400px){.ntab button{font-size:9.5px}.ntab button .ic{font-size:19px}}
 @media print{.ntab-wrap,.inbar,.innote,.scanpanel,.foot,.priv,.rowbtns,.readbar{display:none!important}body{background:#fff;color:#111}.card{border:0}}
 </style>
 </head>
@@ -225,6 +248,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 
 <nav class="ntab-wrap"><div class="ntab" id="ntab" aria-label="The Narc modes"></div></nav>
 <div class="brandmark" aria-label="Accelerated Experiences" title="An Accelerated Experiences, LLC app"></div>
+<div class="brandcap">Accelerated Experiences, LLC</div>
 
 <script>
 /* ================================================================
