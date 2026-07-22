@@ -6,16 +6,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>The Narc — snap anything that's costing you money</title>
 <meta name="description" content="One tool, six doors: bills, home assessment, pet policy, taxes, debt collectors, and open-enrollment benefits. The Narc reads what's costing you money, tells you plainly what's wrong, and writes the letter to fight it. Runs entirely in your browser — nothing you enter is sent anywhere.">
-<meta name="theme-color" content="#0A1730">
+<meta name="theme-color" content="#0B1512">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Lato:wght@700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
- --off:#EAF3F0;
- --ink800:#0A1730;--ink700:#1A3A66;--ink600:#224676;--line:#294A78;
- --accent:#4FCB8E;--accent6:#3DB87B;--sea:#86B8E0;
- --bg1:#163460;--bg2:#0A1730;--bg3:#070F22;
+ --off:#EAF2EE;
+ --ink800:#0C1512;--ink700:#16241F;--ink600:#1D2E28;--line:#2A3D36;
+ --accent:#46D6A0;--accent6:#34B888;--sea:#9DB3AB;
+ --bg1:#12201B;--bg2:#0B1512;--bg3:#070C0A;
  --ok:#56C98B;--warn:#E6B45C;--bad:#F0846A}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{margin:0;min-height:100vh;color:var(--off);
@@ -381,8 +381,8 @@ function switchMode(k){
 /* ================= MODE: BILLS ================= */
 MODES.bill={
   key:'bill',label:'Bills',tabIc:'🧾',
-  accent:'#4FCB8E',accent6:'#3DB87B',sea:'#86B8E0',line:'#294A78',
-  ink800:'#0A1730',ink700:'#1A3A66',ink600:'#224676',bg1:'#163460',bg2:'#0A1730',bg3:'#070F22',
+  accent:'#46D6A0',accent6:'#34B888',sea:'#9DB3AB',line:'#2A3D36',
+  ink800:'#0C1512',ink700:'#16241F',ink600:'#1D2E28',bg1:'#12201B',bg2:'#0B1512',bg3:'#070C0A',
   sub:'your medical bill, decoded — in plain English',
   persona:{emoji:'🧾',name:'Bills desk',
     tag:"I read medical bills line by line and flag what looks padded, duplicated, or worth challenging. I check the math and the codes — I don't guess your diagnosis.",
@@ -479,7 +479,7 @@ MODES.bill={
         +'<div style="text-align:center;margin-top:10px"><button class="lnk" onclick="window.print()">🖨 Print / share this appeal</button></div>';
     }
     html+='<div class="rcpt-t">📸 Your shareable receipt</div><div id="billreceipt"></div>';
-    showReport(html,function(){NarcReceipt.card({el:$('billreceipt'),narc:'The Narc',accent:MODES.bill.accent,bg:'#0A1730',
+    showReport(html,function(){NarcReceipt.card({el:$('billreceipt'),narc:'The Narc',accent:MODES.bill.accent,bg:'#0B1512',
       headline:flagged>0?('Flagged '+flagged+' charge'+(flagged>1?'s':'')+' worth challenging'):'Read your bill — nothing obvious jumped out',
       big:fmt2(total),
       sub:flagged>0?('on this '+fmt2(total)+' bill — get an itemized bill and push back.'):'Still worth comparing to your EOB.',
@@ -540,8 +540,8 @@ var BILL_APPEAL="[Your name]\n[Your address]\n[Date]\n\n[Insurer name] — Appea
 /* ================= MODE: HOME ================= */
 MODES.home={
   key:'home',label:'Home',tabIc:'🏠',
-  accent:'#E0A24E',accent6:'#C08A3E',sea:'#AEC9A6',line:'#453A2C',
-  ink800:'#191510',ink700:'#372F26',ink600:'#453D32',bg1:'#3A3226',bg2:'#14100B',bg3:'#0B0906',
+  accent:'#E5B653',accent6:'#C99A3C',sea:'#9DB3AB',line:'#2A3D36',
+  ink800:'#0C1512',ink700:'#16241F',ink600:'#1D2E28',bg1:'#12201B',bg2:'#0B1512',bg3:'#070C0A',
   sub:'are you over-assessed? let\'s check.',
   priv:'🔒 Runs entirely in your browser. <b>It never sees your address or your neighbors</b> — it only compares the numbers you type.',
   persona:{emoji:'🏠',name:'Home desk',
@@ -611,7 +611,7 @@ MODES.home={
       +'<p class="nfa">Educational estimate from the numbers you entered — <b>not legal or tax advice</b>. Assessment ratios and appeal deadlines vary by county; confirm yours. Nothing you typed left your browser.</p>'
       +'<div style="text-align:center;font-size:12.5px;color:var(--sea);margin:8px 0 4px">Tap <b>✉ Get your letter</b> below for a ready assessment-appeal letter.</div>'
       +'<div class="rcpt-t">📸 Your shareable receipt</div><div id="homereceipt"></div>';
-    showReport(html,function(){NarcReceipt.card({el:$('homereceipt'),narc:'The Narc',accent:MODES.home.accent,bg:'#1B1610',
+    showReport(html,function(){NarcReceipt.card({el:$('homereceipt'),narc:'The Narc',accent:MODES.home.accent,bg:'#0B1512',
       headline:over?('Over-assessed by about '+Math.round(overPct*100)+'% — worth appealing'):'Assessment looks roughly fair',
       big:over?('~'+fmt(estOverpay)+'/yr'):'In line',
       sub:over?('Assessed '+fmt(assessed)+' vs. '+fmt(med)+' median comps. You can appeal.'):('Assessed '+fmt(assessed)+', comps '+fmt(med)+' median. Recheck after a reassessment.'),
@@ -623,8 +623,8 @@ var HOME_LETTER="[Your name]\n[Your address]\n[Date]\n\n[County] Assessor / Boar
 /* ================= MODE: PET ================= */
 MODES.paw={
   key:'paw',label:'Pet',tabIc:'🐾',
-  accent:'#52C6B9',accent6:'#3FA99D',sea:'#F2B79C',line:'#55305A',
-  ink800:'#230F28',ink700:'#472653',ink600:'#553363',bg1:'#4A2452',bg2:'#1E0F23',bg3:'#120A15',
+  accent:'#4FC9C0',accent6:'#3AAAA2',sea:'#9DB3AB',line:'#2A3D36',
+  ink800:'#0C1512',ink700:'#16241F',ink600:'#1D2E28',bg1:'#12201B',bg2:'#0B1512',bg3:'#070C0A',
   sub:'what you\'re really covered for.',
   persona:{emoji:'🐾',name:'Pet desk',
     tag:"I read pet-insurance fine print for the gaps that bite at claim time. Warm heart, cold eye on the exclusions.",
@@ -685,7 +685,7 @@ MODES.paw={
       +'<p class="nfa">Educational read of the details you entered — <b>not insurance or veterinary advice</b>, and not a coverage decision. Your policy documents and insurer are the final word. Nothing you typed left your browser.</p>'
       +(denied?'<div style="text-align:center;font-size:12.5px;color:var(--sea);margin:8px 0 4px">Tap <b>✉ Get your letter</b> below for a ready denial-appeal letter.</div>':'')
       +'<div class="rcpt-t">📸 Your shareable receipt</div><div id="pawreceipt"></div>';
-    showReport(html,function(){NarcReceipt.card({el:$('pawreceipt'),narc:'The Narc',accent:MODES.paw.accent,bg:'#241028',
+    showReport(html,function(){NarcReceipt.card({el:$('pawreceipt'),narc:'The Narc',accent:MODES.paw.accent,bg:'#0B1512',
       headline:claim>0?('On a '+fmt(claim)+' vet bill, here\'s what comes back'):(gaps>0?('Found '+gaps+' coverage gap'+(gaps>1?'s':'')+' worth knowing'):'Policy basics look solid'),
       big:claim>0?('~'+fmt(estReimb)):String(gaps)+(gaps===1?' gap':' gaps'),
       sub:claim>0?('Your net after reimbursement: ~'+fmt(net)+'. '+reimb+'% back after '+fmt(ded)+' deductible.'):'Know your exam-fee, hereditary, and limit terms before a big claim.',
@@ -697,8 +697,8 @@ var PET_LETTER="[Your name]\n[Your address]\n[Date]\n\n[Insurer] — Claims Appe
 /* ================= MODE: TAX ================= */
 MODES.tax={
   key:'tax',label:'Tax',tabIc:'🧮',
-  accent:'#54BE86',accent6:'#42A972',sea:'#93C7AC',line:'#2C5140',
-  ink800:'#0C1B13',ink700:'#1D3B2C',ink600:'#264A38',bg1:'#173626',bg2:'#0B1D14',bg3:'#06120C',
+  accent:'#6FD08A',accent6:'#55B372',sea:'#9DB3AB',line:'#2A3D36',
+  ink800:'#0C1512',ink700:'#16241F',ink600:'#1D2E28',bg1:'#12201B',bg2:'#0B1512',bg3:'#070C0A',
   sub:'did you overpay? — a plain-English check',
   seasonal:'tax',
   persona:{emoji:'🧮',name:'Tax desk',
@@ -759,7 +759,7 @@ MODES.tax={
     h+='<p class="nfa" style="color:var(--accent);font-weight:600">💡 This is a once-a-year check — add it to your home screen and run it again next tax season.</p>';
     h+='<p class="nfa"><b>Educational · not tax advice.</b> I spot things to check — I don\'t file, and I can\'t see your full return. Figures are rough and for a recent tax year; <b>verify anything before you act</b> with the IRS, a free VITA site, or a preparer you trust.</p>';
     h+='<div class="rcpt-t">📸 Your shareable receipt</div><div id="taxreceipt"></div>';
-    showReport(h,function(){NarcReceipt.card({el:$('taxreceipt'),narc:'The Narc',accent:MODES.tax.accent,bg:'#0E1E15',
+    showReport(h,function(){NarcReceipt.card({el:$('taxreceipt'),narc:'The Narc',accent:MODES.tax.accent,bg:'#0B1512',
       headline:F.length?('Found '+F.length+' credit'+(F.length>1?'s':'')+' worth a second look'):'Nothing obvious left on the table',
       big:(F.length&&total>0)?('up to ~'+fmt(total)):'Clear',
       sub:F.length?('Theoretical max — the real number is usually lower. Confirm each before you file or amend.'):'The big misses are EITC and credits for kids, childcare, or college. None seemed to fit.',
@@ -770,8 +770,8 @@ MODES.tax={
 /* ================= MODE: DEBT (collections) ================= */
 MODES.collections={
   key:'collections',label:'Debt',tabIc:'⚖️',
-  accent:'#E0725A',accent6:'#C85E48',sea:'#C79E96',line:'#512C2A',
-  ink800:'#1E0E0E',ink700:'#3C1E1C',ink600:'#4A2624',bg1:'#3A1C1A',bg2:'#200F0F',bg3:'#150909',
+  accent:'#F0846A',accent6:'#D66A50',sea:'#9DB3AB',line:'#2A3D36',
+  ink800:'#0C1512',ink700:'#16241F',ink600:'#1D2E28',bg1:'#12201B',bg2:'#0B1512',bg3:'#070C0A',
   sub:'a collector came at you? here are your rights — in plain English',
   persona:{emoji:'⚖️',name:'Debt desk',
     tag:"I lay out your rights against debt collectors in plain English. In your corner — not theirs.",
@@ -829,7 +829,7 @@ MODES.collections={
     h+='<div class="rowbtns" style="justify-content:center"><button class="lnk" onclick="window.print()">🖨 Print / share this</button></div>';
     h+='<p class="nfa"><b>Educational · not legal advice.</b> Debt and lawsuits are high-stakes and the rules vary by state. I point you to your rights — I can\'t represent you. <b>If you\'ve been sued or anything feels serious, talk to a lawyer</b> (free legal aid at lawhelp.org).</p>';
     h+='<div class="rcpt-t">📸 Your shareable receipt</div><div id="colreceipt"></div>';
-    showReport(h,function(){NarcReceipt.card({el:$('colreceipt'),narc:'The Narc',accent:MODES.collections.accent,bg:'#241010',
+    showReport(h,function(){NarcReceipt.card({el:$('colreceipt'),narc:'The Narc',accent:MODES.collections.accent,bg:'#0B1512',
       headline:sit==='sued'?'You\'ve been sued — respond by the deadline. Don\'t ignore it.':'You have more rights here than they let on',
       big:sit==='sued'?'Answer it':(F.length+' right'+(F.length>1?'s':'')),
       sub:sit==='sued'?'Most default judgments happen only because people never respond. Make them prove the debt.':'Send the free debt-validation letter first. Don\'t pay or promise to pay until they prove it\'s yours.',
@@ -840,8 +840,8 @@ MODES.collections={
 /* ================= MODE: BENEFITS (open enrollment / SBC) ================= */
 MODES.benefits={
   key:'benefits',label:'Benefits',tabIc:'🩺',
-  accent:'#6E9BE6',accent6:'#567FCB',sea:'#A9B6D6',line:'#2E3A5E',
-  ink800:'#0F1428',ink700:'#24305A',ink600:'#2E3A66',bg1:'#1C2440',bg2:'#0F1428',bg3:'#080B18',
+  accent:'#6FB6E0',accent6:'#55A0CC',sea:'#9DB3AB',line:'#2A3D36',
+  ink800:'#0C1512',ink700:'#16241F',ink600:'#1D2E28',bg1:'#12201B',bg2:'#0B1512',bg3:'#070C0A',
   sub:'open enrollment is a trap — lay your plans side by side',
   seasonal:'benefits',
   persona:{emoji:'🩺',name:'Benefits desk',
@@ -923,7 +923,7 @@ MODES.benefits={
       +'<li><b>Look past premium.</b> The lowest monthly cost is often the most expensive year if you actually use care.</li></ul></div>'
       +'<p class="nfa">Educational estimate from the SBC numbers you entered and the usage level you picked — <b>not insurance or medical advice</b>. It can\'t know your future health, copays, or drug tiers. Confirm details in each plan\'s SBC before you enroll. Nothing you typed left your browser.</p>'
       +'<div class="rcpt-t">📸 Your shareable receipt</div><div id="benreceipt"></div>';
-    showReport(html,function(){NarcReceipt.card({el:$('benreceipt'),narc:'The Narc',accent:MODES.benefits.accent,bg:'#0F1428',
+    showReport(html,function(){NarcReceipt.card({el:$('benreceipt'),narc:'The Narc',accent:MODES.benefits.accent,bg:'#0B1512',
       headline:'At '+usageLbl.toLowerCase()+' usage, '+best.name+' wins',
       big:'~'+fmt(best.total)+'/yr',
       sub:'All-in (premiums + estimated care) beat '+(second?second.name:'the rest')+'. Re-run at a different usage — the winner can flip.',
