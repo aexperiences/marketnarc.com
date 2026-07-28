@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Narcs — pick your door</title>
+<meta name="description" content="Open the tool you need. The Narc has six doors — medical bills, property tax, pet insurance, missed tax credits, debt collectors, and open-enrollment benefits. Plus MarketNarc for an honest read on the market. Plain-English, on your device, on your side.">
+<meta name="theme-color" content="#0B1512">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --off:#EAF2EE;--ink800:#0C1512;--ink700:#16241F;--ink600:#1D2E28;--line:#2A3D36;
+  --accent:#46D6A0;--accent6:#34B888;--sea:#9DB3AB;
+  --bg1:#12201B;--bg2:#0B1512;--bg3:#070C0A;
+  --serif:Lato;--sans:Inter,-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{min-height:100%}
+body{margin:0;color:var(--off);font-family:var(--sans);
+  background:radial-gradient(120% 80% at 50% -10%,var(--bg1) 0%,var(--bg2) 55%,var(--bg3) 100%);
+  min-height:100dvh;display:flex;flex-direction:column}
+a{color:inherit;text-decoration:none}
+/* top bar */
+.top{flex:0 0 auto;display:flex;align-items:center;gap:11px;padding:13px 18px;
+  border-bottom:1px solid var(--line);background:rgba(11,21,18,.55);position:sticky;top:0;z-index:6;backdrop-filter:blur(6px)}
+.brand{display:flex;align-items:center;gap:10px}
+.brand .logo{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;
+  background:linear-gradient(160deg,#16241F,#0B1512);border:1px solid var(--line);font-size:16px}
+.brand b{font-family:var(--serif);font-weight:900;font-size:17px;letter-spacing:-.2px}
+.brand b .n{color:var(--accent)}
+.top .sp{flex:1}
+.top .priv{color:var(--accent);font-size:11.5px;font-weight:700;white-space:nowrap}
+@media(max-width:430px){.top .priv{display:none}}
+/* body wrap */
+.wrap{flex:1 1 auto;width:100%;max-width:760px;margin:0 auto;padding:30px 18px calc(34px + env(safe-area-inset-bottom))}
+.head{text-align:center;max-width:600px;margin:0 auto 8px}
+.head h1{font-family:var(--serif);font-weight:900;font-size:26px;margin:0 0 8px;letter-spacing:-.3px;line-height:1.12}
+.head p{margin:0;color:var(--sea);font-size:14px;line-height:1.55}
+/* section label */
+.sec{display:flex;align-items:center;gap:12px;margin:30px 2px 14px;color:var(--sea);
+  font-size:11.5px;font-weight:800;letter-spacing:.14em;text-transform:uppercase}
+.sec::after{content:"";flex:1;height:1px;background:var(--line)}
+/* door grid */
+.doors{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+@media(max-width:560px){.doors{grid-template-columns:1fr}}
+.door{display:flex;gap:13px;align-items:flex-start;padding:15px 15px;border-radius:18px;
+  background:linear-gradient(180deg,rgba(29,46,40,.6),rgba(12,21,18,.5));border:1px solid var(--line);
+  transition:transform .16s,border-color .16s,box-shadow .16s;position:relative}
+.door:hover{transform:translateY(-2px);border-color:var(--dc,var(--accent));box-shadow:0 14px 32px rgba(0,0,0,.45)}
+.door:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.door .dic{flex:0 0 auto;width:42px;height:42px;border-radius:12px;display:grid;place-items:center;font-size:22px;
+  background:color-mix(in srgb,var(--dc,var(--accent)) 16%,transparent);border:1px solid color-mix(in srgb,var(--dc,var(--accent)) 40%,transparent)}
+.door .dtx{flex:1;min-width:0}
+.door .dnm{font-family:var(--serif);font-weight:900;font-size:16px;margin:0;display:flex;align-items:baseline;gap:8px}
+.door .dnm .ki{font-family:var(--sans);font-weight:700;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--dc,var(--accent));opacity:.9}
+.door .dsub{color:var(--sea);font-size:12.5px;line-height:1.45;margin:5px 0 0}
+.door .go{color:var(--dc,var(--accent));font-size:12px;font-weight:800;margin-top:9px;display:inline-block}
+/* wide lane card (MarketNarc) */
+.lane{display:flex;gap:15px;align-items:center;padding:17px 16px;border-radius:18px;
+  background:linear-gradient(120deg,rgba(29,46,40,.62),rgba(12,21,18,.5));border:1px solid var(--line);
+  transition:transform .16s,border-color .16s,box-shadow .16s}
+.lane:hover{transform:translateY(-2px);border-color:#7FC7F0;box-shadow:0 14px 32px rgba(0,0,0,.45)}
+.lane .dic{width:46px;height:46px;font-size:24px;border-radius:13px;
+  background:color-mix(in srgb,#7FC7F0 16%,transparent);border:1px solid color-mix(in srgb,#7FC7F0 40%,transparent);display:grid;place-items:center}
+.lane .dnm{color:#EAF2EE}
+.lane .dnm .ki{color:#7FC7F0}
+.lane .go{color:#7FC7F0}
+.foot{text-align:center;color:var(--sea);font-size:11.5px;margin:26px auto 0;max-width:560px;line-height:1.55;opacity:.9}
+.foot a{color:var(--accent);font-weight:700}
+</style>
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="/" aria-label="The Narcs home">
+    <span class="logo" aria-hidden="true">🔎</span>
+    <b>The <span class="n">Narcs</span></b>
+  </a>
+  <span class="sp"></span>
+  <span class="priv">🔒 On your device</span>
+</header>
+
+<div class="wrap">
+  <div class="head">
+    <h1>Pick your door.</h1>
+    <p>Snap or type whatever's costing you money and get the plain-English read — plus the letter to fight it. Everything runs privately, right on your device.</p>
+  </div>
+
+  <div class="sec">The Narc · six doors</div>
+  <div class="doors">
+    <a class="door" href="/thenarc-app#bill" style="--dc:#46D6A0">
+      <span class="dic" aria-hidden="true">🧾</span>
+      <span class="dtx"><span class="dnm">Bills <span class="ki">medical bills</span></span>
+      <p class="dsub">Line by line — what each charge is really for, what looks padded or duplicated, and an appeal letter if you were denied.</p>
+      <span class="go">Open Bills →</span></span>
+    </a>
+    <a class="door" href="/thenarc-app#home" style="--dc:#E5B653">
+      <span class="dic" aria-hidden="true">🏠</span>
+      <span class="dtx"><span class="dnm">Home <span class="ki">property tax</span></span>
+      <p class="dsub">Over-assessed? Compare against comps you pull, see what you're likely overpaying, and get the appeal letter.</p>
+      <span class="go">Open Home →</span></span>
+    </a>
+    <a class="door" href="/thenarc-app#paw" style="--dc:#4FC9C0">
+      <span class="dic" aria-hidden="true">🐾</span>
+      <span class="dtx"><span class="dnm">Pet <span class="ki">pet insurance</span></span>
+      <p class="dsub">What your policy really covers, what you'll be reimbursed on a bill, and how to fight a "pre-existing" denial.</p>
+      <span class="go">Open Pet →</span></span>
+    </a>
+    <a class="door" href="/thenarc-app#tax" style="--dc:#6FD08A">
+      <span class="dic" aria-hidden="true">🧮</span>
+      <span class="dtx"><span class="dnm">Tax <span class="ki">missed credits</span></span>
+      <p class="dsub">Billions in credits go unclaimed. A plain check for the EITC, the Child Tax Credit, and others you may have left behind.</p>
+      <span class="go">Open Tax →</span></span>
+    </a>
+    <a class="door" href="/thenarc-app#collections" style="--dc:#F0846A">
+      <span class="dic" aria-hidden="true">⚖️</span>
+      <span class="dtx"><span class="dnm">Debt <span class="ki">debt collectors</span></span>
+      <p class="dsub">Your FDCPA rights, whether the debt is even valid, and a ready debt-validation letter to answer from strength.</p>
+      <span class="go">Open Debt →</span></span>
+    </a>
+    <a class="door" href="/thenarc-app#benefits" style="--dc:#6FB6E0">
+      <span class="dic" aria-hidden="true">🩺</span>
+      <span class="dtx"><span class="dnm">Benefits <span class="ki">open enrollment</span></span>
+      <p class="dsub">Scan your benefits packet and lay 2–3 plans side by side in plain English — the real trade-off, for how you actually use care.</p>
+      <span class="go">Open Benefits →</span></span>
+    </a>
+  </div>
+
+  <div class="sec">The other lane · the market</div>
+  <a class="lane" href="/marketnarc-app">
+    <span class="dic" aria-hidden="true">📈</span>
+    <span class="dtx"><span class="dnm">MarketNarc <span class="ki">penny &amp; mid-cap</span></span>
+    <p class="dsub">A different animal — an honest risk read on the corner most apps ignore. Where the danger is, how sure it is, and a plain "not sure" when the data's thin. Never a hot tip.</p>
+    <span class="go">Open MarketNarc →</span></span>
+  </a>
+
+  <p class="foot">Educational — never financial, medical, or legal advice. Your real numbers stay on your device.<br>
+  An <a href="https://aexperiences.com">Accelerated Experiences, LLC</a> line.</p>
+</div>
+</body>
+</html>
