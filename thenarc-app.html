@@ -721,7 +721,7 @@ MODES.tax={
    +'<label><input type="checkbox" id="cEdu"> I or a dependent <b>paid college tuition</b></label>'
    +'<label><input type="checkbox" id="cRet"> I put money into an <b>IRA or 401(k)</b> on a modest income</label>'
    +'<label><input type="checkbox" id="cLoan"> I <b>paid student-loan interest</b></label>'
-   +'</div><button class="go" onclick="M(\'decode\')">Check if I overpaid →</button></div>',
+   +'</div><div class="rowbtns"><button class="lnk" onclick="M(\'sample\')">Load a sample</button><button class="lnk" onclick="M(\'clear\')">Clear</button></div><button class="go" onclick="M(\'decode\')">Check if I overpaid →</button></div>',
   sample:function(){$('fstatus').value='hoh';$('kids').value='2';$('agi').value='38000';$('refund').value='3200';$('cCare').checked=true;$('cEdu').checked=false;$('cRet').checked=false;$('cLoan').checked=true;},
   clear:function(){$('fstatus').value='single';$('kids').value='0';$('agi').value='';$('refund').value='';['cCare','cEdu','cRet','cLoan'].forEach(function(id){$(id).checked=false;});$('report').style.display='none';},
   decode:function(){
@@ -792,7 +792,7 @@ MODES.collections={
    +'<label><input type="checkbox" id="cWork"> They call me <b>at work</b> after I asked them to stop</label>'
    +'<label><input type="checkbox" id="cThreat"> They <b>threatened me, lied, or claimed to be law enforcement</b></label>'
    +'<label><input type="checkbox" id="cRepeat"> They <b>call over and over</b> to annoy or harass</label>'
-   +'</div><button class="go" onclick="M(\'decode\')">Show me my rights →</button></div>',
+   +'</div><div class="rowbtns"><button class="lnk" onclick="M(\'sample\')">Load a sample</button><button class="lnk" onclick="M(\'clear\')">Clear</button></div><button class="go" onclick="M(\'decode\')">Show me my rights →</button></div>',
   sample:function(){var s=document.querySelector('input[name="sit"][value="letter"]');if(s)s.checked=true;$('age').value='4';$('cOriginal').checked=false;$('cOld30').checked=false;$('cDont').checked=true;$('cTime').checked=true;$('cWork').checked=false;$('cThreat').checked=false;$('cRepeat').checked=false;},
   clear:function(){var s=document.querySelector('input[name="sit"][value="letter"]');if(s)s.checked=true;$('age').value='0';['cOriginal','cOld30','cDont','cTime','cWork','cThreat','cRepeat'].forEach(function(id){$(id).checked=false;});$('report').style.display='none';},
   decode:function(){
