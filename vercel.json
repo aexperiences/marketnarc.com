@@ -101,11 +101,11 @@
   "rewrites": [
     {
       "source": "/narcs",
-      "destination": "/index.html"
+      "destination": "/"
     },
     {
       "source": "/narcs/",
-      "destination": "/index.html"
+      "destination": "/"
     },
     {
       "source": "/narcs/:path*",
