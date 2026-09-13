@@ -41,7 +41,7 @@
     wrap(x, o.sub || "", 88, 800, W - 176, 48);
 
     x.fillStyle = "#5c789e"; x.font = "600 30px -apple-system, 'Segoe UI', sans-serif";
-    x.fillText("The Narcs · marketnarc.com · see-through-it tools", 88, H - 96);
+    x.fillText("The Narcs · aexperiences.com/narcs · see-through-it tools", 88, H - 96);
     x.fillText("Educational — not financial, medical, or legal advice.", 88, H - 54);
     return c;
   }
@@ -66,7 +66,7 @@
             try {
               var file = new File([b], (o.narc || "narc").toLowerCase() + "-receipt.png", { type: "image/png" });
               if (navigator.canShare && navigator.canShare({ files: [file] })) navigator.share({ files: [file], text: o.share || ("Narc'd it. " + (o.headline || "")) });
-              else navigator.share({ text: (o.share || ("Narc'd it. " + (o.headline || ""))) + " — marketnarc.com" });
+              else navigator.share({ text: (o.share || ("Narc'd it. " + (o.headline || ""))) + " — aexperiences.com/narcs" });
             } catch (e) {}
           }, "image/png");
         };

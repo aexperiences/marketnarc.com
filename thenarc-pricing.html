@@ -6,7 +6,7 @@
 <title>The Narc — one subscription, six doors</title>
 <meta name="description" content="One subscription unlocks all six modes of The Narc — Bills, Home, Pet, Tax, Debt, and open-enrollment Benefits. Lead with the annual plan; 3-day free trial. Runs on your device, private by design.">
 <meta name="theme-color" content="#0A1730">
-<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/narcs/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Lato:wght@700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -93,7 +93,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
   </div>
   <p class="trial">✓ <b>3-day free trial</b> on every plan · ✓ one price unlocks <b>all six modes</b> · ✓ cancel anytime</p>
 
-  <a class="opena" href="/thenarc-app">Just want to look first? Open The Narc free →</a>
+  <a class="opena" href="/narcs/thenarc-app">Just want to look first? Open The Narc free →</a>
 
   <p class="fineprint" id="fineprint">Prices are confirmed at checkout. The Narc is educational and runs on your device — it flags what's wrong and drafts the letter; you decide and file. Not legal, medical, tax, or financial advice.</p>
 
@@ -130,7 +130,7 @@ function showMsg(html){var m=document.getElementById('msg');m.style.display='blo
 async function startCheckout(plan,btn){
   var old=btn.textContent; btn.disabled=true; btn.textContent='One sec…';
   try{
-    var r=await fetch('/api/narc-checkout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({plan:plan})});
+    var r=await fetch('/narcs/api/narc-checkout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({plan:plan})});
     var j=await r.json();
     if(j && j.url){ location.href=j.url; return; }
     if(j && j.staged){
@@ -152,7 +152,7 @@ async function handleReturn(){
   if(paid && paid.indexOf('cs_')===0){
     showMsg("Confirming your subscription…");
     try{
-      var r=await fetch('/api/narc-verify',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({session_id:paid})});
+      var r=await fetch('/narcs/api/narc-verify',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({session_id:paid})});
       var j=await r.json();
       if(j && j.ok && j.token){
         try{localStorage.setItem('narc_token',j.token);localStorage.setItem('narc_until',String(j.until||''));}catch(e){}
@@ -167,6 +167,6 @@ async function handleReturn(){
 applyPricing();
 handleReturn();
 </script>
-<script src="/family-nav.js" defer></script>
+<script src="/narcs/family-nav.js" defer></script>
 </body>
 </html>

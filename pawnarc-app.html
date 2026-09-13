@@ -6,7 +6,7 @@
 <title>PawNarc — read your pet policy</title>
 <meta name="description" content="Enter your pet insurance policy details and PawNarc reads them in plain English — flagging gaps, exclusions, and what you're really covered for. Runs entirely in your browser; nothing is sent anywhere.">
 <meta name="theme-color" content="#34163A">
-<link rel="icon" href="/pawnarc-icon.svg" type="image/svg+xml">
+<link rel="icon" href="/narcs/pawnarc-icon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Lato:wght@700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -154,7 +154,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline
     <div id="letterwrap" style="display:none;margin-top:14px"><div style="font-family:Lato;font-weight:900;font-size:14px;color:var(--accent);margin:0 0 6px">&#9993; Here&rsquo;s your letter &mdash; fill in the [brackets], send it certified, keep a copy</div><div id="lettertext" style="background:var(--ink800);border:1px dashed var(--line);border-radius:12px;padding:16px;font-family:ui-monospace,Menlo,monospace;font-size:12.5px;line-height:1.6;white-space:pre-wrap"></div><div style="text-align:center;margin-top:10px"><button class="lnk" type="button" onclick="window.print()">&#128424; Print / share</button></div></div>
   </div>
 
-  <div class="foot"><a href="/pawnarc">← Back to PawNarc</a> &nbsp;·&nbsp; <a href="/">The Narcs</a></div>
+  <div class="foot"><a href="/narcs/pawnarc">← Back to PawNarc</a> &nbsp;·&nbsp; <a href="/narcs/">The Narcs</a></div>
 </div>
 
 <script>
@@ -332,10 +332,10 @@ var LETTER="[Your name]\n[Your address]\n[Date]\n\n[Insurer] — Claims Appeals 
 function showLetter(){document.getElementById("lettertext").textContent=LETTER;var w=document.getElementById("letterwrap");w.style.display="block";w.scrollIntoView({behavior:"smooth"});}
 </script>
 <div class="brandmark" aria-label="Accelerated Experiences" title="An Accelerated Experiences app"></div>
-  <script src="/narc-ocr.js" defer></script>
-  <script src="/narc-receipt.js" defer></script>
-  <script src="/narc-persona.js" defer></script>
-  <script src="/family-nav.js" defer></script>
+  <script src="/narcs/narc-ocr.js" defer></script>
+  <script src="/narcs/narc-receipt.js" defer></script>
+  <script src="/narcs/narc-persona.js" defer></script>
+  <script src="/narcs/family-nav.js" defer></script>
   <script>
 window.NARC_APP='paw';
 window.NARC_WALK=[
@@ -353,6 +353,6 @@ window.NARC_FIRST=function(){
  return "<b>Check the reimbursement math below before you file.</b> Insurers apply the deductible and percentage in a specific order — knowing it stops you from under-claiming.";
 };
   </script>
-  <script src="/narc-walk.js" defer></script>
+  <script src="/narcs/narc-walk.js" defer></script>
 </body>
 </html>

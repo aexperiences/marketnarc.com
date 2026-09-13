@@ -21,10 +21,7 @@
       signoff: "Don't leave your own money sitting with the IRS. Go check each one by name." },
     collections: { emoji: "⚖️", name: "CollectionsNarc",
       tag: "I lay out your rights against debt collectors in plain English. In your corner — not theirs.",
-      signoff: "Know your rights and they lose their leverage. Put everything in writing." },
-    market: { emoji: "👁️", name: "MarketNarc",
-      tag: "Nate reads the small-cap corner as a risk story, not a hot tip — where the danger is, how thin the data is, and when he honestly can't tell. Never a trade, never advice.",
-      signoff: "That's the risk as I read it — not a call to act. The decision, and the downside, are yours. —Nate" }
+      signoff: "Know your rights and they lose their leverage. Put everything in writing." }
   };
 
   function keyFromPath() {
@@ -34,7 +31,6 @@
     if (p.indexOf("pawnarc") >= 0) return "paw";
     if (p.indexOf("taxnarc") >= 0) return "tax";
     if (p.indexOf("collectionsnarc") >= 0) return "collections";
-    if (p.indexOf("marketnarc") >= 0) return "market";
     return null;
   }
 

@@ -7,7 +7,7 @@
 <title>The Narc — snap anything that's costing you money</title>
 <meta name="description" content="One tool, six doors: bills, home assessment, pet policy, taxes, debt collectors, and open-enrollment benefits. The Narc reads what's costing you money, tells you plainly what's wrong, and writes the letter to fight it. Runs entirely in your browser — nothing you enter is sent anywhere.">
 <meta name="theme-color" content="#0B1512">
-<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/narcs/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Lato:wght@700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -231,7 +231,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
     </div>
   </div>
 
-  <div class="foot"><a href="/">← The Narc home</a> &nbsp;·&nbsp; <a href="/marketnarc-app">Try MarketNarc</a></div>
+  <div class="foot"><a href="/narcs/">← The Narc home</a></div>
 </div>
 
 <div id="paywall" class="pw-wrap" style="display:none" role="dialog" aria-modal="true" aria-label="Unlock The Narc">
@@ -959,14 +959,14 @@ function openPaywall(){var p=$('pwPrice');if(p)p.textContent=pwSeasonPrice();var
 function closePaywall(){var pw=$('paywall');if(pw)pw.style.display='none';}
 function pwRecheck(){ if(pwToken()){PAY.unlocked=true;closePaywall();M('decode');return;} var n=$('pwNote');if(n)n.textContent='Not seeing a subscription yet. If you just started your trial, give it a moment and tap again.'; }
 function verifyPaid(sid){
-  try{fetch('/api/narc-verify',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({session_id:sid})})
+  try{fetch('/narcs/api/narc-verify',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({session_id:sid})})
     .then(function(r){return r.json();}).then(function(j){if(j&&j.ok&&j.token){try{localStorage.setItem('narc_token',j.token);localStorage.setItem('narc_until',String(j.until||''));}catch(e){}PAY.unlocked=true;closePaywall();}}).catch(function(){});}catch(e){}
 }
 function initPay(){
   PAY.unlocked=!!pwToken();
   try{var q=new URLSearchParams(location.search);var paid=q.get('paid');if(paid&&paid.indexOf('cs_')===0)verifyPaid(paid);}catch(e){}
   // ask the server whether paid access is live; fail-safe = stay free (never lock people out on a hiccup)
-  try{fetch('/api/narc-config',{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){PAY.live=!!(j&&j.live);}).catch(function(){PAY.live=false;});}catch(e){PAY.live=false;}
+  try{fetch('/narcs/api/narc-config',{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){PAY.live=!!(j&&j.live);}).catch(function(){PAY.live=false;});}catch(e){PAY.live=false;}
 }
 
 /* ---------- boot ---------- */
@@ -978,8 +978,8 @@ function boot(){
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
 </script>
-<script src="/narc-ocr.js" defer></script>
-<script src="/narc-receipt.js" defer></script>
-<script src="/family-nav.js" defer></script>
+<script src="/narcs/narc-ocr.js" defer></script>
+<script src="/narcs/narc-receipt.js" defer></script>
+<script src="/narcs/family-nav.js" defer></script>
 </body>
 </html>

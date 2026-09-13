@@ -6,7 +6,7 @@
 <title>TaxNarc — did you overpay? A plain-English check</title>
 <meta name="description" content="Answer a few plain questions and TaxNarc flags credits you may have missed — EITC, the Child Tax Credit, over-withholding — in plain English. Runs in your browser; nothing you enter is sent anywhere. Educational, not tax advice.">
 <meta name="theme-color" content="#12261B">
-<link rel="icon" href="/taxnarc-icon.svg" type="image/svg+xml">
+<link rel="icon" href="/narcs/taxnarc-icon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Lato:wght@700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -125,7 +125,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
     </div>
   </div>
 
-  <div class="foot"><a href="/taxnarc">&larr; Back to TaxNarc</a> &nbsp;&middot;&nbsp; <a href="/">The Narcs</a></div>
+  <div class="foot"><a href="/narcs/taxnarc">&larr; Back to TaxNarc</a> &nbsp;&middot;&nbsp; <a href="/narcs/">The Narcs</a></div>
   <div class="brandmark" aria-label="Accelerated Experiences" title="An Accelerated Experiences app"></div>
 </div>
 
@@ -234,10 +234,10 @@ function toggleStop(on){var s=document.getElementById('stopread');if(s)s.style.d
 function speakRead(){if(!('speechSynthesis' in window)){return;}var t=narcText();if(!t)return;try{window.speechSynthesis.cancel();}catch(e){}var u=new SpeechSynthesisUtterance(t);u.rate=0.98;u.onend=function(){toggleStop(false);};u.onerror=function(){toggleStop(false);};window.speechSynthesis.speak(u);toggleStop(true);}
 function stopRead(){try{window.speechSynthesis.cancel();}catch(e){}toggleStop(false);}
 </script>
-  <script src="/narc-ocr.js" defer></script>
-  <script src="/narc-receipt.js" defer></script>
-  <script src="/narc-persona.js" defer></script>
-  <script src="/family-nav.js" defer></script>
+  <script src="/narcs/narc-ocr.js" defer></script>
+  <script src="/narcs/narc-receipt.js" defer></script>
+  <script src="/narcs/narc-persona.js" defer></script>
+  <script src="/narcs/family-nav.js" defer></script>
   <script>
 window.NARC_APP='tax';
 window.NARC_WALK=[
@@ -258,6 +258,6 @@ window.NARC_FIRST=function(){
  return "<b>Start with the biggest credit flagged below</b> — then confirm it against last year's return before you file or amend.";
 };
   </script>
-  <script src="/narc-walk.js" defer></script>
+  <script src="/narcs/narc-walk.js" defer></script>
 </body>
 </html>

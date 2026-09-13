@@ -3,39 +3,113 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "headers": [
-    { "source": "/(.*)", "headers": [ { "key": "X-Content-Type-Options", "value": "nosniff" }, { "key": "X-Frame-Options", "value": "SAMEORIGIN" }, { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" } ] }
-  ],
-  "functions": {
-    "api/*.py": {
-      "includeFiles": "api/_*.py"
-    }
-  },
-  "crons": [
     {
-      "path": "/api/publish",
-      "schedule": "0 14 * * 1-5"
-    },
-    {
-      "path": "/api/publish",
-      "schedule": "0 19 * * 1-5"
-    },
-    {
-      "path": "/api/resolve",
-      "schedule": "30 20 * * 1-5"
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "SAMEORIGIN"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        }
+      ]
     }
   ],
   "redirects": [
-    { "source": "/live", "destination": "/marketnarc-app", "permanent": false },
-    { "source": "/marketnarc", "destination": "/marketnarc-app", "permanent": false },
-    { "source": "/thenarc", "destination": "/thenarc-app", "permanent": false },
-    { "source": "/narc", "destination": "/thenarc-app", "permanent": false },
-    { "source": "/pricing", "destination": "/thenarc-pricing", "permanent": false },
-    { "source": "/billnarc", "destination": "/thenarc-app#bill", "permanent": false },
-    { "source": "/homenarc", "destination": "/thenarc-app#home", "permanent": false },
-    { "source": "/pawnarc", "destination": "/thenarc-app#paw", "permanent": false },
-    { "source": "/taxnarc", "destination": "/thenarc-app#tax", "permanent": false },
-    { "source": "/collectionsnarc", "destination": "/thenarc-app#collections", "permanent": false },
-    { "source": "/benefits", "destination": "/thenarc-app#benefits", "permanent": false },
-    { "source": "/benefitsnarc", "destination": "/thenarc-app#benefits", "permanent": false }
+    {
+      "source": "/narcs/thenarc",
+      "destination": "/narcs/thenarc-app",
+      "permanent": false
+    },
+    {
+      "source": "/narcs/narc",
+      "destination": "/narcs/thenarc-app",
+      "permanent": false
+    },
+    {
+      "source": "/narcs/pricing",
+      "destination": "/narcs/thenarc-pricing",
+      "permanent": false
+    },
+    {
+      "source": "/narcs/billnarc",
+      "destination": "/narcs/thenarc-app#bill",
+      "permanent": false
+    },
+    {
+      "source": "/narcs/homenarc",
+      "destination": "/narcs/thenarc-app#home",
+      "permanent": false
+    },
+    {
+      "source": "/narcs/pawnarc",
+      "destination": "/narcs/thenarc-app#paw",
+      "permanent": false
+    },
+    {
+      "source": "/narcs/taxnarc",
+      "destination": "/narcs/thenarc-app#tax",
+      "permanent": false
+    },
+    {
+      "source": "/narcs/collectionsnarc",
+      "destination": "/narcs/thenarc-app#collections",
+      "permanent": false
+    },
+    {
+      "source": "/narcs/benefits",
+      "destination": "/narcs/thenarc-app#benefits",
+      "permanent": false
+    },
+    {
+      "source": "/narcs/benefitsnarc",
+      "destination": "/narcs/thenarc-app#benefits",
+      "permanent": false
+    },
+    {
+      "source": "/thenarc",
+      "destination": "/narcs/thenarc-app",
+      "permanent": false
+    },
+    {
+      "source": "/narc",
+      "destination": "/narcs/thenarc-app",
+      "permanent": false
+    },
+    {
+      "source": "/pricing",
+      "destination": "/narcs/thenarc-pricing",
+      "permanent": false
+    },
+    {
+      "source": "/benefits",
+      "destination": "/narcs/thenarc-app#benefits",
+      "permanent": false
+    },
+    {
+      "source": "/benefitsnarc",
+      "destination": "/narcs/thenarc-app#benefits",
+      "permanent": false
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/narcs",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/narcs/",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/narcs/:path*",
+      "destination": "/:path*"
+    }
   ]
 }

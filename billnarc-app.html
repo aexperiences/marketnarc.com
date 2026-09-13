@@ -6,7 +6,7 @@
 <title>BillNarc — decode your own medical bill</title>
 <meta name="description" content="Enter your medical bill's line items and BillNarc reads them in plain English — flagging duplicates, likely errors, and coverage you may be owed. Runs entirely in your browser; nothing is sent anywhere.">
 <meta name="theme-color" content="#122A52">
-<link rel="icon" href="/billnarc-icon.svg" type="image/svg+xml">
+<link rel="icon" href="/narcs/billnarc-icon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Lato:wght@700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -127,7 +127,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline
     </div>
   </div>
 
-  <div class="foot"><a href="/billnarc">← Back to BillNarc</a> &nbsp;·&nbsp; <a href="/">The Narcs</a></div>
+  <div class="foot"><a href="/narcs/billnarc">← Back to BillNarc</a> &nbsp;·&nbsp; <a href="/narcs/">The Narcs</a></div>
 </div>
 
 <script>
@@ -302,10 +302,10 @@ function speakRead(){if(!('speechSynthesis' in window)){return;}var t=narcText()
 function stopRead(){try{window.speechSynthesis.cancel();}catch(e){}toggleStop(false);}
 </script>
 <div class="brandmark" aria-label="Accelerated Experiences" title="An Accelerated Experiences app"></div>
-  <script src="/narc-ocr.js" defer></script>
-  <script src="/narc-receipt.js" defer></script>
-  <script src="/narc-persona.js" defer></script>
-  <script src="/family-nav.js" defer></script>
+  <script src="/narcs/narc-ocr.js" defer></script>
+  <script src="/narcs/narc-receipt.js" defer></script>
+  <script src="/narcs/narc-persona.js" defer></script>
+  <script src="/narcs/family-nav.js" defer></script>
   <script>
 window.NARC_APP='bill';
 window.NARC_NODECODE=true;
@@ -322,6 +322,6 @@ window.NARC_FIRST=function(){
  return "<b>Request a fully itemized bill and check every line.</b> Hospitals bank on you paying the summary — duplicate charges, upcoding, and out-of-network surprises hide in the detail.";
 };
   </script>
-  <script src="/narc-walk.js" defer></script>
+  <script src="/narcs/narc-walk.js" defer></script>
 </body>
 </html>

@@ -1,6 +1,6 @@
 /* ===========================================================
    The Narcs — "Synapse" design system  (family default)
-   Indigo + mint + coral. MarketNarc keeps Signal teal/amber
+   Indigo + mint + coral. The Narc keeps Signal teal/amber
    via the .theme-signal escape hatch below.
    =========================================================== */
 :root{
@@ -21,7 +21,7 @@
   --sp:clamp(20px,5vw,40px);
   --shadow:0 18px 50px -28px rgba(0,0,0,.65);
 }
-/* MarketNarc product theme — the Signal teal + amber, scoped to its page */
+/* Signal teal + amber product theme, scoped to the page that opts in */
 .theme-signal{
   --ink:#0E2B2A; --ink-800:#0A2120; --ink-700:#143E3C; --ink-600:#1B4B48;
   --line:#214F4C; --amber:#E6A93C; --amber-600:#D2922A; --sea:#8FC4BB; --clay:#D98A63;
@@ -122,7 +122,7 @@ a:hover{text-decoration:underline}
 .bleed-light h2{color:var(--ink)}.bleed-light .lede{color:#42514e}
 .bleed-light .kicker{color:var(--amber-600)}
 
-/* the MarketNarc call card (preview component) */
+/* the call card (preview component) */
 .callcard{background:var(--ink-700);border:1px solid var(--line);border-radius:18px;
   padding:24px;box-shadow:var(--shadow);position:relative;max-width:420px}
 .callcard .cc-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px}
