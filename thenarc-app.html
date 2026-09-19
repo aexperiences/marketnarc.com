@@ -34,6 +34,7 @@ body{margin:0;min-height:100vh;color:var(--off);
 .app{max-width:660px;margin:0 auto}
 .head{display:flex;align-items:center;gap:11px;justify-content:center;margin-bottom:4px}
 .head svg{width:34px;height:34px;border-radius:9px;transition:.3s}
+.head #hlogo{width:40px;height:40px;border-radius:10px;display:block}
 .head .wm{font-family:Lato;font-weight:900;font-size:25px;letter-spacing:-.01em}
 .head .wm .n{color:var(--accent);transition:color .3s}
 .modechip{display:block;text-align:center;font-family:Lato;font-weight:900;font-size:11px;letter-spacing:.14em;
@@ -203,7 +204,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 <body data-mode="bill">
 <div class="app">
   <div class="head">
-    <svg id="hlogo" viewBox="0 0 1024 1024" aria-hidden="true"></svg>
+    <img id="hlogo" src="/narcs/favicon-192.png" alt="" width="40" height="40">
     <span class="wm">The<span class="n">Narcs</span></span>
   </div>
   <span class="modechip" id="modechip">Bills</span>
@@ -366,7 +367,6 @@ function switchMode(k){
   if(!MODES[k])return;
   ACTIVE=k;var m=MODES[k];
   applyTheme(m);
-  $('hlogo').innerHTML=logoSVG(m.accent);
   $('modechip').textContent=m.label;
   $('sub').innerHTML=m.sub;
   $('priv').innerHTML=m.priv||'🔒 Runs entirely in your browser. Nothing you type is sent anywhere.';
