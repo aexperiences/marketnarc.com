@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="100%" height="100%" preserveAspectRatio="xMidYMid meet">
+<defs>
+<linearGradient id="gpriv" x1="0" y1="0" x2="0.65" y2="1"><stop offset="0%" stop-color="#b8322a"/><stop offset="55%" stop-color="#7a1f1a"/><stop offset="100%" stop-color="#2a1810"/></linearGradient>
+<radialGradient id="glpriv" cx="32%" cy="6%" r="80%"><stop offset="0%" stop-color="#ffffff" stop-opacity=".26"/><stop offset="100%" stop-color="#ffffff" stop-opacity="0"/></radialGradient>
+<linearGradient id="gshield" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#f4eede"/><stop offset="100%" stop-color="#d9cfb6"/></linearGradient>
+</defs>
+<rect width="1024" height="1024" fill="url(#gpriv)"/>
+<circle cx="512" cy="430" r="260" fill="#ffffff" opacity=".08"/>
+<path d="M512,150 L790,250 L790,520 C790,700 660,830 512,890 C364,830 234,700 234,520 L234,250 Z" fill="url(#gshield)" stroke="#2a1810" stroke-width="18" stroke-linejoin="round"/>
+<path d="M512,190 L750,276 L750,520 C750,676 640,790 512,846 C384,790 274,676 274,520 L274,276 Z" fill="none" stroke="#e0a83a" stroke-width="10" opacity=".8"/>
+<rect x="412" y="500" width="200" height="160" rx="22" fill="#2a1810"/>
+<path d="M452,500 L452,440 C452,400 482,372 512,372 C542,372 572,400 572,440 L572,500" fill="none" stroke="#2a1810" stroke-width="30" stroke-linecap="round"/>
+<circle cx="512" cy="566" r="26" fill="#e0a83a"/><rect x="500" y="580" width="24" height="46" rx="8" fill="#e0a83a"/>
+<rect width="1024" height="1024" fill="url(#glpriv)"/>
+</svg>
