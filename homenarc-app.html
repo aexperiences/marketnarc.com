@@ -309,8 +309,8 @@ function nTalk(){var SR=window.SpeechRecognition||window.webkitSpeechRecognition
 
 function narcText(){var el=document.getElementById('reportbody');if(!el)return '';var t=el.innerText||el.textContent||'';return t.replace(/\u00a0/g,' ').replace(/\s+/g,' ').trim();}
 function toggleStop(on){var s=document.getElementById('stopread');if(s)s.style.display=on?'inline-block':'none';}
-function speakRead(){if(!('speechSynthesis' in window)){return;}var t=narcText();if(!t)return;try{window.speechSynthesis.cancel();}catch(e){}var u=new SpeechSynthesisUtterance(t);u.rate=0.98;u.onend=function(){toggleStop(false);};u.onerror=function(){toggleStop(false);};window.speechSynthesis.speak(u);toggleStop(true);}
-function stopRead(){try{window.speechSynthesis.cancel();}catch(e){}toggleStop(false);}
+function speakRead(){var t=narcText();if(!t||!(window.AEVoice&&window.AEVoice.v>=2))return;toggleStop(true);window.AEVoice.speak(String(t),{voice:'roz',maxWaitMs:12000}).then(function(){toggleStop(false);});}
+function stopRead(){try{if(window.AEVoice&&window.AEVoice.v>=2)window.AEVoice.stop();}catch(e){}toggleStop(false);}
 var LETTER="[Your name]\n[Your address]\n[Date]\n\n[County] Assessor / Board of Review\n[Address]\n\nRe: Appeal of assessed value — [property address], Parcel # [ ___ ], Tax year [ ___ ]\n\nTo whom it may concern:\n\nI am formally appealing the assessed value of my property. Based on the recent sale prices and assessments of comparable homes in my area, my assessment appears too high.\n\nI request a review and a reduction of the assessed value to reflect fair market value. I can provide comparable sales, photos, and any errors I found in the property record.\n\nPlease send me the appeal deadline and any hearing date, and confirm what documentation you need.\n\nSincerely,\n[Your name]";
 function showLetter(){document.getElementById("lettertext").textContent=LETTER;var w=document.getElementById("letterwrap");w.style.display="block";w.scrollIntoView({behavior:"smooth"});}
 </script>

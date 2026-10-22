@@ -73,11 +73,12 @@
 
   /* ---------- walkthrough engine ---------- */
   var wi=0, walking=false, rec=null, retry=0;
-  function speak(t,cb){ if(!('speechSynthesis'in window)){ if(cb)cb(); return; } try{speechSynthesis.cancel();}catch(e){} var u=new SpeechSynthesisUtterance(t); u.rate=1.0; u.onend=function(){if(cb)cb();}; u.onerror=function(){if(cb)cb();}; speechSynthesis.speak(u); }
+  /* Oct 22 2026: Roz, the house voice in Turbo, never the device voice (SSOT A5.3.1) */ (function(){ if(window.AEVoice&&window.AEVoice.v>=2) return; var sc=document.createElement('script'); sc.src='https://www.aexperiences.com/ae-voice.js'; sc.async=true; (document.head||document.documentElement).appendChild(sc); })(); document.addEventListener('pointerdown',function(){ if(window.AEVoice&&window.AEVoice.v>=2) window.AEVoice.unlock(); },true);
+function speak(t,cb){ if(!(window.AEVoice&&window.AEVoice.v>=2)){ if(cb)cb(); return; } window.AEVoice.speak(String(t||''),{voice:'roz'}).then(function(){ if(cb)cb(); }); }
   function setLbl(m){ var e=$('nwlbl'); if(e) e.textContent=m; }
   function kindOf(el,step){ if(step.kind)return step.kind; if(!el)return 'text'; if(el.type==='checkbox')return 'bool'; if(el.tagName==='SELECT')return 'select'; if(el.type==='number')return 'number'; return 'text'; }
   function start(){ if(walking){stop();return;} var SR=window.SpeechRecognition||window.webkitSpeechRecognition; if(!SR){ setLbl('Voice isn’t supported here — try Chrome, or just tap the answers.'); return; } walking=true; wi=0; retry=0; var b=$('nwbtn'); if(b){b.classList.add('rec'); b.innerHTML='◼ Stop the walkthrough';} step(); }
-  function stop(){ walking=false; try{if(rec)rec.stop();}catch(e){} try{speechSynthesis.cancel();}catch(e){} rec=null; var b=$('nwbtn'); if(b){b.classList.remove('rec'); b.innerHTML='🎤 Walk me through it, out loud';} setLbl(''); }
+  function stop(){ walking=false; try{if(rec)rec.stop();}catch(e){} try{if(window.AEVoice&&window.AEVoice.v>=2)window.AEVoice.stop();}catch(e){} rec=null; var b=$('nwbtn'); if(b){b.classList.remove('rec'); b.innerHTML='🎤 Walk me through it, out loud';} setLbl(''); }
   function step(){ if(!walking)return;
     if(wi>=STEPS.length){ finish(); return; }
     var s=STEPS[wi];
