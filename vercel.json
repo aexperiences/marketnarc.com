@@ -33,11 +33,6 @@
       "permanent": false
     },
     {
-      "source": "/narcs/pricing",
-      "destination": "/narcs/thenarc-pricing",
-      "permanent": false
-    },
-    {
       "source": "/narcs/billnarc",
       "destination": "/narcs/thenarc-app#bill",
       "permanent": false
@@ -95,6 +90,21 @@
     {
       "source": "/benefitsnarc",
       "destination": "/narcs/thenarc-app#benefits",
+      "permanent": false
+    },
+    {
+      "source": "/narcs/pricing",
+      "destination": "/narcs/#pricing",
+      "permanent": false
+    },
+    {
+      "source": "/narcs/thenarc-pricing",
+      "destination": "/narcs/#pricing",
+      "permanent": false
+    },
+    {
+      "source": "/thenarc-pricing",
+      "destination": "/#pricing",
       "permanent": false
     }
   ],
