@@ -23,6 +23,78 @@
   ],
   "redirects": [
     {
+      "source": "/narcs/open",
+      "missing": [
+        {
+          "type": "query",
+          "key": "unlocked"
+        }
+      ],
+      "destination": "/narcs/thenarc-app",
+      "permanent": false
+    },
+    {
+      "source": "/narcs/billnarc-app",
+      "destination": "/narcs/thenarc-app#bill",
+      "permanent": false
+    },
+    {
+      "source": "/narcs/homenarc-app",
+      "destination": "/narcs/thenarc-app#home",
+      "permanent": false
+    },
+    {
+      "source": "/narcs/pawnarc-app",
+      "destination": "/narcs/thenarc-app#paw",
+      "permanent": false
+    },
+    {
+      "source": "/narcs/taxnarc-app",
+      "destination": "/narcs/thenarc-app#tax",
+      "permanent": false
+    },
+    {
+      "source": "/narcs/collectionsnarc-app",
+      "destination": "/narcs/thenarc-app#collections",
+      "permanent": false
+    },
+    {
+      "source": "/open",
+      "missing": [
+        {
+          "type": "query",
+          "key": "unlocked"
+        }
+      ],
+      "destination": "/narcs/thenarc-app",
+      "permanent": false
+    },
+    {
+      "source": "/billnarc-app",
+      "destination": "/narcs/thenarc-app#bill",
+      "permanent": false
+    },
+    {
+      "source": "/homenarc-app",
+      "destination": "/narcs/thenarc-app#home",
+      "permanent": false
+    },
+    {
+      "source": "/pawnarc-app",
+      "destination": "/narcs/thenarc-app#paw",
+      "permanent": false
+    },
+    {
+      "source": "/taxnarc-app",
+      "destination": "/narcs/thenarc-app#tax",
+      "permanent": false
+    },
+    {
+      "source": "/collectionsnarc-app",
+      "destination": "/narcs/thenarc-app#collections",
+      "permanent": false
+    },
+    {
       "source": "/narcs/thenarc",
       "destination": "/narcs/thenarc-app",
       "permanent": false
